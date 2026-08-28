@@ -32,6 +32,21 @@ const FORBIDDEN = [
   { pattern: 'NSPasteboard', reason: 'clipboard read' },
   { pattern: 'clipboard.readText', reason: 'clipboard read' },
   { pattern: 'navigator.clipboard.read', reason: 'clipboard read' },
+  // Accessibility text reading (ADR 0005 D-35). REWIND observes that a text element changed; it
+  // never asks what the value became. Reading a field while the user types is functionally a
+  // keylogger even without a keyboard hook — §8 bans the outcome, not the API.
+  { pattern: 'kAXValueAttribute', reason: 'reads text content via accessibility (ADR 0005 D-35)' },
+  { pattern: 'kAXSelectedTextAttribute', reason: 'reads selected text via accessibility' },
+  { pattern: 'kAXSelectedTextRangeAttribute', reason: 'reads selection range via accessibility' },
+  {
+    pattern: 'AXUIElementCopyAttributeValue',
+    reason: 'generic accessibility value read — use the role-scoped helper instead',
+  },
+  {
+    pattern: 'CurrentValuePattern',
+    reason: 'reads text content via UI Automation (Windows equivalent)',
+  },
+  { pattern: 'TextPattern', reason: 'reads text content via UI Automation' },
   // Screen capture (PRIVACY.md §2: no screenshots at MVP)
   { pattern: 'BitBlt', reason: 'screen capture' },
   { pattern: 'CGDisplayCreateImage', reason: 'screen capture' },
