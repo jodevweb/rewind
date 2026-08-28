@@ -1,0 +1,356 @@
+{
+  "$schema": "../schemas/golden-session.json",
+  "id": "gs-11-off-hours-drift",
+  "name": "Off-hours drift",
+  "description": "An afternoon on a CSV importer, then three hours of League of Legends. The engine used to file the entire evening under the afternoon’s project, because unlabelled activity kept extending the very window that decided whether it was nearby.",
+  "tests": "A long run of anchorless activity must not be absorbed by the last context that had anchors. Drift is measured from the last real evidence, not from whatever the context most recently swallowed — so the evening forms its own context instead of inflating the afternoon’s. An engine that merges these reports hours of work that never happened, which is the one thing a tool people trust for their own history cannot do.",
+  "day": "2026-08-28",
+  "tzOffsetMinutes": 120,
+  "expected": {
+    "contextCount": 2,
+    "contexts": [
+      {
+        "tag": "importer",
+        "label": "CSV importer",
+        "labelMatches": "(?i)importer|csv|mimiq",
+        "outcome": "fix_implemented",
+        "expectedNextStep": "Push feat/csv-importer",
+        "startTimestamp": 1787925600000,
+        "endTimestamp": 1787926320000,
+        "eventRefs": [
+          "gs-11-off-hours-drift-e001",
+          "gs-11-off-hours-drift-e002",
+          "gs-11-off-hours-drift-e003",
+          "gs-11-off-hours-drift-e004",
+          "gs-11-off-hours-drift-e005",
+          "gs-11-off-hours-drift-e006"
+        ],
+        "importantEventRefs": [
+          "gs-11-off-hours-drift-e003",
+          "gs-11-off-hours-drift-e005",
+          "gs-11-off-hours-drift-e006"
+        ],
+        "note": "Ends at the commit. Nothing after 16:12 belongs to it."
+      },
+      {
+        "tag": "evening",
+        "label": "Evening, not work",
+        "labelMatches": "(?i)league|legends|discord",
+        "outcome": "abandoned",
+        "startTimestamp": 1787926800000,
+        "endTimestamp": 1787937300000,
+        "eventRefs": [
+          "gs-11-off-hours-drift-e007",
+          "gs-11-off-hours-drift-e008",
+          "gs-11-off-hours-drift-e009",
+          "gs-11-off-hours-drift-e010",
+          "gs-11-off-hours-drift-e011",
+          "gs-11-off-hours-drift-e012"
+        ],
+        "importantEventRefs": [],
+        "note": "Carries no anchors by construction. It must stand on its own rather than join the afternoon."
+      }
+    ],
+    "noiseEventRefs": []
+  },
+  "events": [
+    {
+      "id": "faf7bc30-bc30-7000-8000-000000000001",
+      "ref": "gs-11-off-hours-drift-e001",
+      "timestamp": 1787925600000,
+      "endTimestamp": 1787926320000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code",
+      "appDisplay": "Code",
+      "title": "importer.ts — mimiq",
+      "repositoryId": "mimiq",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "faf7bc30-bc30-7000-8000-000000000002",
+      "ref": "gs-11-off-hours-drift-e002",
+      "timestamp": 1787925610000,
+      "tzOffsetMinutes": 120,
+      "source": "ide",
+      "type": "ide.workspace.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "mimiq",
+      "metadata": {
+        "workspacePath": "/Users/j/dev/mimiq",
+        "ideName": "vscode",
+        "ideVersion": "1.96.0"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "faf7bc30-bc30-7000-8000-000000000003",
+      "ref": "gs-11-off-hours-drift-e003",
+      "timestamp": 1787925690000,
+      "tzOffsetMinutes": 120,
+      "source": "git",
+      "type": "git.branch.checkout",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "mimiq",
+      "metadata": {
+        "from": "main",
+        "to": "feat/csv-importer",
+        "repository": "mimiq"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 80
+    },
+    {
+      "id": "faf7bc30-bc30-7000-8000-000000000004",
+      "ref": "gs-11-off-hours-drift-e004",
+      "timestamp": 1787925840000,
+      "tzOffsetMinutes": 120,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "mimiq",
+      "metadata": {
+        "path": "/Users/j/dev/mimiq/src/importer.ts",
+        "language": "typescript",
+        "lineCount": 210
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "faf7bc30-bc30-7000-8000-000000000005",
+      "ref": "gs-11-off-hours-drift-e005",
+      "timestamp": 1787926140000,
+      "tzOffsetMinutes": 120,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "mimiq",
+      "metadata": {
+        "commandRedacted": "pnpm test importer",
+        "exitCode": 0,
+        "durationMs": 8400,
+        "cwd": "/Users/j/dev/mimiq"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "faf7bc30-bc30-7000-8000-000000000006",
+      "ref": "gs-11-off-hours-drift-e006",
+      "timestamp": 1787926320000,
+      "tzOffsetMinutes": 120,
+      "source": "git",
+      "type": "git.commit",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "mimiq",
+      "metadata": {
+        "messageRedacted": "feat: csv importer handles quoted separators",
+        "repository": "mimiq",
+        "branch": "feat/csv-importer",
+        "filesChanged": 3,
+        "insertions": 88,
+        "deletions": 12
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 90
+    },
+    {
+      "id": "faf7bc30-bc30-7000-8000-000000000007",
+      "ref": "gs-11-off-hours-drift-e007",
+      "timestamp": 1787926800000,
+      "endTimestamp": 1787928480000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "League of Legends",
+      "appDisplay": "League of Legends",
+      "title": "League of Legends",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "faf7bc30-bc30-7000-8000-000000000008",
+      "ref": "gs-11-off-hours-drift-e008",
+      "timestamp": 1787928480000,
+      "endTimestamp": 1787930400000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "League of Legends",
+      "appDisplay": "League of Legends",
+      "title": "League of Legends (TM) Client",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "faf7bc30-bc30-7000-8000-000000000009",
+      "ref": "gs-11-off-hours-drift-e009",
+      "timestamp": 1787930400000,
+      "endTimestamp": 1787932500000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "League of Legends",
+      "appDisplay": "League of Legends",
+      "title": "League of Legends",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "faf7bc30-bc30-7000-8000-00000000000a",
+      "ref": "gs-11-off-hours-drift-e010",
+      "timestamp": 1787932500000,
+      "endTimestamp": 1787933100000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Discord",
+      "appDisplay": "Discord",
+      "title": "Discord",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "faf7bc30-bc30-7000-8000-00000000000b",
+      "ref": "gs-11-off-hours-drift-e011",
+      "timestamp": 1787933100000,
+      "endTimestamp": 1787935200000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "League of Legends",
+      "appDisplay": "League of Legends",
+      "title": "League of Legends (TM) Client",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "faf7bc30-bc30-7000-8000-00000000000c",
+      "ref": "gs-11-off-hours-drift-e012",
+      "timestamp": 1787935200000,
+      "endTimestamp": 1787937300000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "League of Legends",
+      "appDisplay": "League of Legends",
+      "title": "League of Legends",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    }
+  ]
+}

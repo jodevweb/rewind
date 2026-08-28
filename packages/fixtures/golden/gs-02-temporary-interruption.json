@@ -388,7 +388,10 @@
       },
       "repositoryId": "myapp",
       "metadata": {
-        "lines": ["3 of 20 runs failed", "Timeout: worker did not drain within 500ms"],
+        "lines": [
+          "3 of 20 runs failed",
+          "Timeout: worker did not drain within 500ms"
+        ],
         "lineCount": 2,
         "truncated": false
       },
@@ -727,7 +730,10 @@
       "metadata": {
         "sha": "c41d7e9a2b6f8c3d5e1a9f7b4c2d8e6a3f1b5c9d",
         "messageRedacted": "fix(queue): await worker drain with an abort signal instead of a fixed timeout",
-        "filesChanged": ["src/queue/worker.ts", "test/queue.worker.test.ts"],
+        "filesChanged": [
+          "src/queue/worker.ts",
+          "test/queue.worker.test.ts"
+        ],
         "insertions": 18,
         "deletions": 11,
         "authorIsUser": true

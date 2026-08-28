@@ -417,7 +417,9 @@
           "C:/dev/myapp/src/payments/adyen.adapter.ts"
         ],
         "count": 7,
-        "changeTypes": ["modified"]
+        "changeTypes": [
+          "modified"
+        ]
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -1065,7 +1067,10 @@
       "metadata": {
         "sha": "f18b3c7d9e2a4b6c8d0e1f3a5b7c9d1e2f4a6b8c",
         "messageRedacted": "content(pricing): rewrite tier descriptions and align table copy (MKT-118)",
-        "filesChanged": ["content/pricing.mdx", "components/PricingTable.tsx"],
+        "filesChanged": [
+          "content/pricing.mdx",
+          "components/PricingTable.tsx"
+        ],
         "insertions": 63,
         "deletions": 39,
         "authorIsUser": true

@@ -465,7 +465,10 @@
       },
       "repositoryId": "myapp",
       "metadata": {
-        "lines": ["expected 3600000 to be 7200000", "  at test/auth.test.ts:44:23"],
+        "lines": [
+          "expected 3600000 to be 7200000",
+          "  at test/auth.test.ts:44:23"
+        ],
         "lineCount": 2,
         "truncated": false
       },
@@ -595,7 +598,11 @@
       "metadata": {
         "sha": "b93e17a5c8d2f4b6a1e3c7d9f2b4a6c8e1d3f5a7",
         "messageRedacted": "fix(auth): use absolute expiry instead of a rolling window (AUTH-221)",
-        "filesChanged": ["src/auth/session.ts", "src/auth/user.ts", "test/auth.test.ts"],
+        "filesChanged": [
+          "src/auth/session.ts",
+          "src/auth/user.ts",
+          "test/auth.test.ts"
+        ],
         "insertions": 21,
         "deletions": 14,
         "authorIsUser": true

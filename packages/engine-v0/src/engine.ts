@@ -36,6 +36,17 @@ export interface EngineContext {
   anchors: Anchor[];
   confidence: number;
   /**
+   * When this context last saw an activity that actually carried identity.
+   *
+   * Drift is measured from here rather than from `endTimestamp`, which anchorless attachment itself
+   * keeps advancing. That was a ratchet: each anchorless activity attached, moved the end forward,
+   * and thereby made the next one "nearby" too, so an evening of gaming accreted onto an afternoon
+   * of work with nothing to stop it. A context's identity comes from its anchors, so unlabelled
+   * activity may hang off it for a while after the last real evidence — not forever after the last
+   * thing it swallowed.
+   */
+  lastAnchoredTimestamp: number;
+  /**
    * True when no anchor was good enough to name the context, so `label` is a placeholder the UI
    * should replace with a translated one. The engine has no business inventing prose (§147).
    */
@@ -258,6 +269,22 @@ function score(
 
   const gap = Math.max(0, activity.startTimestamp - context.endTimestamp);
   const recency = Math.pow(0.5, gap / config.recencyHalfLifeMs);
+  // How far an unlabelled activity sits from what this context is actually made of.
+  //
+  // The ratchet only matters when unlabelled material accretes onto IDENTIFIED work, so the two
+  // cases are measured differently:
+  //
+  //   - A context with anchors is measured from its last real evidence, to the activity's END. What
+  //     matters is how far past the evidence the activity reaches, not where it began: a stretch
+  //     starting eight minutes after a commit and running half an hour is not a tail of that commit.
+  //   - A context with no anchors at all has no evidence to drift from, and cannot be corrupted by
+  //     unlabelled material because that is all it is. Consecutive unlabelled activity is one
+  //     stretch of unlabelled time, so it is measured from the context's end to the activity's
+  //     start — otherwise an evening fragments into a context per half hour.
+  const driftGap =
+    context.anchors.length > 0
+      ? Math.max(0, activity.endTimestamp - context.lastAnchoredTimestamp)
+      : Math.max(0, activity.startTimestamp - context.endTimestamp);
 
   // The rule that keeps GS-03 and GS-04 apart: **no shared anchor, no assignment.** Being adjacent
   // in time and using the same applications is not evidence of the same work — that is exactly what
@@ -277,8 +304,11 @@ function score(
     if (!activityHasAnchors) {
       // Attaching to nearby work is what a person does with an unlabelled stretch of their day:
       // "between nine and ten you were on something", rather than forty orphans.
-      const nearby = gap < config.driftMs;
-      return { total: nearby ? config.assignThreshold * (1 - gap / config.driftMs) : 0, shared };
+      const nearby = driftGap < config.driftMs;
+      return {
+        total: nearby ? config.assignThreshold * (1 - driftGap / config.driftMs) : 0,
+        shared,
+      };
     }
 
     // It has identity and shares none: only a direct continuation of the previous activity, in the
@@ -344,6 +374,7 @@ export function runEngine(
         appChain: [],
         anchors: [],
         confidence: 0,
+        lastAnchoredTimestamp: activity.startTimestamp,
         labelIsFallback: false,
       };
       contexts.push(created);
@@ -410,6 +441,9 @@ function attach(context: EngineContext, activity: Activity, byRef: Map<string, G
   context.eventRefs.push(...activity.eventRefs);
   context.startTimestamp = Math.min(context.startTimestamp, activity.startTimestamp);
   context.endTimestamp = Math.max(context.endTimestamp, activity.endTimestamp);
+  if (activity.anchors.length > 0) {
+    context.lastAnchoredTimestamp = Math.max(context.lastAnchoredTimestamp, activity.endTimestamp);
+  }
   context.anchors = mergeAnchors(context.anchors, activity.anchors);
   // Active time is summed per activity, so gaps between activities — meetings, lunch, other work —
   // are never counted (§69). This is what stops durations inflating into a time report.
@@ -427,6 +461,7 @@ function absorb(into: EngineContext, other: EngineContext): void {
   into.eventRefs.push(...other.eventRefs);
   into.startTimestamp = Math.min(into.startTimestamp, other.startTimestamp);
   into.endTimestamp = Math.max(into.endTimestamp, other.endTimestamp);
+  into.lastAnchoredTimestamp = Math.max(into.lastAnchoredTimestamp, other.lastAnchoredTimestamp);
   into.activeMs += other.activeMs;
   into.anchors = mergeAnchors(into.anchors, other.anchors);
   for (const app of other.appChain) if (!into.appChain.includes(app)) into.appChain.push(app);
