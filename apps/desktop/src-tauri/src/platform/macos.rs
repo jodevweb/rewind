@@ -41,6 +41,13 @@ pub struct MacActiveWindow {
     /// title" rather than as "the permission was revoked".
     seen_title: bool,
     denied: bool,
+    /// Samples that named an application but carried no title.
+    titleless: u32,
+    /// Distinct applications seen. One application reporting titles is not evidence of anything:
+    /// macOS always lets a process read its OWN window title without permission, so REWIND can see
+    /// itself while being blind to everything else — which is exactly what a missing grant looks
+    /// like from the inside.
+    apps_seen: std::collections::BTreeSet<String>,
 }
 
 impl ActiveWindowProvider for MacActiveWindow {
@@ -70,9 +77,18 @@ impl ActiveWindowProvider for MacActiveWindow {
         if app_id.is_empty() {
             return None;
         }
-        if !title.is_empty() {
+        self.apps_seen.insert(app_id.clone());
+        if title.is_empty() {
+            self.titleless += 1;
+            // Many titleless samples across several applications, and never a title from any of
+            // them, is a missing Accessibility grant rather than a run of untitled windows.
+            if self.titleless > 15 && self.apps_seen.len() > 1 && !self.seen_title {
+                self.denied = true;
+            }
+        } else {
             self.seen_title = true;
             self.denied = false;
+            self.titleless = 0;
         }
 
         Some(WindowSnapshot {
@@ -84,10 +100,10 @@ impl ActiveWindowProvider for MacActiveWindow {
     }
 
     fn title_access(&self) -> TitleAccess {
-        if self.seen_title {
-            TitleAccess::Granted
-        } else if self.denied {
+        if self.denied {
             TitleAccess::Denied
+        } else if self.seen_title {
+            TitleAccess::Granted
         } else {
             // Not yet known. Reported as granted so the UI does not accuse the user of withholding a
             // permission before there is any evidence they did.
