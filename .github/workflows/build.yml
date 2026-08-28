@@ -26,9 +26,10 @@ jobs:
           - os: macos-latest
             label: macOS (Apple Silicon)
             artifact: rewind-macos
-            # .app and .dmg
+            # The .dmg only. Artifact upload zips without preserving Unix permissions, so a
+            # bare .app arrives with its executable bit stripped and genuinely will not run —
+            # which macOS reports as "damaged", the same words it uses for a Gatekeeper block.
             bundles: |
-              apps/desktop/src-tauri/target/release/bundle/macos/*.app
               apps/desktop/src-tauri/target/release/bundle/dmg/*.dmg
           - os: windows-latest
             label: Windows
