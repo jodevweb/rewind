@@ -60,6 +60,24 @@ merge, rebase, stash, dirty/clean summary. **Never diff contents.**
 Command line (redacted), working directory, exit code, duration, and — only on non-zero exit — the last
 N lines of stderr (redacted). Full stdout capture is **off by default** (§17).
 
+### 1.6b Semantic actions (ADR 0005 D-34)
+
+That an action happened, and where — never what was written.
+
+| Captured                                                                | Never captured                              |
+| ----------------------------------------------------------------------- | ------------------------------------------- |
+| `message sent`, `composing started`, `item opened`, `document switched` | The message, the document, any field's text |
+| The container, from the window title (`#0-pull-requests`)               | Recipients, participants, thread contents   |
+| The timestamp                                                           | Keystrokes, in any form                     |
+
+**The safeguard is that the reading code does not exist.** REWIND never calls `AXValue`,
+`AXSelectedText` or their UI Automation equivalents on a text element — it observes that a change
+notification fired and does not ask what the value became. This is enforced by the same build gate
+that enforces the no-keylogger rule: those accessors fail CI.
+
+Reading a text field while someone types is functionally a keylogger even without a keyboard hook.
+§8 bans the outcome, not the API.
+
 ### 1.7 Manual
 
 Notes, bookmarks, pins, context names, merges and splits you create yourself.
@@ -76,6 +94,8 @@ This list is absolute. There is no setting that enables any of it.
 - **Camera, microphone, audio.**
 - **File contents.** Not from the IDE, not from the filesystem watcher, not from Git diffs.
 - **Clipboard.** Not captured, not read (§18).
+- **The content of any text field, message, document or web page**, by any means — including the
+  accessibility APIs that technically expose it (ADR 0005 D-35). Enforced by a build gate.
 - **Passwords, credentials, tokens.** Actively detected and destroyed before storage (§4).
 - **Network traffic.** REWIND does not proxy, intercept or inspect traffic.
 - **Other users.** There is no multi-user data model; no `userId` column exists to aggregate on.
