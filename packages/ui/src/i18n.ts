@@ -24,7 +24,7 @@ const fr = {
     'REWIND apprend ton travail. Utilise ta machine normalement — les premiers contextes apparaissent après quelques minutes.',
   'perm.title': 'Accessibility n’est pas accordée.',
   'perm.body':
-    'REWIND voit quelle application est active mais pas le titre de ses fenêtres — et le titre est l’essentiel du signal. Réglages Système → Confidentialité et sécurité → Accessibilité. REWIND ne prend aucune capture d’écran et ne demande jamais l’enregistrement d’écran.',
+    'REWIND voit quelle application est active mais pas le titre de ses fenêtres — et le titre est l’essentiel du signal. macOS laisse toujours une application lire son propre titre, jamais celui des autres : c’est pour ça que tu ne vois que REWIND. Ouvre Réglages Système → Confidentialité et sécurité → Accessibilité, ajoute REWIND et relance-le. REWIND ne prend aucune capture d’écran et ne demande jamais l’enregistrement d’écran.',
 
   'badge.fixture': 'FICTIF — données de test écrites à la main',
   'badge.real': 'RÉEL — capturé sur cette machine',
@@ -107,7 +107,7 @@ const en: Record<Key, string> = {
     'REWIND is learning your work. Use your machine normally — the first contexts appear after a few minutes.',
   'perm.title': 'Accessibility is not granted.',
   'perm.body':
-    'REWIND sees which application is active but not its window titles — and the titles are most of the signal. System Settings → Privacy & Security → Accessibility. REWIND takes no screenshots and never requests Screen Recording.',
+    'REWIND sees which application is active but not its window titles — and the titles are most of the signal. macOS always lets an application read its own title and never another’s, which is why you only see REWIND. Open System Settings → Privacy & Security → Accessibility, add REWIND, and restart it. REWIND takes no screenshots and never requests Screen Recording.',
 
   'badge.fixture': 'FIXTURE — authored test data',
   'badge.real': 'REAL — captured on this machine',

@@ -95,9 +95,12 @@ export function headline(e: GoldenEvent): string {
     case 'external.agent.started':
       return `agent ${str(e, 'agent') ?? ''} démarré`;
     case 'system.window.title_changed':
-      return e.title ?? '';
+      return e.title || e.appDisplay || e.type;
     default:
-      return e.title ?? e.type;
+      // `||` rather than `??`: an empty title is not a title. Without Accessibility on macOS every
+      // title is empty, and `??` rendered a row with a timestamp and nothing else — which reads as
+      // a bug rather than as a degraded mode.
+      return e.title || e.appDisplay || e.app || e.type;
   }
 }
 
