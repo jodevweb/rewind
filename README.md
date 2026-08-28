@@ -114,6 +114,31 @@ On macOS the first run asks for Accessibility. Without it REWIND sees which appl
 not its window titles, and the titles are most of the signal — so the window says so rather than
 pretending. REWIND takes no screenshots and never requests Screen Recording.
 
+### A real application you can keep
+
+`pnpm dev` runs from a terminal, which is a development loop and not how you use software. To get an
+application you drag into Applications and open whenever you like:
+
+```bash
+pnpm build
+```
+
+It produces, on macOS:
+
+```
+apps/desktop/src-tauri/target/release/bundle/macos/REWIND.app     ← drag into /Applications
+apps/desktop/src-tauri/target/release/bundle/dmg/REWIND_0.1.0_*.dmg
+```
+
+and on Windows an NSIS installer under `bundle/nsis/`.
+
+The release build optimises for size and takes longer than the dev build the first time. Afterwards
+REWIND opens like any other application: it lives in the menu bar, capture runs from launch, and you
+pause it from there.
+
+**Not signed yet.** macOS will warn on first open — right-click → Open, once. Signing and
+notarisation are deliberately not blocking the prototype (ADR 0003 D-23).
+
 ### The development harness
 
 ```bash
