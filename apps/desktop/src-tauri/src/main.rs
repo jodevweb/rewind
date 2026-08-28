@@ -43,6 +43,21 @@ fn recent_events(state: State<'_, AppState>, limit: usize) -> Vec<Event> {
     state.capture.recent(limit.min(500))
 }
 
+/// Open a file, folder or URL the interface is showing.
+///
+/// Whitelisted by the provider to paths that exist and http(s) URLs — a captured string must never
+/// be able to become a command.
+#[tauri::command]
+fn open_target(target: String) -> Result<(), String> {
+    platform::open_target(&target)
+}
+
+/// Reveal a file in Finder or Explorer instead of opening it.
+#[tauri::command]
+fn reveal_target(target: String) -> Result<(), String> {
+    platform::reveal_target(&target)
+}
+
 #[tauri::command]
 fn set_paused(app: AppHandle, state: State<'_, AppState>, minutes: Option<u64>) -> CaptureStatus {
     match minutes {
@@ -175,7 +190,9 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             capture_status,
             recent_events,
-            set_paused
+            set_paused,
+            open_target,
+            reveal_target
         ])
         .setup(|app| {
             build_tray(app.handle())?;

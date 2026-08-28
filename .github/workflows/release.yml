@@ -46,6 +46,12 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
 
+      # `__VERSION__` is filled from tauri.conf.json, so without this the version typed into the
+      # Actions tab is ignored and the run republishes whatever version is already committed.
+      - name: Set version
+        if: inputs.version != ''
+        run: node scripts/set-version.mjs "${{ inputs.version }}"
+
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.os == 'macos-latest' && 'aarch64-apple-darwin' || '' }}

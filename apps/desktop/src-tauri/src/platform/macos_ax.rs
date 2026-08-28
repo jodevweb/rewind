@@ -44,7 +44,9 @@ extern "C" {
         attribute: CFStringRef,
         value: *mut CFTypeRef,
     ) -> AXError;
-    fn AXIsProcessTrusted() -> bool;
+    // `Boolean` in C is an unsigned char. Mapping it to Rust's bool, which admits only 0 and 1,
+    // is undefined for any other non-zero value.
+    fn AXIsProcessTrusted() -> u8;
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
@@ -101,7 +103,7 @@ impl Drop for CfString {
 /// which was both slow to conclude and wrong when the real problem was a different permission.
 pub fn is_trusted() -> bool {
     // SAFETY: no arguments, no ownership; the call only reads TCC state.
-    unsafe { AXIsProcessTrusted() }
+    unsafe { AXIsProcessTrusted() != 0 }
 }
 
 /// The title of the focused window of the given process, if it has one.

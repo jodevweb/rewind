@@ -114,3 +114,61 @@ mod unsupported;
 pub use unsupported::{
     UnsupportedActiveWindow as PlatformActiveWindow, UnsupportedIdle as PlatformIdle,
 };
+
+/// Open a path, a folder or a URL with whatever the system uses for it.
+///
+/// The `ApplicationLauncher` provider named in ADR 0002 D-11. It is what makes an event actionable
+/// rather than a record: seeing that you edited a file matters much less than being able to open it.
+///
+/// Refuses anything that is not an existing path or an http(s) URL, so a captured string can never
+/// become an arbitrary command. Nothing is passed through a shell either, so it is never re-parsed.
+pub fn open_target(target: &str) -> Result<(), String> {
+    let target = target.trim();
+    if target.is_empty() {
+        return Err("cible vide".to_owned());
+    }
+    let is_url = target.starts_with("http://") || target.starts_with("https://");
+    if !is_url && !std::path::Path::new(target).exists() {
+        return Err("ni un chemin existant ni une URL http(s)".to_owned());
+    }
+    spawn_opener(&[target.to_owned()])
+}
+
+/// Reveal a file in Finder or Explorer rather than opening it.
+pub fn reveal_target(target: &str) -> Result<(), String> {
+    let target = target.trim();
+    let path = std::path::Path::new(target);
+    if !path.exists() {
+        return Err("chemin introuvable".to_owned());
+    }
+
+    #[cfg(target_os = "macos")]
+    let args = vec!["-R".to_owned(), target.to_owned()];
+    #[cfg(target_os = "windows")]
+    let args = vec![format!("/select,{target}")];
+    // Elsewhere there is no reveal, so open the containing folder.
+    #[cfg(not(any(target_os = "macos", target_os = "windows")))]
+    let args = vec![path
+        .parent()
+        .unwrap_or(path)
+        .to_string_lossy()
+        .into_owned()];
+
+    spawn_opener(&args)
+}
+
+fn spawn_opener(args: &[String]) -> Result<(), String> {
+    #[cfg(target_os = "macos")]
+    const OPENER: &str = "open";
+    // `explorer` rather than `cmd /c start`: no shell means the argument is never re-parsed.
+    #[cfg(target_os = "windows")]
+    const OPENER: &str = "explorer";
+    #[cfg(not(any(target_os = "macos", target_os = "windows")))]
+    const OPENER: &str = "xdg-open";
+
+    std::process::Command::new(OPENER)
+        .args(args)
+        .spawn()
+        .map(|_| ())
+        .map_err(|e| e.to_string())
+}

@@ -123,13 +123,18 @@ impl ActiveWindowProvider for MacActiveWindow {
     }
 
     fn title_access(&self) -> TitleAccess {
-        // Asked, not inferred. The heuristic — a run of titleless samples across several
-        // applications — was slow to conclude and wrong when the real problem was Automation rather
-        // than Accessibility.
-        if macos_ax::is_trusted() {
-            TitleAccess::Granted
-        } else {
+        // Observation beats the permission bit. If titles are arriving, there is nothing to warn
+        // about, whatever TCC reports — a warning the user can watch being wrong is a warning they
+        // learn to ignore, and this one was wrong on a machine where the grant was in place.
+        if self.seen_title {
+            return TitleAccess::Granted;
+        }
+        // No title yet. Ask the system rather than guess, and stay quiet until there is enough
+        // evidence that this is a permission problem rather than a slow start.
+        if self.samples > 5 && !macos_ax::is_trusted() {
             TitleAccess::Denied
+        } else {
+            TitleAccess::Granted
         }
     }
 }
