@@ -29,3 +29,6 @@ apps/desktop/dist/
 
 # Never commit this file. Back it up somewhere durable.
 REWIND-UPDATER-PRIVATE-KEY.txt
+
+# Staging for a release build; assembled by CI, never committed.
+release-assets/
