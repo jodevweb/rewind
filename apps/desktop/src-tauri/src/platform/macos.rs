@@ -48,6 +48,11 @@ pub struct MacActiveWindow {
     /// itself while being blind to everything else — which is exactly what a missing grant looks
     /// like from the inside.
     apps_seen: std::collections::BTreeSet<String>,
+    /// Verbatim stderr from the last failed osascript call.
+    last_error: Option<String>,
+    /// The last observation: application, and whether it carried a title.
+    last_seen: Option<(String, bool)>,
+    samples: u32,
 }
 
 impl ActiveWindowProvider for MacActiveWindow {
@@ -58,8 +63,10 @@ impl ActiveWindowProvider for MacActiveWindow {
             .output()
             .ok()?;
 
+        self.samples += 1;
         if !output.status.success() {
             let err = String::from_utf8_lossy(&output.stderr);
+            self.last_error = Some(err.trim().to_owned());
             // -1743 is macOS saying the process is not allowed to send Apple events / use
             // accessibility features. That is the permission, not a bug.
             if err.contains("-1743") || err.contains("not allowed") {
@@ -77,6 +84,8 @@ impl ActiveWindowProvider for MacActiveWindow {
         if app_id.is_empty() {
             return None;
         }
+        self.last_error = None;
+        self.last_seen = Some((app_id.clone(), !title.is_empty()));
         self.apps_seen.insert(app_id.clone());
         if title.is_empty() {
             self.titleless += 1;
@@ -99,6 +108,10 @@ impl ActiveWindowProvider for MacActiveWindow {
         })
     }
 
+    fn diagnostics(&self) -> String {
+        self.describe()
+    }
+
     fn title_access(&self) -> TitleAccess {
         if self.denied {
             TitleAccess::Denied
@@ -109,6 +122,25 @@ impl ActiveWindowProvider for MacActiveWindow {
             // permission before there is any evidence they did.
             TitleAccess::Granted
         }
+    }
+}
+
+impl MacActiveWindow {
+    fn describe(&self) -> String {
+        let mut parts = Vec::new();
+        parts.push(format!("{} relevés", self.samples));
+        match &self.last_seen {
+            Some((app, has_title)) => parts.push(format!(
+                "dernier : {app} ({})",
+                if *has_title { "avec titre" } else { "sans titre" }
+            )),
+            None => parts.push("aucun relevé exploitable".to_owned()),
+        }
+        parts.push(format!("{} application(s) vues", self.apps_seen.len()));
+        if let Some(err) = &self.last_error {
+            parts.push(format!("erreur osascript : {err}"));
+        }
+        parts.join(" · ")
     }
 }
 

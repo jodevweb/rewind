@@ -82,6 +82,14 @@ pub enum TitleAccess {
 pub trait ActiveWindowProvider: Send {
     fn current(&mut self) -> Option<WindowSnapshot>;
     fn title_access(&self) -> TitleAccess;
+
+    /// What the platform last told us, in plain words.
+    ///
+    /// Exists because swallowing the underlying error turned a one-line permission problem into
+    /// three rounds of guessing. A provider that cannot say why it sees nothing is not debuggable.
+    fn diagnostics(&self) -> String {
+        String::new()
+    }
 }
 
 pub trait IdleProvider: Send {

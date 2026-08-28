@@ -25,6 +25,7 @@ interface CaptureStatus {
   platform: 'macos' | 'windows' | 'other';
   /** Where the events actually live. Shown so it is never a mystery (PRIVACY §12). */
   storePath: string;
+  diagnostics: string;
 }
 
 interface DaemonEvent {
@@ -200,6 +201,26 @@ export function App() {
       {error && <div className="banner warn">{error}</div>}
 
       <Workspace session={session} emptyMessage={t('app.empty')} />
+
+      {status && (
+        <footer className="diag">
+          <span>{status.platform}</span>
+          <span>·</span>
+          <span>
+            {t('diag.titles')} {t(`diag.${status.titleAccess}` as 'diag.granted')}
+          </span>
+          {status.diagnostics && (
+            <>
+              <span>·</span>
+              <span className="mono">{status.diagnostics}</span>
+            </>
+          )}
+          <span>·</span>
+          <span className="mono" title={status.storePath}>
+            {status.eventsTotal} {t('header.kept')}
+          </span>
+        </footer>
+      )}
     </div>
   );
 }

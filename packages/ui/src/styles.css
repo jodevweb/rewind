@@ -912,3 +912,22 @@ button.ghost:hover {
 .stat .total {
   color: var(--faint);
 }
+
+/* The diagnostics strip. Always visible: "it runs but sees nothing" is precisely the state that
+   needs an explanation, and it is the state that looks like everything is fine. */
+.diag {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin-top: 20px;
+  padding: 9px 14px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  color: var(--faint);
+}
+
+.diag .mono {
+  font-family: var(--mono);
+  font-size: 10.5px;
+}
