@@ -16,18 +16,18 @@ Superseding the phase sequence for the next stretch (ADR 0001 D-9). The first mi
 with no LLM involved. Only once that chain is convincing on synthetic data do real collectors replace
 the synthetic events.
 
-| #   | Work                                                                       | Ticket                 | Status                    |
-| --- | -------------------------------------------------------------------------- | ---------------------- | ------------------------- |
-| 1   | Golden sessions + evaluation harness                                       | P0-005, P0-005b        | ✅ done                   |
-| 2   | Rust / Xcode / Tauri prerequisites **on the Mac**, plus a signing identity | P1-000                 | next — gated on B-1…B-3   |
-| 3   | Desktop shell                                                              | P1-001                 |                           |
-| 4   | SQLite + event store                                                       | P1-004                 |                           |
-| 5   | **Fake Collector** — replay a golden session through the real pipeline     | P1-007                 |                           |
-| 6   | Timeline rendering a golden session                                        | P2-008                 |                           |
-| 7   | Context engine V0, deterministic                                           | P7-001, P7-002, P7-004 |                           |
-| 8   | Context visualisation                                                      | P7-006                 |                           |
-| 9   | Real macOS system collector — Level 1 observation                          | P2-004, P2-005         | needs B-1 (Accessibility) |
-| 10  | Browser → Claude Code / Terminal → Cockpit → Git, in D-19 order            | Phases 3–6, reordered  |                           |
+| #   | Work                                                                           | Ticket                 | Status                    |
+| --- | ------------------------------------------------------------------------------ | ---------------------- | ------------------------- |
+| 1   | Golden sessions + evaluation harness                                           | P0-005, P0-005b        | ✅ done                   |
+| 2   | Rust + Tauri prerequisites on **both** machines (MSVC Build Tools / Xcode CLT) | P1-000                 | in progress               |
+| 3   | Desktop shell                                                                  | P1-001                 |                           |
+| 4   | SQLite + event store                                                           | P1-004                 |                           |
+| 5   | **Fake Collector** — replay a golden session through the real pipeline         | P1-007                 |                           |
+| 6   | Timeline rendering a golden session                                            | P2-008                 |                           |
+| 7   | Context engine V0, deterministic                                               | P7-001, P7-002, P7-004 |                           |
+| 8   | Context visualisation                                                          | P7-006                 |                           |
+| 9   | Real macOS system collector — Level 1 observation                              | P2-004, P2-005         | needs B-1 (Accessibility) |
+| 10  | Browser → Claude Code / Terminal → Cockpit → Git, in D-19 order                | Phases 3–6, reordered  |                           |
 
 **Revised by [ADR 0002](adr/0002-work-context-first-macos.md).** The platform is macOS, the wedge is
 work-context rather than developer, and the source priority is D-19: macOS window observation →
