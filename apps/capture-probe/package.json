@@ -1,0 +1,19 @@
+{
+  "name": "@rewind/capture-probe",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Windows capture probe: real foreground-window activity into the existing engine, to validate anchor extraction against real titles. Not the collector.",
+  "scripts": {
+    "capture": "tsx src/probe.ts",
+    "capture:clear": "tsx src/probe.ts --clear",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rewind/protocol": "workspace:*"
+  },
+  "devDependencies": {
+    "@rewind/config": "workspace:*",
+    "tsx": "^4.19.2"
+  }
+}

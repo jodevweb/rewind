@@ -15,3 +15,6 @@ packages/protocol/src/generated.ts
 
 # macOS
 .DS_Store
+
+# Captured real activity from this machine. Never committed.
+apps/studio/public/captured/

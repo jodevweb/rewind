@@ -17,7 +17,9 @@
     "check:forbidden-apis": "node scripts/check-forbidden-apis.mjs",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm check:forbidden-apis",
     "eval": "pnpm --filter @rewind/eval eval",
-    "build:fixtures": "pnpm --filter @rewind/fixtures build"
+    "build:fixtures": "pnpm --filter @rewind/fixtures build",
+    "capture": "pnpm --filter @rewind/capture-probe capture",
+    "capture:clear": "pnpm --filter @rewind/capture-probe capture:clear"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
