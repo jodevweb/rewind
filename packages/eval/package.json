@@ -15,7 +15,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@rewind/fixtures": "workspace:*"
+    "@rewind/fixtures": "workspace:*",
+    "@rewind/engine-v0": "workspace:*"
   },
   "devDependencies": {
     "@rewind/config": "workspace:*",
