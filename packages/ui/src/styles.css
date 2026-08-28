@@ -931,3 +931,16 @@ button.ghost:hover {
   font-family: var(--mono);
   font-size: 10.5px;
 }
+
+.banner.update {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: color-mix(in srgb, var(--ok) 10%, var(--panel));
+  border-color: color-mix(in srgb, var(--ok) 38%, var(--line));
+}
+
+.banner.update button {
+  margin-left: auto;
+}
