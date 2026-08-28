@@ -37,6 +37,7 @@
     "longDescription": "REWIND comprend sur quoi tu travailles, même quand ton travail traverse plusieurs applications. Local-first : rien ne quitte ta machine.",
     "macOS": {
       "minimumSystemVersion": "13.0",
+      "signingIdentity": "-",
       "exceptionDomain": "",
       "entitlements": null,
       "files": {}
