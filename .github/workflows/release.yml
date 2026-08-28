@@ -136,6 +136,18 @@ jobs:
           body: |
             Mise à jour automatique depuis l’application, ou téléchargement ci-dessous.
 
+            **Première installation sur macOS.** L’application est signée ad-hoc mais pas notarisée
+            par Apple, faute de compte développeur payant. macOS met donc à la corbeille, au
+            lancement, toute application téléchargée qu’il ne peut pas vérifier. Après avoir glissé
+            REWIND dans Applications, et **avant** de l’ouvrir :
+
+            ```
+            xattr -dr com.apple.quarantine /Applications/REWIND.app
+            ```
+
+            Une seule fois, par machine. Les mises à jour suivantes passent par l’application et ne
+            repassent pas par la quarantaine.
+
             Ce dépôt ne contient que les installeurs. Le code source est privé.
           draft: false
           prerelease: false
