@@ -56,12 +56,8 @@ extern "C" {
         encoding: u32,
         is_external: bool,
     ) -> CFStringRef;
-    fn CFStringGetCString(
-        string: CFStringRef,
-        buffer: *mut u8,
-        size: isize,
-        encoding: u32,
-    ) -> bool;
+    fn CFStringGetCString(string: CFStringRef, buffer: *mut u8, size: isize, encoding: u32)
+        -> bool;
     fn CFStringGetLength(string: CFStringRef) -> isize;
     fn CFRelease(cf: CFTypeRef);
     fn CFGetTypeID(cf: CFTypeRef) -> usize;
