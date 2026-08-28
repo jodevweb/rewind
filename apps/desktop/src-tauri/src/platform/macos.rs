@@ -133,7 +133,11 @@ impl MacActiveWindow {
         match &self.last_seen {
             Some((app, has_title)) => parts.push(format!(
                 "dernier : {app} ({})",
-                if *has_title { "avec titre" } else { "sans titre" }
+                if *has_title {
+                    "avec titre"
+                } else {
+                    "sans titre"
+                }
             )),
             None => parts.push("aucun relevé exploitable".to_owned()),
         }

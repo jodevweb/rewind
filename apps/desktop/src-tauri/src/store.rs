@@ -122,7 +122,9 @@ impl Store {
             .prepare("SELECT 1 FROM pragma_table_info('events') WHERE name = 'metadata'")?
             .exists([])?;
         if !has_metadata {
-            conn.execute_batch("ALTER TABLE events ADD COLUMN metadata TEXT NOT NULL DEFAULT '{}'")?;
+            conn.execute_batch(
+                "ALTER TABLE events ADD COLUMN metadata TEXT NOT NULL DEFAULT '{}'",
+            )?;
         }
 
         // One agent session is one row, however many times its file is rescanned.
@@ -219,7 +221,9 @@ impl Store {
                 app_display: row.get(6)?,
                 title: row.get::<_, Option<String>>(7)?.unwrap_or_default(),
                 pid: row.get(8)?,
-                metadata: row.get::<_, Option<String>>(9)?.unwrap_or_else(|| "{}".into()),
+                metadata: row
+                    .get::<_, Option<String>>(9)?
+                    .unwrap_or_else(|| "{}".into()),
                 redaction_version: row.get(10)?,
                 redaction_applied: if applied.is_empty() {
                     Vec::new()
