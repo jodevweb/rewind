@@ -8,13 +8,13 @@
  *
  * This runs once per platform and leaves everything in `release-assets/`:
  *
- *   - the updater bundle (`.app.tar.gz` on macOS, `-setup.nsis.zip` on Windows) and its signature,
- *   - the installer a person downloads and double-clicks (`.dmg`, `-setup.exe`),
+ *   - the updater bundle and its signature,
+ *   - the installer a person downloads and double-clicks,
  *   - a small `<platform>.json` describing what was found, which `build-latest-json.mjs` merges.
  *
- * Files are renamed to carry the version and platform. Tauri names the macOS updater bundle
- * `REWIND.app.tar.gz` with no version or architecture in it, and two platforms cannot both upload a
- * file of the same name to one release.
+ * On Windows those first two are the same file: Tauri v2 signs the NSIS `.exe` directly and produces
+ * no `.nsis.zip`, which was v1 behaviour. On macOS they differ — a `.app.tar.gz` for the updater, a
+ * `.dmg` for a person.
  *
  *   node scripts/collect-release-assets.mjs darwin-aarch64 0.2.0
  */
@@ -33,7 +33,7 @@ const [platform, version] = process.argv.slice(2);
 
 const PLATFORMS = {
   'darwin-aarch64': { updater: /\.app\.tar\.gz$/, installer: /\.dmg$/ },
-  'windows-x86_64': { updater: /-setup\.nsis\.zip$/, installer: /-setup\.exe$/ },
+  'windows-x86_64': { updater: /-setup\.exe$/, installer: /-setup\.exe$/ },
 };
 
 if (!PLATFORMS[platform]) {
@@ -70,7 +70,10 @@ function walk(dir) {
   return found;
 }
 
-const files = walk(TARGET).filter((f) => f.includes('bundle'));
+// `.sig` files are excluded so a signature never gets mistaken for the artifact it signs: on Windows
+// the updater pattern ends in `-setup.exe`, and `-setup.exe.sig` would not match, but the next
+// platform's pattern might not be so lucky.
+const files = walk(TARGET).filter((f) => f.includes('bundle') && !f.endsWith('.sig'));
 const { updater, installer } = PLATFORMS[platform];
 
 const pick = (pattern, what) => {
@@ -103,17 +106,30 @@ try {
 
 mkdirSync(OUT, { recursive: true });
 
-const suffix = updaterPath.endsWith('.app.tar.gz') ? 'app.tar.gz' : 'nsis.zip';
-const updaterName = `REWIND_${version}_${platform}.${suffix}`;
 const installerName = installerPath.split(/[/\\]/).pop();
 
-copyFileSync(updaterPath, join(OUT, updaterName));
+// Tauri names the macOS updater bundle `REWIND.app.tar.gz` — no version, no architecture — and two
+// platforms cannot upload files of the same name to one release. Windows already produces a unique
+// name, and there the updater artifact is the installer people download, so renaming it would only
+// make the release page harder to read.
+const updaterIsInstaller = updaterPath === installerPath;
+const updaterName = updaterIsInstaller ? installerName : `REWIND_${version}_${platform}.app.tar.gz`;
+
 copyFileSync(installerPath, join(OUT, installerName));
+if (!updaterIsInstaller) {
+  copyFileSync(updaterPath, join(OUT, updaterName));
+}
+
 writeFileSync(
   join(OUT, `${platform}.json`),
   `${JSON.stringify({ platform, version, updaterName, installerName, signature }, null, 2)}\n`,
 );
 
 console.log(
-  `Collected for ${platform}:\n  ${updaterName}\n  ${installerName}\n  signature (${signature.length} chars)`,
+  [
+    `Collected for ${platform}:`,
+    `  installer: ${installerName}`,
+    `  updater:   ${updaterName}${updaterIsInstaller ? ' (the installer itself)' : ''}`,
+    `  signature: ${signature.length} chars`,
+  ].join('\n'),
 );
