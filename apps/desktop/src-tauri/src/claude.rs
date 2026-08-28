@@ -343,7 +343,10 @@ pub fn scan(store: &Store, tz: i32) -> (usize, u64) {
                 event.redaction_applied = stamp.applied;
                 event.redaction_count = stamp.count;
 
-                if store.upsert_agent_session(&event, &session.session_id).is_ok() {
+                if store
+                    .upsert_agent_session(&event, &session.session_id)
+                    .is_ok()
+                {
                     written += 1;
                 }
             }
