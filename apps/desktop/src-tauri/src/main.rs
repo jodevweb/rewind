@@ -103,9 +103,11 @@ fn build_tray(app: &AppHandle) -> tauri::Result<()> {
     )?;
 
     TrayIconBuilder::with_id("main")
-        .icon(app.default_window_icon().cloned().ok_or_else(|| {
-            tauri::Error::AssetNotFound("default window icon".into())
-        })?)
+        .icon(
+            app.default_window_icon()
+                .cloned()
+                .ok_or_else(|| tauri::Error::AssetNotFound("default window icon".into()))?,
+        )
         .tooltip("REWIND — ● Enregistrement")
         .menu(&menu)
         .show_menu_on_left_click(false)

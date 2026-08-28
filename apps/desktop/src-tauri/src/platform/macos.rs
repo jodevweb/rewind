@@ -53,7 +53,11 @@ impl Default for MacActiveWindow {
 
 impl ActiveWindowProvider for MacActiveWindow {
     fn current(&mut self) -> Option<WindowSnapshot> {
-        let output = Command::new("osascript").arg("-e").arg(SCRIPT).output().ok()?;
+        let output = Command::new("osascript")
+            .arg("-e")
+            .arg(SCRIPT)
+            .output()
+            .ok()?;
 
         if !output.status.success() {
             let err = String::from_utf8_lossy(&output.stderr);
