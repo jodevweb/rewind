@@ -59,8 +59,13 @@ jobs:
           pnpm check:forbidden-apis
           pnpm --filter @rewind/protocol test
 
+      # The same signing key the release uses. Updater artifacts cannot be produced without it, and
+      # a build workflow that skips the signing step stops being a rehearsal for the release.
       - name: Build
         run: pnpm --filter @rewind/desktop build
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
 
       - uses: actions/upload-artifact@v4
         with:
