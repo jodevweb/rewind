@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "@rewind/engine-v0": "workspace:*",
-    "@rewind/fixtures": "workspace:*"
+    "@rewind/fixtures": "workspace:*",
+    "@rewind/predict": "workspace:*"
   },
   "peerDependencies": {
     "react": "^19.0.0"

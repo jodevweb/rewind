@@ -1208,3 +1208,78 @@ button.ghost:hover {
   margin-right: 4px;
   opacity: 0.5;
 }
+
+/* ── Forecast ────────────────────────────────────────────────────────── */
+
+/* The drift notice. Deliberately not alarming: it reports, it does not nag. */
+.drift {
+  border-left: 3px solid var(--accent);
+}
+
+.suggestion {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.suggestion:disabled {
+  cursor: default;
+}
+
+.suggestion:not(:disabled):hover {
+  border-color: var(--line-2);
+}
+
+.suggestion-label {
+  font-weight: 600;
+}
+
+/* The evidence. It is the whole reason the suggestion is allowed on screen, so it is never hidden
+   behind a tooltip. */
+.suggestion-why {
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+.suggestion-when {
+  color: var(--muted);
+  font-size: 10.5px;
+  opacity: 0.8;
+}
+
+/* When you actually work. A shape rather than a chart — no axes, no grid, no judgement. */
+.hours {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 38px;
+  margin-top: 12px;
+  padding-top: 4px;
+  border-top: 1px solid var(--line);
+}
+
+.hour {
+  flex: 1;
+  min-width: 3px;
+  border-radius: 2px 2px 0 0;
+  background: var(--accent);
+  opacity: 0.55;
+}
+
+.hours-scale {
+  align-self: flex-end;
+  margin-left: 8px;
+  color: var(--muted);
+  font-size: 10px;
+  white-space: nowrap;
+}
