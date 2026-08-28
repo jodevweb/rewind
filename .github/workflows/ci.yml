@@ -60,19 +60,32 @@ jobs:
       - name: Context engine benchmark
         run: pnpm --filter @rewind/eval test
 
-  # Enabled once the Rust workspace lands in Phase 1 (ticket P1-001).
+  # ADR 0004 D-30: both platforms build from the first Rust commit. A platform that is not built
+  # is not supported, whatever the documents say — and this is also the only place the Rust code can
+  # be compiled at all right now, since Smart App Control blocks an unsigned rustc on the dev machine.
   rust:
-    name: Rust
-    if: false
-    runs-on: windows-latest
+    name: Rust (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    defaults:
+      run:
+        working-directory: apps/desktop/src-tauri
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
-      - run: cargo fmt --check
-        working-directory: apps/desktop/src-tauri
-      - run: cargo clippy --all-targets -- -D warnings
-        working-directory: apps/desktop/src-tauri
-      - run: cargo test
-        working-directory: apps/desktop/src-tauri
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/desktop/src-tauri
+
+      # Tauri needs GTK/webkit on Linux only; macOS and Windows runners already have their webview.
+      - name: Format
+        run: cargo fmt --check
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+      - name: Test
+        run: cargo test

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "REWIND",
+  "version": "0.1.0",
+  "identifier": "com.danim.rewind",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5274",
+    "beforeDevCommand": "pnpm vite --port 5274",
+    "beforeBuildCommand": "pnpm vite build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "REWIND",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 900,
+        "minHeight": 600,
+        "visible": false,
+        "decorations": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["dmg", "app", "nsis"],
+    "icon": ["icons/icon.png"],
+    "copyright": "REWIND",
+    "shortDescription": "Une mémoire contextuelle pour ton ordinateur",
+    "longDescription": "REWIND comprend sur quoi tu travailles, même quand ton travail traverse plusieurs applications. Local-first : rien ne quitte ta machine."
+  }
+}
