@@ -1,0 +1,26 @@
+{
+  "name": "@rewind/studio",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Fake Collector studio (ticket P1-007): replay a golden session and see events become contexts and a Resume card. The first milestone, with no Rust and no LLM.",
+  "scripts": {
+    "dev": "vite --port 5273",
+    "build": "vite build",
+    "preview": "vite preview --port 5273",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rewind/engine-v0": "workspace:*",
+    "@rewind/fixtures": "workspace:*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@rewind/config": "workspace:*",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.5"
+  }
+}

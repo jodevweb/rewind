@@ -17,6 +17,8 @@
 
 import type { GoldenSession } from '@rewind/fixtures';
 
+import { runEngine } from '@rewind/engine-v0';
+
 import type { Prediction } from './metrics.js';
 
 export interface Predictor {
@@ -106,6 +108,25 @@ function repoAndGapPredictor(gapMinutes: number): Predictor {
   };
 }
 
+/**
+ * Not a baseline — the actual V0 engine. It sits in the same table so its numbers are always read
+ * next to the floor and the ceiling, and so a change to it is measured rather than argued about.
+ */
+const engineV0: Predictor = {
+  id: 'engine-v0',
+  description:
+    'Deterministic anchor-based context engine (@rewind/engine-v0). No embeddings, no LLM.',
+  predict: (session) => {
+    const out: Prediction = new Map();
+    const result = runEngine(session);
+    for (const context of result.contexts) {
+      for (const ref of context.eventRefs) out.set(ref, context.id);
+    }
+    for (const ref of result.unassigned) out.set(ref, null);
+    return out;
+  },
+};
+
 export const BASELINES: Predictor[] = [
   oracle,
   singleContext,
@@ -114,6 +135,7 @@ export const BASELINES: Predictor[] = [
   perApplication,
   timeGapPredictor(15),
   repoAndGapPredictor(15),
+  engineV0,
 ];
 
 export function getPredictor(id: string): Predictor | undefined {

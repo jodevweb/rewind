@@ -1,0 +1,350 @@
+/* Calm, dense, premium — UX.md §12. No gradients, one accent, red reserved for failure. */
+
+:root {
+  --bg: #0d0f12;
+  --panel: #14171c;
+  --panel-2: #191d24;
+  --line: #242932;
+  --text: #e6e9ef;
+  --muted: #8b94a3;
+  --accent: #7aa2f7;
+  --fail: #f07178;
+  --ok: #9ece6a;
+  --radius: 10px;
+  --mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f7f8fa;
+    --panel: #ffffff;
+    --panel-2: #f2f4f7;
+    --line: #e3e7ed;
+    --text: #1a1e26;
+    --muted: #6b7382;
+    --accent: #3b6fd4;
+    --fail: #c0392b;
+    --ok: #3d8b40;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font:
+    14px/1.55 -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Inter,
+    system-ui,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 20px 24px 48px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.brand .muted {
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+/* The recording indicator is always visible — PRIVACY.md §13. */
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 22%, transparent);
+}
+
+select {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 11px;
+  font: inherit;
+  min-width: 300px;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr 1.25fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1150px) {
+  main {
+    grid-template-columns: 1fr;
+  }
+}
+
+h2 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: var(--muted);
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+
+h3 {
+  margin: 4px 0 2px;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.muted {
+  color: var(--muted);
+}
+.small {
+  font-size: 12px;
+}
+.hint {
+  margin: -4px 0 12px;
+}
+.mono {
+  font-family: var(--mono);
+  font-size: 12.5px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+button.card {
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease;
+}
+
+.ctx:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+}
+.ctx.on {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, var(--panel));
+}
+
+.ctx .row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+.ctx .label {
+  font-weight: 600;
+  font-size: 15px;
+}
+.ctx .dur {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* "Slack → Linear → Figma" — the chain is the product's signature, not a per-app time report. */
+.chain {
+  font-size: 12px;
+  color: var(--accent);
+  margin: 5px 0 4px;
+  font-family: var(--mono);
+}
+
+.noise,
+.footnote {
+  font-size: 11.5px;
+  color: var(--muted);
+  padding: 6px 2px;
+}
+
+.resume-card .rows {
+  margin-top: 13px;
+  padding-top: 11px;
+  border-top: 1px solid var(--line);
+}
+
+.line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 2px 0;
+  flex-wrap: wrap;
+}
+.line.failure .mono {
+  color: var(--fail);
+}
+.line.success .mono {
+  color: var(--ok);
+}
+
+button.cite {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  border-radius: 5px;
+  padding: 0 6px;
+  font-size: 11px;
+  font-family: var(--mono);
+  cursor: pointer;
+  margin-left: auto;
+}
+button.cite:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.next {
+  margin-top: 13px;
+  padding: 11px 13px;
+  background: var(--panel-2);
+  border-radius: 8px;
+  border-left: 2px solid var(--accent);
+}
+
+.open {
+  display: flex;
+  gap: 8px;
+  margin-top: 13px;
+  flex-wrap: wrap;
+}
+button.ghost {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 7px;
+  padding: 6px 11px;
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+button.ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+.tag {
+  font-size: 11px;
+  font-family: var(--mono);
+  padding: 2px 7px;
+  border-radius: 5px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+.tag.strong {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+}
+.tag.medium {
+  color: var(--text);
+}
+
+.events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 78vh;
+  overflow-y: auto;
+}
+.events li {
+  display: flex;
+  gap: 10px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  align-items: baseline;
+}
+.events li:hover {
+  background: var(--panel);
+}
+.events li.cited {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  outline: 1px solid var(--accent);
+}
+.events .t {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  min-width: 38px;
+}
+.events .g {
+  color: var(--muted);
+  min-width: 12px;
+}
+.events .body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.events .app {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.03em;
+}
+.events .head {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.events li.fail .head {
+  color: var(--fail);
+}
+
+.truth {
+  background: var(--panel-2);
+  margin-top: 18px;
+}
+.verdict {
+  margin-top: 8px;
+  font-size: 12px;
+  font-family: var(--mono);
+}
+.verdict.ok {
+  color: var(--ok);
+}
+.verdict.off {
+  color: var(--fail);
+}

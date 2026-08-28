@@ -14,5 +14,10 @@
   "devDependencies": {
     "@rewind/config": "workspace:*",
     "tsx": "^4.19.2"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./sessions": "./src/sessions/index.ts",
+    "./authoring": "./src/authoring.ts"
   }
 }
