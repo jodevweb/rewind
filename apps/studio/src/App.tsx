@@ -123,8 +123,18 @@ export function App() {
   const active = result.contexts.find((c) => c.id === selected) ?? result.contexts[0] ?? undefined;
   const resume = useMemo(() => (active ? buildResume(session, active) : null), [session, active]);
 
+  const isCaptured = session.id === CAPTURED_ID;
+
   return (
     <div className="app">
+      {!captured && (
+        <div className="banner">
+          <strong>Everything below is fake.</strong> These ten sessions are hand-authored test data
+          used to score the engine. To see your own activity, run <code>pnpm capture</code> in a
+          second terminal and use your machine normally — a real session appears at the top of the
+          picker within a minute, marked ●, and refreshes while you work.
+        </div>
+      )}
       <header>
         <div className="brand">
           <span className="dot" /> REWIND <span className="muted">Studio</span>
@@ -144,9 +154,12 @@ export function App() {
           ))}
         </select>
         <div className="muted small">
-          Fake Collector replay · {session.events.length} events → {result.contexts.length} context
+          {session.events.length} events → {result.contexts.length} context
           {result.contexts.length === 1 ? '' : 's'} · deterministic, no LLM
         </div>
+        <span className={`badge ${isCaptured ? 'live' : 'fixture'}`}>
+          {isCaptured ? 'REAL — captured on this machine' : 'FIXTURE — authored test data'}
+        </span>
       </header>
 
       <main>
