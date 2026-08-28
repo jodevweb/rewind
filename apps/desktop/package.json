@@ -17,7 +17,9 @@
     "react-dom": "^19.0.0",
     "@rewind/ui": "workspace:*",
     "@rewind/fixtures": "workspace:*",
-    "@rewind/engine-v0": "workspace:*"
+    "@rewind/engine-v0": "workspace:*",
+    "@tauri-apps/plugin-updater": "^2.0.0",
+    "@tauri-apps/plugin-process": "^2.0.0"
   },
   "devDependencies": {
     "@rewind/config": "workspace:*",

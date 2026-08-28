@@ -26,3 +26,6 @@ apps/desktop/dist/
 # Scratch files from CI inspection — never committed.
 *.tmp.json
 *.tmp.txt
+
+# Never commit this file. Back it up somewhere durable.
+REWIND-UPDATER-PRIVATE-KEY.txt

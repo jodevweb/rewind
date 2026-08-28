@@ -75,7 +75,15 @@ impl Store {
     pub fn open() -> rusqlite::Result<Self> {
         let dir = data_dir();
         std::fs::create_dir_all(&dir).ok();
-        let path = dir.join("rewind.db");
+        Self::open_at(dir.join("rewind.db"))
+    }
+
+    /// Open a store at an explicit path.
+    ///
+    /// Exists because the tests were opening the *user's* database — a suite that writes to real
+    /// user data is a hazard regardless of what it asserts, and two tests racing on the same file is
+    /// how the migration below started failing.
+    pub fn open_at(path: PathBuf) -> rusqlite::Result<Self> {
         let conn = Connection::open(&path)?;
 
         conn.pragma_update(None, "journal_mode", "WAL")?;
@@ -122,9 +130,15 @@ impl Store {
             .prepare("SELECT 1 FROM pragma_table_info('events') WHERE name = 'metadata'")?
             .exists([])?;
         if !has_metadata {
-            conn.execute_batch(
-                "ALTER TABLE events ADD COLUMN metadata TEXT NOT NULL DEFAULT '{}'",
-            )?;
+            // Check-then-act is not atomic across connections, so losing the race is expected and
+            // harmless: the column exists either way. Only a different failure is worth surfacing.
+            if let Err(err) =
+                conn.execute_batch("ALTER TABLE events ADD COLUMN metadata TEXT NOT NULL DEFAULT '{}'")
+            {
+                if !err.to_string().contains("duplicate column name") {
+                    return Err(err);
+                }
+            }
         }
 
         // One agent session is one row, however many times its file is rescanned.

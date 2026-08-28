@@ -293,8 +293,15 @@ fn stable_title(title: &str) -> String {
 mod tests {
     use super::*;
 
+    /// A store of its own, in a temporary directory. A test must never touch the user's database.
     fn capture() -> Capture {
-        Capture::new(Arc::new(Store::open().expect("store")))
+        let mut path = std::env::temp_dir();
+        path.push(format!(
+            "rewind-test-{}-{}.db",
+            std::process::id(),
+            now_ms()
+        ));
+        Capture::new(Arc::new(Store::open_at(path).expect("store")))
     }
 
     #[test]

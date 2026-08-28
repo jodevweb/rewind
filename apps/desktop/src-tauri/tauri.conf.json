@@ -42,5 +42,14 @@
     },
     "category": "Productivity",
     "publisher": "Danim"
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEIwMDgwRjUyNkY0RkE4Q0MKUldUTXFFOXZVZzhJc05XT1plV1Fxb2VraXhwU0ViTklWTDZ4TFplL0NyZ29yOWcxRWpBZ3dyNzAK",
+      "endpoints": ["https://github.com/jodevweb/rewind/releases/latest/download/latest.json"],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }
