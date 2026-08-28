@@ -9,7 +9,7 @@
  * permanently, for tests, demos, debugging and reproducing issues.
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 // The package root pulls in Node-only loaders; the studio takes the pure-data entry points.
 import { ALL_SESSIONS } from '@rewind/fixtures/sessions';
@@ -80,14 +80,42 @@ function isFailure(e: GoldenEvent): boolean {
   );
 }
 
+const CAPTURED_ID = 'captured-session';
+
 export function App() {
   const [sessionId, setSessionId] = useState(ALL_SESSIONS[6]!.id);
+  // Real activity captured on this machine by the capture probe. Written to the studio's public
+  // directory, never committed, and absent until `pnpm capture` has run.
+  const [captured, setCaptured] = useState<GoldenSession | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = () =>
+      fetch('/captured/session.json', { cache: 'no-store' })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((s: GoldenSession | null) => {
+          if (!cancelled && s && s.events.length > 0) setCaptured(s);
+        })
+        .catch(() => {});
+    load();
+    // Poll while capturing so the screen fills as the machine is used.
+    const timer = setInterval(load, 4000);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, []);
+
+  const allSessions = useMemo(
+    () => (captured ? [captured, ...ALL_SESSIONS] : ALL_SESSIONS),
+    [captured],
+  );
   const [selected, setSelected] = useState<string | null>(null);
   const [citation, setCitation] = useState<string | null>(null);
 
   const session = useMemo(
-    () => ALL_SESSIONS.find((s) => s.id === sessionId) as GoldenSession,
-    [sessionId],
+    () => (allSessions.find((s) => s.id === sessionId) ?? allSessions[0]) as GoldenSession,
+    [allSessions, sessionId],
   );
   const result = useMemo(() => runEngine(session), [session]);
   const byRef = useMemo(() => new Map(session.events.map((e) => [e.ref, e])), [session]);
@@ -108,8 +136,9 @@ export function App() {
             setSelected(null);
           }}
         >
-          {ALL_SESSIONS.map((s) => (
+          {allSessions.map((s) => (
             <option key={s.id} value={s.id}>
+              {s.id === CAPTURED_ID ? '● ' : ''}
               {s.name} — {s.events.length} events
             </option>
           ))}
@@ -330,6 +359,18 @@ function TruthPanel({
   session: GoldenSession;
   result: ReturnType<typeof runEngine>;
 }) {
+  if (session.expected.contexts.length === 0) {
+    return (
+      <div className="card truth">
+        <div className="muted small">Real capture — no ground truth</div>
+        <p className="small" style={{ margin: '6px 0 0' }}>
+          Nobody labelled this session, so there is nothing to score against. Judge it the way you
+          would judge your own memory of the day: are these the pieces of work you actually did?
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="card truth">
       <div className="muted small">Ground truth (fixture)</div>
