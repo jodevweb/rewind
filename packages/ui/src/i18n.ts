@@ -67,7 +67,7 @@ const fr = {
   'today.loose': 'Hors contexte',
   'today.looseHint':
     'Ces événements ont bien été capturés. Le moteur n’a simplement pas trouvé assez de liens pour en faire un contexte — il faut au moins deux événements qui partagent une ancre.',
-  'today.fallbackLabel': 'Travail dans',
+  'today.fallbackLabel': 'Activité dans',
 
   'next.fixFailing': 'Corriger la commande qui échoue :',
   'next.commitOrStash': 'Commiter ou remiser',
@@ -175,7 +175,7 @@ const en: Record<Key, string> = {
   'today.loose': 'Outside any context',
   'today.looseHint':
     'These events were captured. The engine simply did not find enough links to form a context — it needs at least two events sharing an anchor.',
-  'today.fallbackLabel': 'Work in',
+  'today.fallbackLabel': 'Activity in',
 
   'next.fixFailing': 'Fix the failing command:',
   'next.commitOrStash': 'Commit or stash',

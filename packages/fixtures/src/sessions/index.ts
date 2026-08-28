@@ -10,6 +10,7 @@ import { gs07 } from './gs-07-cross-app-feature-work.js';
 import { gs08 } from './gs-08-two-projects-interleaved.js';
 import { gs09 } from './gs-09-administrative-work.js';
 import { gs10 } from './gs-10-communication-noise.js';
+import { gs11 } from './gs-11-off-hours-drift.js';
 
 /**
  * The golden set (ticket P0-005). Each fixture isolates one failure mode of the context engine:
@@ -27,6 +28,7 @@ import { gs10 } from './gs-10-communication-noise.js';
  *   GS-08  two projects interleaved in short slices, sharing every application
  *   GS-09  pure administrative work — zero development events
  *   GS-10  interruptions arriving in the same applications the real work uses
+ *   GS-11  false merge  — hours of anchorless non-work must not be absorbed by the last context
  *
  * A fix for any future context-engine bug should add a fixture here, or extend one.
  */
@@ -41,6 +43,7 @@ export const ALL_SESSIONS: GoldenSession[] = [
   gs08,
   gs09,
   gs10,
+  gs11,
 ];
 
-export { gs01, gs02, gs03, gs04, gs05, gs06, gs07, gs08, gs09, gs10 };
+export { gs01, gs02, gs03, gs04, gs05, gs06, gs07, gs08, gs09, gs10, gs11 };

@@ -425,7 +425,10 @@
       "metadata": {
         "agent": "claude-code",
         "toolCallCount": 18,
-        "filesTouched": ["src/app/layout.tsx", "src/app/page.tsx"],
+        "filesTouched": [
+          "src/app/layout.tsx",
+          "src/app/page.tsx"
+        ],
         "outcome": "in_progress"
       },
       "privacyLevel": "normal",

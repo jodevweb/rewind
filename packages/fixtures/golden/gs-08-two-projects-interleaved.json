@@ -486,7 +486,9 @@
       "metadata": {
         "agent": "claude-code",
         "toolCallCount": 22,
-        "filesTouched": ["src/staging/mask.ts"],
+        "filesTouched": [
+          "src/staging/mask.ts"
+        ],
         "outcome": "in_progress"
       },
       "privacyLevel": "normal",
@@ -919,7 +921,9 @@
         "missionId": "msn_9012",
         "runId": "run_2",
         "status": "succeeded",
-        "filesChanged": ["src/staging/mask.ts"]
+        "filesChanged": [
+          "src/staging/mask.ts"
+        ]
       },
       "privacyLevel": "normal",
       "redaction": {
