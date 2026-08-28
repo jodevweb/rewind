@@ -12,13 +12,15 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "REWIND",
         "width": 1200,
         "height": 800,
         "minWidth": 900,
         "minHeight": 600,
-        "visible": false,
-        "decorations": true
+        "visible": true,
+        "decorations": true,
+        "center": true
       }
     ],
     "security": {
@@ -27,8 +29,16 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["dmg", "app", "nsis"],
-    "icon": ["icons/128x128.png", "icons/icon.png", "icons/icon.ico"],
+    "targets": [
+      "dmg",
+      "app",
+      "nsis"
+    ],
+    "icon": [
+      "icons/128x128.png",
+      "icons/icon.png",
+      "icons/icon.ico"
+    ],
     "copyright": "REWIND",
     "shortDescription": "Une mémoire contextuelle pour ton ordinateur",
     "longDescription": "REWIND comprend sur quoi tu travailles, même quand ton travail traverse plusieurs applications. Local-first : rien ne quitte ta machine."
