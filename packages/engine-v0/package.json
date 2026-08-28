@@ -1,0 +1,18 @@
+{
+  "name": "@rewind/engine-v0",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Deterministic context engine, TypeScript reference implementation. Validated against the golden benchmark before the Rust port (ADR 0001 D-4).",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rewind/fixtures": "workspace:*"
+  },
+  "devDependencies": {
+    "@rewind/config": "workspace:*"
+  }
+}

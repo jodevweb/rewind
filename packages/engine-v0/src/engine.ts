@@ -1,0 +1,430 @@
+/**
+ * Context Engine V0 — deterministic, no embeddings, no LLM (ADR 0002, CONTEXT_ENGINE §2–4).
+ *
+ * TypeScript reference implementation. Its purpose is to have the heuristics validated against the
+ * golden benchmark *before* the Rust port, so the Rust engine starts from measured numbers rather
+ * than from a guess. It is a predictor for `@rewind/eval`, and the Fake Collector's brain for the
+ * studio. Per ADR 0001 D-4 the production engine is Rust; this exists to be ported, not to ship.
+ */
+
+import type { GoldenEvent, GoldenSession } from '@rewind/fixtures/authoring';
+
+import { anchorsForSession, matchingAnchors, strength, type Anchor } from './anchors.js';
+
+export interface Activity {
+  id: string;
+  label: string;
+  startTimestamp: number;
+  endTimestamp: number;
+  eventRefs: string[];
+  apps: string[];
+  anchors: Anchor[];
+  contextId?: string;
+}
+
+export interface EngineContext {
+  id: string;
+  label: string;
+  activityIds: string[];
+  eventRefs: string[];
+  startTimestamp: number;
+  endTimestamp: number;
+  /** Active time, idle excluded — the only duration the product is allowed to show. */
+  activeMs: number;
+  /** Applications in first-touch order: the "Slack → Linear → Figma" chain. */
+  appChain: string[];
+  anchors: Anchor[];
+  confidence: number;
+}
+
+export interface EngineResult {
+  activities: Activity[];
+  contexts: EngineContext[];
+  /** Events the engine assigned to nothing. */
+  unassigned: string[];
+  anchorsByRef: Map<string, Anchor[]>;
+}
+
+export interface EngineConfig {
+  activityGapMs: number;
+  /** Hard cap so a long stretch in one application still yields granular activities. */
+  activityMaxMs: number;
+  assignThreshold: number;
+  recencyHalfLifeMs: number;
+  minContextEvents: number;
+}
+
+export const DEFAULT_CONFIG: EngineConfig = {
+  activityGapMs: 90_000,
+  activityMaxMs: 20 * 60 * 1000,
+  assignThreshold: 0.22,
+  recencyHalfLifeMs: 3 * 60 * 60 * 1000,
+  minContextEvents: 2,
+};
+
+const APP_NAMES: Record<string, string> = {
+  'com.tinyspeck.slackmacgap': 'Slack',
+  'com.linear': 'Linear',
+  'com.figma.Desktop': 'Figma',
+  'com.apple.Notes': 'Notes',
+  'com.apple.mail': 'Mail',
+  'com.apple.finder': 'Finder',
+  'com.apple.Terminal': 'Terminal',
+  'com.googlecode.iterm2': 'iTerm2',
+  'com.google.Chrome': 'Chrome',
+  'com.apple.Safari': 'Safari',
+  'com.acme.cockpit': 'Cockpit',
+  'com.apple.Preview': 'Preview',
+  'com.microsoft.VSCode': 'VS Code',
+  'Code.exe': 'VS Code',
+  'chrome.exe': 'Chrome',
+  'WindowsTerminal.exe': 'Terminal',
+  'slack.exe': 'Slack',
+  'Teams.exe': 'Teams',
+  'olk.exe': 'Outlook',
+  'explorer.exe': 'Finder',
+  'Spotify.exe': 'Spotify',
+};
+
+export function appName(event: GoldenEvent): string {
+  if (event.source === 'agent') return 'Claude Code';
+  if (event.source === 'external') return 'Cockpit';
+  if (event.source === 'terminal') return 'Terminal';
+  if (event.source === 'git') return 'Git';
+  if (!event.app) return event.appDisplay ?? 'System';
+  return APP_NAMES[event.app] ?? event.appDisplay ?? event.app;
+}
+
+const overlap = matchingAnchors;
+
+function mergeAnchors(into: Anchor[], from: Anchor[]): Anchor[] {
+  const out = [...into];
+  for (const a of from) {
+    const existing = out.find((x) => x.type === a.type && x.normalizedValue === a.normalizedValue);
+    if (existing) existing.confidence = Math.max(existing.confidence, a.confidence);
+    else out.push({ ...a });
+  }
+  return out;
+}
+
+const HARD_BOUNDARY = new Set([
+  'system.idle.start',
+  'system.session.lock',
+  'system.power.sleep',
+  'system.capture.paused',
+]);
+
+/** Stage A — activities: contiguous runs of coherent events. */
+function buildActivities(
+  events: GoldenEvent[],
+  anchorsByRef: Map<string, Anchor[]>,
+  config: EngineConfig,
+): Activity[] {
+  const activities: Activity[] = [];
+  let current: Activity | null = null;
+  let n = 0;
+
+  const close = () => {
+    current = null;
+  };
+
+  for (const e of events) {
+    const anchors = anchorsByRef.get(e.ref) ?? [];
+    const end = e.endTimestamp ?? e.timestamp;
+
+    if (HARD_BOUNDARY.has(e.type)) {
+      close();
+      continue;
+    }
+
+    if (current) {
+      const gapped = e.timestamp - current.endTimestamp > config.activityGapMs;
+      const tooLong = end - current.startTimestamp > config.activityMaxMs;
+
+      // Compare against the anchors of the events immediately preceding, NOT the activity's whole
+      // accumulated set. An activity's anchor set only grows, so testing against all of it turns the
+      // activity into a magnet: one weak anchor like `repository:myapp` present throughout a session
+      // keeps it open forever, and GS-04's whole day collapsed into a single activity.
+      const recent = recentAnchors(current, anchorsByRef, 3);
+      const heldByAnchor = overlap(anchors, recent).length > 0;
+      // An activity legitimately moves between applications and back — edit, run tests, edit again —
+      // so membership in the activity is the test, not the immediately previous application.
+      // Requiring the last application shattered every fixture (recall fell to 10 %).
+      const sameApp = current.apps.includes(appName(e));
+
+      // A conflicting strong anchor ends the activity outright: a different issue id is different
+      // work, even one second later in the same application.
+      const strongHere = anchors.filter((a) => strength(a.type) === 'strong');
+      const strongThere = recent.filter((a) => strength(a.type) === 'strong');
+      const conflicting =
+        strongHere.length > 0 &&
+        strongThere.length > 0 &&
+        overlap(strongHere, strongThere).length === 0;
+
+      if (gapped || tooLong || conflicting || (!heldByAnchor && !sameApp)) close();
+    }
+
+    if (!current) {
+      n += 1;
+      current = {
+        id: `a${n}`,
+        label: '',
+        startTimestamp: e.timestamp,
+        endTimestamp: end,
+        eventRefs: [],
+        apps: [],
+        anchors: [],
+      };
+      activities.push(current);
+    }
+
+    current.eventRefs.push(e.ref);
+    current.endTimestamp = Math.max(current.endTimestamp, end);
+    current.anchors = mergeAnchors(current.anchors, anchors);
+    const app = appName(e);
+    if (!current.apps.includes(app)) current.apps.push(app);
+  }
+
+  for (const a of activities) a.label = labelActivity(a);
+  return activities;
+}
+
+/** Anchors of the last `n` events of an activity — the local context, not the whole history. */
+function recentAnchors(
+  activity: Activity,
+  anchorsByRef: Map<string, Anchor[]>,
+  n: number,
+): Anchor[] {
+  const out: Anchor[] = [];
+  for (const ref of activity.eventRefs.slice(-n)) {
+    for (const a of anchorsByRef.get(ref) ?? []) {
+      if (!out.some((x) => x.type === a.type && x.normalizedValue === a.normalizedValue))
+        out.push(a);
+    }
+  }
+  return out;
+}
+
+function labelActivity(a: Activity): string {
+  const strong = a.anchors.filter((x) => strength(x.type) === 'strong');
+  const medium = a.anchors.filter((x) => strength(x.type) === 'medium');
+  const keyword = a.anchors.filter((x) => x.type === 'keyword');
+  const best = strong[0] ?? medium[0] ?? keyword[0];
+  const where = a.apps[0] ?? 'System';
+  return best ? `${best.value} — ${where}` : where;
+}
+
+/** Score an activity against a candidate context. Weights follow CONTEXT_ENGINE §4.2. */
+function score(
+  activity: Activity,
+  context: EngineContext,
+  config: EngineConfig,
+  previousContextId: string | undefined,
+  previousApp: string | undefined,
+): { total: number; shared: Anchor[] } {
+  const shared = overlap(activity.anchors, context.anchors);
+  const strongHit = shared.some((a) => strength(a.type) === 'strong');
+  const mediumHit = shared.some((a) => strength(a.type) === 'medium');
+  // Weak hits are deduplicated by value: "myapp" arriving as both a repository and a keyword is one
+  // piece of evidence, not two.
+  const weakHits = new Set(
+    shared.filter((a) => strength(a.type) === 'weak').map((a) => a.normalizedValue),
+  ).size;
+
+  // Conflicting identity. If both sides carry a strong anchor and none of them match, that is
+  // positive evidence of *different* work — two issue ids are two pieces of work, however adjacent
+  // in time and however many files they share. This is what keeps GS-04 apart.
+  const activityStrong = activity.anchors.filter((a) => strength(a.type) === 'strong');
+  const contextStrong = context.anchors.filter((a) => strength(a.type) === 'strong');
+  if (!strongHit && activityStrong.length > 0 && contextStrong.length > 0) {
+    return { total: 0, shared };
+  }
+
+  const anchorStrong = strongHit ? 1 : mediumHit ? 0.7 : 0;
+  const anchorWeak = Math.min(1, weakHits / 2);
+  const appAffinity = activity.apps.some((x) => context.appChain.includes(x)) ? 1 : 0;
+
+  const gap = Math.max(0, activity.startTimestamp - context.endTimestamp);
+  const recency = Math.pow(0.5, gap / config.recencyHalfLifeMs);
+
+  // The rule that keeps GS-03 and GS-04 apart: **no shared anchor, no assignment.** Being adjacent
+  // in time and using the same applications is not evidence of the same work — that is exactly what
+  // ADR 0002 D-15 says. The single exception is a direct continuation: same application, under two
+  // minutes apart, which is one interaction split across two activities rather than a new subject.
+  if (shared.length === 0) {
+    // The only anchor-free assignment allowed: this activity directly continues the previous one,
+    // in the same application, within two minutes. "The application appears somewhere in this
+    // context's history" is NOT continuation — that reading merged GS-03's two projects, which are
+    // adjacent in time and both use Chrome.
+    const continuation =
+      previousContextId === context.id &&
+      previousApp !== undefined &&
+      activity.apps[0] === previousApp &&
+      gap < 120_000;
+    return { total: continuation ? config.assignThreshold : 0, shared };
+  }
+
+  // Semantic (0.20) is absent in V0 — no embeddings. Its weight is redistributed onto anchors,
+  // which is honest: without embeddings the engine leans harder on explicit identifiers.
+  const raw = 0.5 * anchorStrong + 0.28 * anchorWeak + 0.14 * recency + 0.04 * appAffinity;
+
+  // An anchor match survives a long gap; without a strong one, recency still matters.
+  const total = strongHit ? raw : raw * (0.4 + 0.6 * recency);
+  return { total, shared };
+}
+
+/** Stage C — context assignment, then a merge pass over shared strong anchors. */
+export function runEngine(
+  session: GoldenSession,
+  config: EngineConfig = DEFAULT_CONFIG,
+): EngineResult {
+  const events = session.events;
+  const byRef = new Map(events.map((e) => [e.ref, e]));
+  const anchorsByRef = anchorsForSession(events);
+  const activities = buildActivities(events, anchorsByRef, config);
+
+  const contexts: EngineContext[] = [];
+  let n = 0;
+
+  let previousContextId: string | undefined;
+  let previousApp: string | undefined;
+
+  for (const activity of activities) {
+    let best: EngineContext | null = null;
+    let bestScore = 0;
+    for (const context of contexts) {
+      const { total } = score(activity, context, config, previousContextId, previousApp);
+      if (total > bestScore) {
+        bestScore = total;
+        best = context;
+      }
+    }
+
+    if (best && bestScore >= config.assignThreshold) {
+      attach(best, activity, byRef);
+      previousContextId = best.id;
+      previousApp = activity.apps[activity.apps.length - 1];
+    } else {
+      n += 1;
+      const created: EngineContext = {
+        id: `c${n}`,
+        label: '',
+        activityIds: [],
+        eventRefs: [],
+        startTimestamp: activity.startTimestamp,
+        endTimestamp: activity.endTimestamp,
+        activeMs: 0,
+        appChain: [],
+        anchors: [],
+        confidence: 0,
+      };
+      contexts.push(created);
+      attach(created, activity, byRef);
+      previousContextId = created.id;
+      previousApp = activity.apps[activity.apps.length - 1];
+    }
+  }
+
+  // Merge pass. Work returns to a subject hours later (GS-06, GS-08); a shared strong anchor is
+  // enough to reunite the pieces, and recency deliberately is not.
+  let merged = true;
+  while (merged) {
+    merged = false;
+    outer: for (let i = 0; i < contexts.length; i += 1) {
+      for (let j = i + 1; j < contexts.length; j += 1) {
+        const a = contexts[i]!;
+        const b = contexts[j]!;
+        const shared = overlap(a.anchors, b.anchors);
+        if (shared.length === 0) continue;
+
+        // Work returns to a subject hours later (GS-06 spans three blocks across a day, GS-08 two).
+        // Recency deliberately plays no part here — a shared anchor is a shared anchor whenever it
+        // appears. The guard is the mirror of the assignment conflict rule: merge on any shared
+        // anchor UNLESS both sides carry strong identities that disagree. That keeps GS-04's two
+        // tasks apart (auth-221 vs perm-88) while reuniting GS-09's billing pieces, which have no
+        // strong anchor at all.
+        const aStrong = a.anchors.filter((x) => strength(x.type) === 'strong');
+        const bStrong = b.anchors.filter((x) => strength(x.type) === 'strong');
+        const conflicting =
+          aStrong.length > 0 && bStrong.length > 0 && overlap(aStrong, bStrong).length === 0;
+
+        if (!conflicting) {
+          absorb(a, b);
+          contexts.splice(j, 1);
+          merged = true;
+          break outer;
+        }
+      }
+    }
+  }
+
+  // Contexts too small to be real are released back to noise rather than shown as work.
+  const unassigned: string[] = [];
+  const kept = contexts.filter((c) => {
+    if (c.eventRefs.length >= config.minContextEvents) return true;
+    unassigned.push(...c.eventRefs);
+    return false;
+  });
+
+  for (const c of kept) {
+    c.label = labelContext(c);
+    c.confidence = confidenceOf(c);
+  }
+  kept.sort((a, b) => b.activeMs - a.activeMs);
+  return { activities, contexts: kept, unassigned, anchorsByRef };
+}
+
+function attach(context: EngineContext, activity: Activity, byRef: Map<string, GoldenEvent>): void {
+  activity.contextId = context.id;
+  context.activityIds.push(activity.id);
+  context.eventRefs.push(...activity.eventRefs);
+  context.startTimestamp = Math.min(context.startTimestamp, activity.startTimestamp);
+  context.endTimestamp = Math.max(context.endTimestamp, activity.endTimestamp);
+  context.anchors = mergeAnchors(context.anchors, activity.anchors);
+  // Active time is summed per activity, so gaps between activities — meetings, lunch, other work —
+  // are never counted (§69). This is what stops durations inflating into a time report.
+  context.activeMs += Math.max(activity.endTimestamp - activity.startTimestamp, 30_000);
+  for (const ref of activity.eventRefs) {
+    const e = byRef.get(ref);
+    if (!e) continue;
+    const app = appName(e);
+    if (!context.appChain.includes(app)) context.appChain.push(app);
+  }
+}
+
+function absorb(into: EngineContext, other: EngineContext): void {
+  into.activityIds.push(...other.activityIds);
+  into.eventRefs.push(...other.eventRefs);
+  into.startTimestamp = Math.min(into.startTimestamp, other.startTimestamp);
+  into.endTimestamp = Math.max(into.endTimestamp, other.endTimestamp);
+  into.activeMs += other.activeMs;
+  into.anchors = mergeAnchors(into.anchors, other.anchors);
+  for (const app of other.appChain) if (!into.appChain.includes(app)) into.appChain.push(app);
+}
+
+function labelContext(c: EngineContext): string {
+  const byConfidence = [...c.anchors].sort((a, b) => b.confidence - a.confidence);
+  const issue = byConfidence.find((a) => a.type === 'issue');
+  const project = byConfidence.find((a) => a.type === 'project');
+  const keyword = byConfidence.find((a) => a.type === 'keyword');
+  const doc = byConfidence.find((a) => a.type === 'document');
+  const branch = byConfidence.find((a) => a.type === 'branch');
+
+  const subject = project ?? keyword ?? doc ?? branch;
+  const pretty = (s: string) =>
+    s
+      .replace(/^(fix|feat|chore|refactor|investigate)\//, '')
+      .replace(/[-_/]+/g, ' ')
+      .replace(/\b\w/g, (m) => m.toUpperCase());
+
+  if (issue && subject) return `${pretty(subject.value)} (${issue.value})`;
+  if (issue) return issue.value;
+  if (subject) return pretty(subject.value);
+  return `Work — ${c.appChain[0] ?? 'System'}`;
+}
+
+function confidenceOf(c: EngineContext): number {
+  const strong = c.anchors.filter((a) => strength(a.type) === 'strong').length;
+  const sources = new Set(c.appChain).size;
+  return Math.min(1, 0.3 + 0.25 * Math.min(strong, 2) + 0.1 * Math.min(sources, 4));
+}

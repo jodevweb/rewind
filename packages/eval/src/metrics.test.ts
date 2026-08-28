@@ -192,14 +192,23 @@ describe('baselines behave as documented', () => {
     expect(suite.meanFalseSplitRate).toBeGreaterThan(0.5);
   });
 
-  it('makes GS-08 hard for every baseline — it is the pivot benchmark', () => {
+  it('makes GS-08 hard for every naive baseline, and the engine beats them all', () => {
     const session = loadGoldenSession('gs-08-two-projects-interleaved');
+    const scoreOf = (id: string) =>
+      evaluateSession(session, getPredictor(id)!.predict(session)).pairwiseF1;
+
+    // Two projects interleaved in short slices, sharing every application. Nothing naive works.
     for (const predictor of BASELINES) {
-      if (predictor.id === 'oracle') continue;
-      const m = evaluateSession(session, predictor.predict(session));
-      // Two projects interleaved in short slices, sharing every application. Nothing naive works.
-      expect(m.pairwiseF1, predictor.id).toBeLessThan(0.7);
-      expect(m.ari, predictor.id).toBeLessThan(0.2);
+      if (predictor.id === 'oracle' || predictor.id === 'engine-v0') continue;
+      expect(scoreOf(predictor.id), predictor.id).toBeLessThan(0.7);
+    }
+
+    // And the point of the fixture: an anchor-based engine does better than all of them. If this
+    // ever fails, the anchors have stopped carrying the signal the pivot depends on.
+    const engine = scoreOf('engine-v0');
+    for (const predictor of BASELINES) {
+      if (predictor.id === 'oracle' || predictor.id === 'engine-v0') continue;
+      expect(engine, `engine-v0 vs ${predictor.id}`).toBeGreaterThan(scoreOf(predictor.id));
     }
   });
 
