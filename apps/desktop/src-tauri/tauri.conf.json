@@ -29,10 +29,18 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["dmg", "app", "nsis"],
+    "targets": ["app", "dmg", "nsis"],
     "icon": ["icons/128x128.png", "icons/icon.png", "icons/icon.ico"],
     "copyright": "REWIND",
     "shortDescription": "Une mémoire contextuelle pour ton ordinateur",
-    "longDescription": "REWIND comprend sur quoi tu travailles, même quand ton travail traverse plusieurs applications. Local-first : rien ne quitte ta machine."
+    "longDescription": "REWIND comprend sur quoi tu travailles, même quand ton travail traverse plusieurs applications. Local-first : rien ne quitte ta machine.",
+    "macOS": {
+      "minimumSystemVersion": "13.0",
+      "exceptionDomain": "",
+      "entitlements": null,
+      "files": {}
+    },
+    "category": "Productivity",
+    "publisher": "Danim"
   }
 }
