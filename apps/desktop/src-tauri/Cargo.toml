@@ -8,6 +8,14 @@ license = "UNLICENSED"
 publish = false
 rust-version = "1.77"
 
+# Windows version-info resource. tauri-winres reads this section, and its absence fails the build
+# script on Windows rather than degrading — so it is required, not decorative.
+[package.metadata.winres]
+ProductName = "REWIND"
+FileDescription = "REWIND — une mémoire contextuelle pour ton ordinateur"
+LegalCopyright = "REWIND"
+OriginalFilename = "rewind-desktop.exe"
+
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
