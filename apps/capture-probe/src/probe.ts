@@ -1,43 +1,56 @@
 /**
- * Capture probe — real window activity on this machine, into the existing engine.
+ * Capture probe — real window activity, on Windows and macOS.
  *
  * NOT the collector. The product's collector is Rust behind `ActiveWindowProvider` (ADR 0002 D-11),
- * event-driven, writing to SQLite. This is a measurement rig with one job: produce **real window
- * titles** so anchor extraction is validated against reality rather than against fixtures we wrote
- * ourselves — the risk flagged in P0-005 and the reason to run it before porting anything to Rust.
+ * event-driven, writing to SQLite. This is a measurement rig with one job: feed the engine **real
+ * window titles**, so anchor extraction is validated against reality rather than against fixtures we
+ * wrote ourselves — the risk flagged in P0-005.
  *
- * It obeys the product's own rules even though it is throwaway:
- *   - exclusion rules run before an event is constructed (PRIVACY §3.1);
- *   - every title goes through the secret redactor, fail-closed (PRIVACY §4.2);
- *   - output is one local file, deleted with `pnpm capture:clear`;
- *   - nothing is sent anywhere.
+ * It obeys the product's own rules despite being throwaway: exclusions applied before an event is
+ * constructed (PRIVACY §3.1), every title through the fail-closed redactor (PRIVACY §4.2), data in
+ * the OS data directory, nothing sent anywhere.
  *
- *   pnpm capture           start capturing (Ctrl-C to stop)
- *   pnpm capture:clear     delete the captured file
+ *   pnpm capture         start capturing (Ctrl-C to stop)
+ *   pnpm capture:where   print where the data lives, and how much of it there is
+ *   pnpm capture:clear   delete it, for real
  */
 
 import { spawn } from 'node:child_process';
-import { mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdirSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { createInterface } from 'node:readline';
-import { dirname, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { defaultRedactor } from '@rewind/protocol';
 
-const here = dirname(fileURLToPath(import.meta.url));
-const OUT_DIR = resolve(here, '../../studio/public/captured');
-const OUT_FILE = resolve(OUT_DIR, 'session.json');
+import { appendEvent, dataDir, ensureDir, readDay, totals, workDay } from './store.js';
 
-if (process.argv.includes('--clear')) {
-  rmSync(OUT_DIR, { recursive: true, force: true });
-  console.log('Captured session deleted.');
+const here = dirname(fileURLToPath(import.meta.url));
+
+if (process.argv.includes('--where')) {
+  const { days, events, bytes } = totals();
+  console.log(
+    [
+      '',
+      '  Tes données sont ici :',
+      `    ${dataDir()}`,
+      '',
+      `  ${days} jour(s) · ${events} événements · ${(bytes / 1024).toFixed(1)} Ko`,
+      "  Un fichier JSONL par jour, en ajout seul. Rien n'est jamais réécrit à l'aveugle.",
+      '',
+    ].join('\n'),
+  );
   process.exit(0);
 }
 
-/**
- * Shipped exclusion defaults (PRIVACY §3.2), by process name. An excluded application produces no
- * event at all — not a hidden one.
- */
+if (process.argv.includes('--clear')) {
+  // Real deletion, and only on an explicit request (PRIVACY §10).
+  rmSync(dataDir(), { recursive: true, force: true });
+  console.log(`Données de capture supprimées : ${dataDir()}`);
+  process.exit(0);
+}
+
+/** Shipped exclusion defaults (PRIVACY §3.2). An excluded app produces no event at all. */
 const EXCLUDED_APPS = [
   '1password',
   'bitwarden',
@@ -53,16 +66,33 @@ const EXCLUDED_APPS = [
   'securityhealthhost',
 ];
 
-/** Titles matching these never become events either. */
 const EXCLUDED_TITLE = /\b(password|mot de passe|bank|banque|login|sign in|connexion)\b/i;
 
-/** Windows shell chrome that is not work. */
+/** Shell chrome, not work. */
 const IGNORED_APPS = [
   'searchhost',
   'shellexperiencehost',
   'startmenuexperiencehost',
   'textinputhost',
   'lockapp',
+];
+
+/** Apps whose titles are ordinary work signal rather than sensitive (PRIVACY §3.3). */
+const SAFE_TITLE_APPS = [
+  'code',
+  'cursor',
+  'windsurf',
+  'windowsterminal',
+  'powershell',
+  'pwsh',
+  'cmd',
+  'chrome',
+  'msedge',
+  'firefox',
+  'com.microsoft.vscode',
+  'com.google.chrome',
+  'com.apple.terminal',
+  'com.googlecode.iterm2',
 ];
 
 interface ProbeLine {
@@ -94,59 +124,55 @@ interface CapturedEvent {
   importance: number;
 }
 
-/** Applications whose titles are treated as ordinary work signal (PRIVACY §3.3). */
-const SAFE_TITLE_APPS = [
-  'code',
-  'cursor',
-  'windsurf',
-  'windowsterminal',
-  'powershell',
-  'pwsh',
-  'cmd',
-  'chrome',
-  'msedge',
-  'firefox',
-];
+const tz = -new Date().getTimezoneOffset();
+const today = workDay(Date.now(), tz);
 
-const events: CapturedEvent[] = [];
+/** Today's events, read back from disk so a restart continues rather than truncates. */
+const events: CapturedEvent[] = readDay<CapturedEvent>(today).events;
+const resumedFrom = events.length;
+
 let open: CapturedEvent | null = null;
 let dropped = 0;
 let redactedCount = 0;
-const tz = -new Date().getTimezoneOffset();
+let brief = 0;
+let dirty = false;
+let seq = 0;
 
-function uuid(n: number): string {
-  return `0192cap0-0000-7000-8000-${String(n).padStart(12, '0')}`;
+function uuid(): string {
+  seq += 1;
+  return `0192cap0-0000-7000-8000-${String(Date.now() % 1e9).padStart(9, '0')}${String(seq % 1000).padStart(3, '0')}`;
 }
 
+/**
+ * Close the currently focused span.
+ *
+ * An earlier version DELETED spans shorter than five seconds as "glances". That was wrong, and the
+ * user caught it: open something, leave it, and it vanished from the timeline. Noise reduction is a
+ * display concern, not a capture concern — the log has to be complete for statistics to mean
+ * anything later. Short spans are kept and scored low so the UI can de-emphasise them.
+ */
 function closeOpen(at: number): void {
   if (!open) return;
-  // Clamp: an idle heartbeat closes the span at "when input stopped", which can be earlier than the
-  // span began. Unclamped that yields a negative duration, the span is treated as a sub-5-second
-  // glance, and every heartbeat silently destroyed the event it was meant to close.
   const end = Math.max(at, open.timestamp);
-  open.endTimestamp = end;
   const ms = end - open.timestamp;
-  // Sub-5-second glances are noise (EVENT_MODEL §5).
-  if (ms < 5000) {
-    events.pop();
-    open = null;
-    return;
-  }
-  open.importance = ms > 60_000 ? 30 : 15;
+  open.endTimestamp = end;
+  open.importance = ms < 5000 ? 5 : ms < 60_000 ? 15 : 30;
+  if (ms < 5000) brief += 1;
   open = null;
+  dirty = true;
 }
 
 /**
  * Titles carrying a spinner, a progress counter or an activity glyph change every second — a
- * terminal running an agent is the worst offender. Compare on the stable part of the title, which
- * is the real-world version of the title-churn coalescing rule in EVENT_MODEL §5.
+ * terminal running an agent is the worst offender. Compare on the stable part of the title, the
+ * real-world form of the title-churn coalescing rule in EVENT_MODEL §5.
  */
-const CHURN = /[ -㌀\u{1F000}-\u{1FAFF}←-⇿■-◿☀-➿]/gu;
+const CHURN = /[ -㌀\u{1F000}-\u{1FAFF}←-⇿■-◿☀-➿]/gu;
 
 function titleKey(exe: string, title: string): string {
   const stable = title
     .replace(CHURN, '')
-    .replace(/\(\d+[^)]*\)/g, '') // "(3s)", "(12 tools)" and similar live counters
+    .replace(/\(\d+[^)]*\)/g, '')
     .replace(/\s+/g, ' ')
     .trim();
   return `${exe}|${stable}`;
@@ -179,15 +205,14 @@ function onFocus(line: ProbeLine): void {
   }
   if (red.stamp.count > 0) redactedCount += red.stamp.count;
 
-  const n = events.length + 1;
   const event: CapturedEvent = {
-    id: uuid(n),
-    ref: `cap-e${String(n).padStart(4, '0')}`,
+    id: uuid(),
+    ref: `cap-${today}-${String(events.length + 1).padStart(4, '0')}`,
     timestamp: line.t,
     tzOffsetMinutes: tz,
     source: 'system',
     type: 'system.window.focus',
-    producer: { name: 'rewind-capture-probe', version: '0.0.1' },
+    producer: { name: 'rewind-capture-probe', version: '0.0.2' },
     app: exe,
     appDisplay: line.appDisplay ?? line.exe ?? exe,
     title: red.text,
@@ -198,32 +223,53 @@ function onFocus(line: ProbeLine): void {
   };
   events.push(event);
   open = event;
-}
-
-function flush(): void {
-  mkdirSync(OUT_DIR, { recursive: true });
-  const session = {
-    $comment:
-      'Captured on this machine by the capture probe. Real window titles, redacted. Not committed.',
-    id: 'captured-session',
-    name: 'Captured (this machine)',
-    description: `Real foreground-window activity captured on ${new Date().toISOString().slice(0, 10)}.`,
-    tests: 'Validates anchor extraction against real window titles rather than authored fixtures.',
-    day: new Date().toISOString().slice(0, 10),
-    tzOffsetMinutes: tz,
-    // No ground truth: nobody labelled this. The studio shows it as unlabelled.
-    expected: { contextCount: 0, contexts: [], noiseEventRefs: [] },
-    events,
-  };
-  writeFileSync(OUT_FILE, JSON.stringify(session, null, 2) + '\n');
+  // Written immediately, one line. A crash costs the span's end time, never the event.
+  appendEvent(today, event);
 }
 
 /**
- * Platform sources. The consumer below is identical on both, which is the point: the probe proves
- * the pipeline is genuinely platform-agnostic before any of it is written in Rust.
- *
- *   Windows — PowerShell P/Invoke, emits JSON lines directly.
- *   macOS   — osascript polled from here; AppleScript has no loop worth writing.
+ * End timestamps and importance are corrections that arrive after the append. Rather than rewriting
+ * history blindly, the day file is rebuilt from the in-memory list only when a correction happened,
+ * through a temporary file and a rename — so an interrupted rewrite can never truncate a day.
+ */
+function compactDay(): void {
+  if (!dirty) return;
+  dirty = false;
+  const dir = ensureDir();
+  const target = join(dir, `${today}.jsonl`);
+  const tmp = `${target}.tmp`;
+  const body = events.map((e) => JSON.stringify(e)).join('\n');
+  writeFileSync(tmp, body + '\n', 'utf8');
+  renameSync(tmp, target);
+}
+
+const SNAPSHOT_DIR = resolve(here, '../../studio/public/captured');
+const SNAPSHOT = resolve(SNAPSHOT_DIR, 'session.json');
+
+/**
+ * A derived view for the studio to fetch. Deliberately NOT the record of truth — deleting it loses
+ * nothing, because the JSONL day files in the data directory hold everything.
+ */
+function flush(): void {
+  compactDay();
+  mkdirSync(SNAPSHOT_DIR, { recursive: true });
+  const session = {
+    $comment: `Vue dérivée. La source est ${dataDir()} — un JSONL par jour, en ajout seul.`,
+    id: 'captured-session',
+    name: `Capturé — ${today}`,
+    description: `Activité réelle capturée le ${today}.`,
+    tests: 'Valide l’extraction d’ancres sur de vrais titres de fenêtres.',
+    day: today,
+    tzOffsetMinutes: tz,
+    expected: { contextCount: 0, contexts: [], noiseEventRefs: [] },
+    events,
+  };
+  writeFileSync(SNAPSHOT, JSON.stringify(session, null, 2) + '\n');
+}
+
+/**
+ * Platform sources. The consumer below is identical on both, which is the point: the probe shows the
+ * pipeline is genuinely platform-agnostic before any of it is written in Rust.
  */
 const isMac = process.platform === 'darwin';
 
@@ -253,8 +299,8 @@ function startWindows(sink: LineSink): () => void {
 }
 
 function startMac(sink: LineSink): () => void {
-  let warnedNoTitles = false;
-  let sawAnyTitle = false;
+  let warned = false;
+  let sawTitle = false;
   let ticks = 0;
 
   const timer = setInterval(() => {
@@ -268,43 +314,36 @@ function startMac(sink: LineSink): () => void {
     child.on('close', () => {
       ticks += 1;
       if (err.trim() !== '') {
-        // -1743 is macOS telling us Accessibility has not been granted (blocker B-1).
-        if (/-1743|not allowed|assistive/i.test(err) && !warnedNoTitles) {
-          warnedNoTitles = true;
+        // -1743 is macOS saying Accessibility has not been granted (blocker B-1).
+        if (/-1743|not allowed|assistive/i.test(err) && !warned) {
+          warned = true;
           console.log(
             [
               '',
-              '  Accessibility is not granted, so window titles are unavailable.',
-              '  System Settings → Privacy & Security → Accessibility → enable your terminal.',
-              '  REWIND takes no screenshots and never requests Screen Recording (ADR 0003 D-22).',
+              "  Accessibility n'est pas accordée, les titres de fenêtres sont indisponibles.",
+              '  Réglages Système → Confidentialité et sécurité → Accessibilité → active ton terminal.',
+              "  REWIND ne prend aucune capture d'écran et ne demande jamais l'enregistrement d'écran.",
               '',
             ].join('\n'),
           );
         }
         return;
       }
-      const [bundleId = '', appName = '', title = ''] = out.trim().split('	');
+      const [bundleId = '', appName = '', title = ''] = out.trim().split('\t');
       if (bundleId === '') return;
-      if (title !== '') sawAnyTitle = true;
-      if (!sawAnyTitle && ticks === 20 && !warnedNoTitles) {
-        warnedNoTitles = true;
+      if (title !== '') sawTitle = true;
+      if (!sawTitle && ticks === 20 && !warned) {
+        warned = true;
         console.log(
           [
             '',
-            '  Twenty samples with an app name but never a window title — that is exactly what a',
-            '  missing Accessibility grant looks like. Enable it for your terminal, then restart.',
+            "  Vingt relevés avec un nom d'application mais jamais de titre de fenêtre — c'est",
+            '  exactement ce à quoi ressemble une permission Accessibility manquante.',
             '',
           ].join('\n'),
         );
       }
-      sink({
-        t: Date.now(),
-        kind: 'focus',
-        exe: bundleId,
-        appDisplay: appName,
-        title,
-        idleMs: 0,
-      });
+      sink({ t: Date.now(), kind: 'focus', exe: bundleId, appDisplay: appName, title, idleMs: 0 });
     });
   }, 1000);
 
@@ -316,15 +355,14 @@ const onLine: LineSink = (line) => {
     onFocus(line);
   } else if (open) {
     // Idle means the user stopped interacting, NOT that the window changed — it is still focused.
-    // Closing the span here destroyed it: the span had zero elapsed length, so the sub-5-second
-    // glance rule threw it away. Record the idleness and leave the span open; only a focus change
-    // closes one. Idle time is subtracted later, where durations are computed (§69).
+    // Closing the span here destroyed it in an earlier version, because the span had zero elapsed
+    // length. Record the idleness and leave the span open; only a focus change closes one.
     open.metadata['idleMsAtLastHeartbeat'] = line.idleMs;
   }
 
   flush();
   process.stdout.write(
-    `\r● recording · ${events.length} events · ${dropped} excluded · ${redactedCount} redacted   `,
+    `\r● ${events.length} événements · ${brief} brefs · ${dropped} exclus · ${redactedCount} masqués   `,
   );
 };
 
@@ -333,11 +371,20 @@ const stopSource = isMac ? startMac(onLine) : startWindows(onLine);
 const stop = () => {
   closeOpen(Date.now());
   flush();
+  const { days, events: total, bytes } = totals();
   console.log(
-    `\n\nStopped. ${events.length} events → ${OUT_FILE}\n` +
-      `${dropped} excluded by privacy rules · ${redactedCount} values redacted.\n` +
-      `Open http://localhost:5273 and pick "Captured (this machine)".\n` +
-      `Delete it with: pnpm capture:clear\n`,
+    [
+      '',
+      '',
+      `Arrêté. ${events.length} événement(s) aujourd'hui, dont ${brief} très bref(s).`,
+      `${dropped} exclus par les règles de confidentialité · ${redactedCount} valeurs masquées.`,
+      '',
+      `Conservé : ${total} événements sur ${days} jour(s) · ${(bytes / 1024).toFixed(1)} Ko`,
+      `  ${dataDir()}`,
+      '',
+      "Ouvre http://localhost:5273 et choisis l'entrée ●.",
+      '',
+    ].join('\n'),
   );
   stopSource();
   process.exit(0);
@@ -347,8 +394,16 @@ process.on('SIGINT', stop);
 process.on('SIGTERM', stop);
 
 console.log(
-  `● Capture probe running. Use your machine normally.\n` +
-    `  Excluded: password managers, banking and auth windows. Titles are redacted before writing.\n` +
-    `  Output: ${OUT_FILE}\n` +
-    `  Press Ctrl-C to stop.\n`,
+  [
+    resumedFrom > 0 ? `  Reprise de ${resumedFrom} événement(s) déjà capturés aujourd'hui.` : '',
+    '● Capture en cours. Utilise ta machine normalement.',
+    "  Exclus : gestionnaires de mots de passe, fenêtres bancaires et d'authentification.",
+    '  Les titres sont masqués avant écriture.',
+    `  Données : ${dataDir()}`,
+    '  Un JSONL par jour, en ajout seul — rien n’est perdu au redémarrage.',
+    '  Ctrl-C pour arrêter · pnpm capture:where pour retrouver tes données',
+    '',
+  ]
+    .filter(Boolean)
+    .join('\n'),
 );

@@ -19,6 +19,12 @@ export interface ResumeLine {
   tone?: 'normal' | 'failure' | 'success';
 }
 
+export type NextStep =
+  | { rule: 'quote_note'; text: string; evidenceRef: string }
+  | { rule: 'fix_failing_command'; command: string; evidenceRef: string }
+  | { rule: 'commit_or_stash'; count: number; branch?: string; evidenceRef: string }
+  | { rule: 'review_agent_work'; evidenceRef: string };
+
 export interface ResumeCard {
   contextLabel: string;
   lastActiveAt: number;
@@ -30,8 +36,14 @@ export interface ResumeCard {
   produced: ResumeLine[];
   failures: ResumeLine[];
   notes: ResumeLine[];
-  /** Deterministic, from the table below. Omitted entirely when no rule fires. */
-  nextStep?: { text: string; evidenceRef: string };
+  /**
+   * Deterministic, from the table below. Omitted entirely when no rule fires.
+   *
+   * Structured rather than a sentence: the engine must not emit user-facing prose, because prose
+   * cannot be translated at the point of display. It states which rule fired and with what values;
+   * the UI renders it in the reader's language (§147).
+   */
+  nextStep?: NextStep;
   openResources: { kind: string; label: string; target: string; evidenceRef: string }[];
 }
 
@@ -214,19 +226,27 @@ export function buildResume(session: GoldenSession, context: EngineContext): Res
   // Deterministic next step. First rule that fires wins; if none does, the field is omitted rather
   // than filled with a guess.
   if (lastNote) {
-    card.nextStep = { text: str(lastNote, 'text') ?? '', evidenceRef: lastNote.ref };
+    // The user's own words, quoted verbatim — never paraphrased, and never translated.
+    card.nextStep = {
+      rule: 'quote_note',
+      text: str(lastNote, 'text') ?? '',
+      evidenceRef: lastNote.ref,
+    };
   } else if (lastFailure) {
     card.nextStep = {
-      text: `Fix the failing command: ${str(lastFailure, 'commandRedacted')}`,
+      rule: 'fix_failing_command',
+      command: str(lastFailure, 'commandRedacted') ?? '',
       evidenceRef: lastFailure.ref,
     };
   } else if (dirtyFiles) {
     card.nextStep = {
-      text: `Commit or stash ${dirtyFiles.count} uncommitted file${dirtyFiles.count === 1 ? '' : 's'}${dirtyFiles.branch ? ` on ${dirtyFiles.branch}` : ''}`,
+      rule: 'commit_or_stash',
+      count: dirtyFiles.count,
+      ...(dirtyFiles.branch ? { branch: dirtyFiles.branch } : {}),
       evidenceRef: dirtyFiles.ref,
     };
   } else if (lastAgent) {
-    card.nextStep = { text: `Review the agent's work`, evidenceRef: lastAgent.ref };
+    card.nextStep = { rule: 'review_agent_work', evidenceRef: lastAgent.ref };
   }
 
   card.working = card.working.slice(-5);
