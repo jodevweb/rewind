@@ -78,10 +78,18 @@ impl ActiveWindowProvider for MacActiveWindow {
         }
 
         let text = String::from_utf8_lossy(&output.stdout);
-        let mut parts = text.trim_end().splitn(3, '\t');
+        let mut parts = text.trim_end().splitn(4, '\t');
         let app_id = parts.next().unwrap_or_default().to_owned();
         let app_display = parts.next().unwrap_or_default().to_owned();
-        let title = parts.next().unwrap_or_default().to_owned();
+        let pid: Option<u32> = parts.next().and_then(|p| p.trim().parse().ok());
+
+        // Prefer the Accessibility API. The AppleScript path also needs Automation — a second,
+        // separate TCC grant whose absence is invisible, because AppleScript swallows its own error
+        // and returns an empty title. That is the failure that cost several rounds of guessing.
+        let scripted_title = parts.next().unwrap_or_default().to_owned();
+        let title = pid
+            .and_then(|p| macos_ax::focused_window_title(p as i32))
+            .unwrap_or(scripted_title);
 
         if app_id.is_empty() {
             return None;
