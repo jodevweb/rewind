@@ -90,12 +90,23 @@ scripts/                Build gates, including the forbidden-API check
 
 ```bash
 pnpm install
-pnpm test                  # includes the redaction corpus — release-blocking
-pnpm typecheck
-pnpm lint
-pnpm check:forbidden-apis  # fails if a keyboard hook, clipboard read or screen capture appears
-pnpm check                 # all of the above
+
+pnpm dev        # REWIND Studio on http://localhost:5273
+pnpm capture    # capture this machine's real window activity (Ctrl-C to stop)
+pnpm eval       # score the context engine against the ten golden sessions
+
+pnpm check      # format + typecheck + tests + the forbidden-API gate
 ```
+
+**Seeing it work.** `pnpm dev` replays a golden session end to end — events become contexts,
+contexts become a Resume card with click-through citations. `pnpm capture` then feeds the same
+pipeline your _real_ window activity: it appears at the top of the session picker, marked `●`, and
+refreshes while you work. Titles are redacted before they are written, password managers and banking
+windows never become events at all, and `pnpm capture:clear` deletes the file.
+
+On macOS the capture probe reads window titles through the Accessibility API, so the first run also
+tells you whether that permission is granted — which is the product's hard dependency (ADR 0003 D-22).
+No Xcode, no Rust, no signing needed for any of this.
 
 Rust work needs the toolchain from [`CONTRIBUTING.md`](CONTRIBUTING.md) (ticket P1-000).
 
