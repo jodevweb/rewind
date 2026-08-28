@@ -79,10 +79,24 @@ So: **`jodevweb/rewind-dist` is public and holds only the built installers.** Si
 private repository; a write-scoped PAT for the dist repo lives there as the `DIST_TOKEN` secret.
 See ADR 0006.
 
-- `.github/workflows/ci.yml` — lint, typecheck, tests, privacy gates, Rust on macOS + Windows.
-- `.github/workflows/build.yml` — installers as artifacts, manual dispatch.
+- `.github/workflows/ci.yml` — lint, typecheck, tests, privacy gates. Linux for everything that
+  can run there, Windows for Rust, macOS only when macOS-specific files changed.
 - `.github/workflows/release.yml` — builds both platforms, assembles `latest.json`, publishes to
-  `rewind-dist`. Run it from the Actions tab with a version like `0.2.3`.
+  `rewind-dist`. Run it from the Actions tab with a version like `0.3.0`.
+
+There is no separate installer-build workflow. There was one, producing artifacts to download by
+hand; once in-app updates worked it was only a second way to spend macOS minutes.
+
+### Minutes are the real constraint
+
+Private repository, free tier: 2000 minutes a month, billed by a multiplier — Linux ×1, Windows ×2,
+**macOS ×10**. A six-minute macOS job costs sixty minutes of the allowance.
+
+A release builds both platforms and costs roughly **75 billed minutes**, so the month holds about
+twenty-five of them. Ordinary CI is now about 3. Before this was noticed, a single push cost about
+84 and the month was 90 % gone in a few days.
+
+**So: batch changes into one release rather than releasing each fix.**
 
 **macOS first install always needs this**, and it is in the release notes:
 
