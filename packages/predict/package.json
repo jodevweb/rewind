@@ -1,0 +1,21 @@
+{
+  "name": "@rewind/predict",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local, deterministic prediction over stored events. No model, no network, no API — every claim carries the evidence it was read from (ADR 0005 D-13).",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@rewind/engine-v0": "workspace:*",
+    "@rewind/fixtures": "workspace:*"
+  },
+  "devDependencies": {
+    "@rewind/config": "workspace:*",
+    "vitest": "^2.1.9"
+  }
+}
