@@ -464,7 +464,10 @@
       "metadata": {
         "agent": "claude-code",
         "toolCallCount": 14,
-        "filesTouched": ["src/staging/generate.ts", "src/staging/prompt.ts"],
+        "filesTouched": [
+          "src/staging/generate.ts",
+          "src/staging/prompt.ts"
+        ],
         "outcome": "in_progress"
       },
       "privacyLevel": "normal",
@@ -599,7 +602,10 @@
       },
       "repositoryId": "danim",
       "metadata": {
-        "lines": ["expected mask to cover 4 regions, got 3", "  at test/staging.test.ts:66:14"],
+        "lines": [
+          "expected mask to cover 4 regions, got 3",
+          "  at test/staging.test.ts:66:14"
+        ],
         "lineCount": 2,
         "truncated": false
       },
@@ -626,7 +632,9 @@
       "metadata": {
         "agent": "claude-code",
         "toolCallCount": 9,
-        "filesTouched": ["src/staging/mask.ts"],
+        "filesTouched": [
+          "src/staging/mask.ts"
+        ],
         "outcome": "in_progress"
       },
       "privacyLevel": "normal",

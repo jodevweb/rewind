@@ -547,7 +547,10 @@
       },
       "repositoryId": "myapp",
       "metadata": {
-        "lines": ["expected 4199 to be 4200", "  at test/checkout.total.test.ts:31:18"],
+        "lines": [
+          "expected 4199 to be 4200",
+          "  at test/checkout.total.test.ts:31:18"
+        ],
         "lineCount": 2,
         "truncated": false
       },
@@ -810,9 +813,14 @@
       },
       "repositoryId": "myapp",
       "metadata": {
-        "paths": ["C:/dev/myapp/src/money/decimal.ts", "C:/dev/myapp/src/checkout/tax.ts"],
+        "paths": [
+          "C:/dev/myapp/src/money/decimal.ts",
+          "C:/dev/myapp/src/checkout/tax.ts"
+        ],
         "count": 9,
-        "changeTypes": ["modified"]
+        "changeTypes": [
+          "modified"
+        ]
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -862,7 +870,10 @@
       },
       "repositoryId": "myapp",
       "metadata": {
-        "lines": ["expected 4201 to be 4200", "  at test/checkout.total.test.ts:31:18"],
+        "lines": [
+          "expected 4201 to be 4200",
+          "  at test/checkout.total.test.ts:31:18"
+        ],
         "lineCount": 2,
         "truncated": false
       },
@@ -2563,7 +2574,9 @@
       },
       "repositoryId": "dashboard",
       "metadata": {
-        "lines": ["Found multiple elements with the text: Create your first project"],
+        "lines": [
+          "Found multiple elements with the text: Create your first project"
+        ],
         "lineCount": 1,
         "truncated": false
       },
