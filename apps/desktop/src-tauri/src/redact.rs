@@ -14,8 +14,7 @@ use std::sync::OnceLock;
 use regex::{Regex, RegexBuilder};
 use serde::Deserialize;
 
-const REGISTRY_JSON: &str =
-    include_str!("../../../../packages/protocol/redaction/patterns.json");
+const REGISTRY_JSON: &str = include_str!("../../../../packages/protocol/redaction/patterns.json");
 
 #[derive(Deserialize)]
 struct Registry {
@@ -117,10 +116,8 @@ impl Redactor {
 mod tests {
     use super::*;
 
-    const POSITIVE: &str =
-        include_str!("../../../../packages/fixtures/redaction/positive.jsonl");
-    const NEGATIVE: &str =
-        include_str!("../../../../packages/fixtures/redaction/negative.jsonl");
+    const POSITIVE: &str = include_str!("../../../../packages/fixtures/redaction/positive.jsonl");
+    const NEGATIVE: &str = include_str!("../../../../packages/fixtures/redaction/negative.jsonl");
 
     #[derive(serde::Deserialize)]
     struct Positive {
@@ -157,7 +154,9 @@ mod tests {
         assert!(cases.len() >= 20, "the corpus should not be trivial");
 
         for case in cases {
-            let (text, stamp) = redactor.redact(&case.text).expect("redaction must not fail");
+            let (text, stamp) = redactor
+                .redact(&case.text)
+                .expect("redaction must not fail");
             assert!(
                 !text.contains(&case.must_not_contain),
                 "{}: the secret survived: {text}",
@@ -179,7 +178,9 @@ mod tests {
     fn evidence_survives_redaction() {
         let redactor = Redactor::shared();
         for case in lines::<Negative>(NEGATIVE) {
-            let (text, _) = redactor.redact(&case.text).expect("redaction must not fail");
+            let (text, _) = redactor
+                .redact(&case.text)
+                .expect("redaction must not fail");
             assert!(
                 text.contains(&case.must_survive),
                 "{}: {} — lost {:?} from {text}",
@@ -200,7 +201,11 @@ mod tests {
             "((((((((((((((((((((",
             &"💥".repeat(1000),
         ] {
-            assert!(redactor.redact(input).is_some(), "must not fail on {:?}", &input[..input.len().min(20)]);
+            assert!(
+                redactor.redact(input).is_some(),
+                "must not fail on {:?}",
+                &input[..input.len().min(20)]
+            );
         }
     }
 
