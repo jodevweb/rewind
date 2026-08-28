@@ -53,6 +53,9 @@ for (const d of descriptors) {
 
 const manifest = {
   version,
+  // The application shows the first line of this in the update banner. An empty banner reads as a
+  // glitch rather than an offer.
+  notes: `REWIND ${version}`,
   pub_date: new Date().toISOString(),
   platforms,
 };
