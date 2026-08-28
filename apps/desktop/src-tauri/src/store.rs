@@ -130,11 +130,11 @@ impl Store {
             .prepare("SELECT 1 FROM pragma_table_info('events') WHERE name = 'metadata'")?
             .exists([])?;
         if !has_metadata {
+            const ADD_METADATA: &str =
+                "ALTER TABLE events ADD COLUMN metadata TEXT NOT NULL DEFAULT '{}'";
             // Check-then-act is not atomic across connections, so losing the race is expected and
             // harmless: the column exists either way. Only a different failure is worth surfacing.
-            if let Err(err) =
-                conn.execute_batch("ALTER TABLE events ADD COLUMN metadata TEXT NOT NULL DEFAULT '{}'")
-            {
+            if let Err(err) = conn.execute_batch(ADD_METADATA) {
                 if !err.to_string().contains("duplicate column name") {
                     return Err(err);
                 }

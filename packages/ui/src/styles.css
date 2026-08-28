@@ -92,10 +92,21 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+html,
+body,
+#root {
+  height: 100%;
+}
+
 .app {
   max-width: 1680px;
+  height: 100%;
   margin: 0 auto;
-  padding: 18px 26px 56px;
+  padding: 14px 22px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
 }
 
 /* ── Top bar ─────────────────────────────────────────────────────────── */
@@ -272,10 +283,61 @@ body {
 /* ── Layout ──────────────────────────────────────────────────────────── */
 
 main {
+  flex: 1;
   display: grid;
   grid-template-columns: minmax(300px, 0.95fr) minmax(340px, 1.05fr) minmax(360px, 1.2fr);
   gap: 18px;
-  align-items: start;
+  align-items: stretch;
+  /* Without this a grid track refuses to shrink below its content, and the columns push the page
+     into a scrollbar instead of scrolling themselves. */
+  min-height: 0;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.col-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin: 0 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.col-note {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+
+.col-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-2) transparent;
+}
+
+.col-body::-webkit-scrollbar {
+  width: 9px;
+}
+
+.col-body::-webkit-scrollbar-thumb {
+  background: var(--line-2);
+  border-radius: 5px;
 }
 
 @media (max-width: 1240px) {
@@ -672,11 +734,27 @@ button.ghost:hover {
 /* ── Timeline ────────────────────────────────────────────────────────── */
 
 .timeline {
-  max-height: calc(100vh - 190px);
-  overflow-y: auto;
-  padding-right: 6px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--line-2) transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* The hour is the only date-like heading a day of capture needs. Minute-by-minute headings were a
+   tree nobody could read. */
+.tl-hour {
+  position: sticky;
+  top: -1px;
+  z-index: 1;
+  margin: 10px 0 6px;
+  padding: 3px 0;
+  background: var(--bg);
+  font: 600 10.5px/1 var(--sans);
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+
+.tl-hour:first-child {
+  margin-top: 0;
 }
 
 .tl-block {
@@ -943,4 +1021,155 @@ button.ghost:hover {
 
 .banner.update button {
   margin-left: auto;
+}
+
+/* ── Drill-down ──────────────────────────────────────────────────────── */
+
+/* Every event row is a button. Seeing that you edited a file matters much less than being able to
+   open it, and that only works if the whole row is the target. */
+.tl-row {
+  display: contents;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tl-events li,
+.loose-list li {
+  transition: background 0.12s ease;
+}
+
+.tl-events li:has(.tl-row:focus-visible),
+.loose-list li:has(.tl-row:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* Returning to the same window eleven times is one line saying eleven. */
+.tl-count {
+  justify-self: end;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--line);
+  color: var(--muted);
+  font: 600 10.5px/1.5 var(--mono);
+}
+
+.tl-events li,
+.loose-list li {
+  grid-template-columns: 18px 38px 1fr auto;
+}
+
+.tl-events li.cited,
+.loose-list li.cited {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.disclosure {
+  align-self: flex-start;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  background: var(--panel);
+  color: var(--muted);
+  font: 600 11px/1 var(--sans);
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+.disclosure:hover {
+  color: var(--text);
+  border-color: var(--line-2);
+}
+
+.disclosure.flush {
+  border: 0;
+  background: none;
+  padding: 0;
+}
+
+.detail {
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: var(--text);
+}
+
+.detail-title {
+  margin: 2px 0 10px;
+  color: var(--muted);
+  font-size: 12.5px;
+  overflow-wrap: anywhere;
+}
+
+.kv {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 3px 14px;
+  margin: 12px 0 0;
+  font-size: 12px;
+}
+
+.kv > div {
+  display: contents;
+}
+
+.kv dt {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.kv dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.link {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.cite {
+  margin-left: 8px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 1px 6px;
+  background: none;
+  color: var(--muted);
+  font-size: 10.5px;
+  cursor: pointer;
+}
+
+.cite:hover {
+  color: var(--text);
 }

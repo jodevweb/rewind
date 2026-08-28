@@ -14,7 +14,15 @@ import { check as checkForUpdate, type Update } from '@tauri-apps/plugin-updater
 import { relaunch } from '@tauri-apps/plugin-process';
 
 import type { GoldenSession } from '@rewind/fixtures/authoring';
-import { getLocale, setLocale, t, tPlural, Workspace, type Locale } from '@rewind/ui';
+import {
+  getLocale,
+  setLocale,
+  t,
+  tPlural,
+  Workspace,
+  type Locale,
+  type WorkspaceActions,
+} from '@rewind/ui';
 import { runEngine } from '@rewind/engine-v0';
 import '@rewind/ui/styles.css';
 
@@ -127,7 +135,7 @@ export function App() {
     try {
       const [s, e] = await Promise.all([
         invoke<CaptureStatus>('capture_status'),
-        invoke<DaemonEvent[]>('recent_events', { limit: 400 }),
+        invoke<DaemonEvent[]>('recent_events', { limit: 5000 }),
       ]);
       setStatus(s);
       setEvents(e);
@@ -173,6 +181,17 @@ export function App() {
   const contextCount = useMemo(
     () => (session.events.length > 0 ? runEngine(session).contexts.length : 0),
     [session],
+  );
+
+  // Opening is what makes the interface an explorer rather than a log. The daemon does the opening:
+  // it is the only side that can check the target is a real path or an http(s) URL before handing it
+  // to the system, and it never goes through a shell.
+  const actions: WorkspaceActions = useMemo(
+    () => ({
+      open: (target) => void invoke('open_target', { target }).catch(setError),
+      reveal: (target) => void invoke('reveal_target', { target }).catch(setError),
+    }),
+    [],
   );
 
   const setPaused = async (minutes: number | null) => {
@@ -261,7 +280,7 @@ export function App() {
 
       {error && <div className="banner warn">{error}</div>}
 
-      <Workspace session={session} emptyMessage={t('app.empty')} />
+      <Workspace session={session} emptyMessage={t('app.empty')} actions={actions} />
 
       {status && (
         <footer className="diag">
