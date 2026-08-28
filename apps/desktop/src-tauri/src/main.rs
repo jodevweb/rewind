@@ -20,7 +20,7 @@ mod platform;
 use std::sync::Arc;
 
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem, Submenu};
-use tauri::tray::TrayIconBuilder;
+use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{AppHandle, Manager, State, WindowEvent};
 
 use capture::{Capture, CaptureStatus, FocusEvent};
@@ -62,9 +62,15 @@ fn refresh_tray(app: &AppHandle, status: &CaptureStatus) {
 }
 
 fn show_window(app: &AppHandle) {
-    if let Some(window) = app.get_webview_window("main") {
-        let _ = window.show();
-        let _ = window.set_focus();
+    match app.get_webview_window("main") {
+        Some(window) => {
+            let _ = window.show();
+            let _ = window.unminimize();
+            let _ = window.set_focus();
+        }
+        // A menu item that silently does nothing is how ten minutes get lost. If the label ever
+        // stops matching the config, this says so.
+        None => eprintln!("REWIND: no webview window labelled \"main\" — check tauri.conf.json"),
     }
 }
 
@@ -110,7 +116,20 @@ fn build_tray(app: &AppHandle) -> tauri::Result<()> {
         )
         .tooltip("REWIND — ● Enregistrement")
         .menu(&menu)
-        .show_menu_on_left_click(false)
+        // Left click opens the menu. It was disabled with nothing handling the click instead, so
+        // clicking the icon did nothing at all — the app was running and unreachable.
+        .show_menu_on_left_click(true)
+        .on_tray_icon_event(|tray, event| {
+            // Windows convention: a double click opens the window directly.
+            if let TrayIconEvent::DoubleClick {
+                button: MouseButton::Left,
+                button_state: MouseButtonState::Up,
+                ..
+            } = event
+            {
+                show_window(tray.app_handle());
+            }
+        })
         .on_menu_event(|app, event| {
             let state = app.state::<AppState>();
             match event.id().as_ref() {
