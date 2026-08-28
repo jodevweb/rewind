@@ -7,7 +7,8 @@
   "scripts": {
     "capture": "tsx src/probe.ts",
     "capture:clear": "tsx src/probe.ts --clear",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "capture:where": "tsx src/probe.ts --where"
   },
   "dependencies": {
     "@rewind/protocol": "workspace:*"

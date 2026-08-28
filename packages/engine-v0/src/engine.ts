@@ -35,6 +35,11 @@ export interface EngineContext {
   appChain: string[];
   anchors: Anchor[];
   confidence: number;
+  /**
+   * True when no anchor was good enough to name the context, so `label` is a placeholder the UI
+   * should replace with a translated one. The engine has no business inventing prose (§147).
+   */
+  labelIsFallback: boolean;
 }
 
 export interface EngineResult {
@@ -317,6 +322,7 @@ export function runEngine(
         appChain: [],
         anchors: [],
         confidence: 0,
+        labelIsFallback: false,
       };
       contexts.push(created);
       attach(created, activity, byRef);
@@ -367,7 +373,9 @@ export function runEngine(
   });
 
   for (const c of kept) {
-    c.label = labelContext(c);
+    const named = namedFrom(c);
+    c.label = named ?? c.appChain[0] ?? '';
+    c.labelIsFallback = named === null;
     c.confidence = confidenceOf(c);
   }
   kept.sort((a, b) => b.activeMs - a.activeMs);
@@ -402,7 +410,8 @@ function absorb(into: EngineContext, other: EngineContext): void {
   for (const app of other.appChain) if (!into.appChain.includes(app)) into.appChain.push(app);
 }
 
-function labelContext(c: EngineContext): string {
+/** Returns a real name, or null when nothing in the context is distinctive enough to name it. */
+function namedFrom(c: EngineContext): string | null {
   const byConfidence = [...c.anchors].sort((a, b) => b.confidence - a.confidence);
   const issue = byConfidence.find((a) => a.type === 'issue');
   const project = byConfidence.find((a) => a.type === 'project');
@@ -420,7 +429,7 @@ function labelContext(c: EngineContext): string {
   if (issue && subject) return `${pretty(subject.value)} (${issue.value})`;
   if (issue) return issue.value;
   if (subject) return pretty(subject.value);
-  return `Work — ${c.appChain[0] ?? 'System'}`;
+  return null;
 }
 
 function confidenceOf(c: EngineContext): number {
