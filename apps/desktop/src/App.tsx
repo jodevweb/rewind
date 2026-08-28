@@ -32,10 +32,14 @@ interface DaemonEvent {
   timestamp: number;
   endTimestamp: number | null;
   tzOffsetMinutes: number;
+  source: string;
+  type: string;
   appId: string;
   appDisplay: string;
   title: string;
   pid: number | null;
+  /** JSON. Opaque to the daemon, meaningful to the engine — anchors live in here. */
+  metadata: string;
   redactionVersion: string;
   redactionApplied: string[];
   redactionCount: number;
@@ -59,6 +63,15 @@ const PAUSES = [
  * widening either keeps the daemon small and the engine platform-agnostic — and it is the seam the
  * Rust port replaces, since the engine will eventually consume these events directly.
  */
+function parseMetadata(raw: string): Record<string, unknown> {
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : {};
+  } catch {
+    return {};
+  }
+}
+
 function toSession(events: DaemonEvent[]): GoldenSession {
   const tz = -new Date().getTimezoneOffset();
   const ordered = [...events].sort((a, b) => a.timestamp - b.timestamp);
@@ -76,13 +89,19 @@ function toSession(events: DaemonEvent[]): GoldenSession {
       timestamp: e.timestamp,
       ...(e.endTimestamp !== null ? { endTimestamp: e.endTimestamp } : {}),
       tzOffsetMinutes: tz,
-      source: 'system' as const,
-      type: 'system.window.focus',
+      source: e.source as 'system',
+      type: e.type,
       producer: { name: 'rewind-daemon', version: '0.1.0' },
       app: e.appId,
       appDisplay: e.appDisplay,
       title: e.title,
-      metadata: { bundleId: e.appId, ...(e.pid !== null ? { pid: e.pid } : {}) },
+      metadata: {
+        bundleId: e.appId,
+        ...(e.pid !== null ? { pid: e.pid } : {}),
+        // The daemon keeps the payload opaque; parsing it here is what turns a Claude session into
+        // anchors the engine can group on. A malformed payload must not take the timeline with it.
+        ...parseMetadata(e.metadata),
+      },
       privacyLevel: 'normal' as const,
       redaction: {
         patternsVersion: e.redactionVersion,

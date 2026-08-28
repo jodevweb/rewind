@@ -19,7 +19,7 @@ use crate::platform::{
     ActiveWindowProvider, IdleProvider, PlatformActiveWindow, PlatformIdle, TitleAccess,
 };
 use crate::redact::Redactor;
-use crate::store::{work_day, Store};
+use crate::store::{work_day, Event, Store};
 
 pub fn now_ms() -> u64 {
     SystemTime::now()
@@ -28,7 +28,7 @@ pub fn now_ms() -> u64 {
         .unwrap_or(0)
 }
 
-fn local_offset_minutes() -> i32 {
+pub fn local_offset_minutes() -> i32 {
     // Tauri targets have a system timezone; deriving the offset from the difference between local
     // and UTC formatting is more portable here than pulling in a date library for one number.
     let now = SystemTime::now()
@@ -78,24 +78,6 @@ fn parse_offset(text: &str) -> Option<i64> {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct FocusEvent {
-    pub timestamp: u64,
-    pub end_timestamp: Option<u64>,
-    pub tz_offset_minutes: i32,
-    pub app_id: String,
-    pub app_display: String,
-    /// Redacted before it ever reaches this struct.
-    pub title: String,
-    pub pid: Option<u32>,
-    pub redaction_version: String,
-    /// Detector ids that fired. Never the matched values.
-    pub redaction_applied: Vec<String>,
-    pub redaction_count: usize,
-    pub importance: i64,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
 pub struct CaptureStatus {
     pub recording: bool,
     pub paused_until: Option<u64>,
@@ -114,11 +96,11 @@ pub struct Capture {
     paused_until: AtomicU64,
     title_access: Mutex<TitleAccess>,
     diagnostics: Mutex<String>,
-    store: Store,
+    store: Arc<Store>,
 }
 
 impl Capture {
-    pub fn new(store: Store) -> Self {
+    pub fn new(store: Arc<Store>) -> Self {
         Self {
             recording: AtomicBool::new(true),
             paused_until: AtomicU64::new(0),
@@ -193,7 +175,7 @@ impl Capture {
         }
     }
 
-    pub fn recent(&self, limit: usize) -> Vec<FocusEvent> {
+    pub fn recent(&self, limit: usize) -> Vec<Event> {
         self.store.recent(limit).unwrap_or_default()
     }
 }
@@ -265,14 +247,17 @@ pub fn spawn(capture: Arc<Capture>) {
             };
 
             let tz = local_offset_minutes();
-            let event = FocusEvent {
+            let event = Event {
                 timestamp: ts,
                 end_timestamp: None,
                 tz_offset_minutes: tz,
+                source: "system".to_owned(),
+                kind: "system.window.focus".to_owned(),
                 app_id: snapshot.app_id,
                 app_display: snapshot.app_display,
                 title,
                 pid: snapshot.pid,
+                metadata: "{}".to_owned(),
                 redaction_version: stamp.patterns_version,
                 redaction_applied: stamp.applied,
                 redaction_count: stamp.count,
@@ -309,7 +294,7 @@ mod tests {
     use super::*;
 
     fn capture() -> Capture {
-        Capture::new(Store::open().expect("store"))
+        Capture::new(Arc::new(Store::open().expect("store")))
     }
 
     #[test]
