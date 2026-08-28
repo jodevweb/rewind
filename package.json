@@ -8,14 +8,14 @@
     "node": ">=22"
   },
   "scripts": {
-    "app": "pnpm --filter @rewind/desktop dev",
-    "app:build": "pnpm --filter @rewind/desktop build",
-    "dev": "pnpm --filter @rewind/studio dev",
+    "dev": "pnpm --filter @rewind/desktop dev",
+    "build": "pnpm --filter @rewind/desktop build",
+    "studio": "pnpm --filter @rewind/studio dev",
     "capture": "pnpm --filter @rewind/capture-probe capture",
     "capture:where": "pnpm --filter @rewind/capture-probe capture:where",
     "capture:clear": "pnpm --filter @rewind/capture-probe capture:clear",
     "eval": "pnpm --filter @rewind/eval eval",
-    "build": "turbo run build",
+    "build:all": "turbo run build",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "lint": "prettier --check .",

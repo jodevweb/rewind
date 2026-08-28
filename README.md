@@ -90,23 +90,41 @@ scripts/                Build gates, including the forbidden-API check
 
 ```bash
 pnpm install
-
-pnpm dev        # REWIND Studio on http://localhost:5273
-pnpm capture    # capture this machine's real window activity (Ctrl-C to stop)
-pnpm eval       # score the context engine against the ten golden sessions
-
-pnpm check      # format + typecheck + tests + the forbidden-API gate
+pnpm dev          # launches REWIND — the application
 ```
 
-**Seeing it work.** `pnpm dev` replays a golden session end to end — events become contexts,
-contexts become a Resume card with click-through citations. `pnpm capture` then feeds the same
-pipeline your _real_ window activity: it appears at the top of the session picker, marked `●`, and
-refreshes while you work. Titles are redacted before they are written, password managers and banking
-windows never become events at all, and `pnpm capture:clear` deletes the file.
+**`pnpm dev` builds and runs the desktop app**, which needs a Rust toolchain the first time:
 
-On macOS the capture probe reads window titles through the Accessibility API, so the first run also
-tells you whether that permission is granted — which is the product's hard dependency (ADR 0003 D-22).
-No Xcode, no Rust, no signing needed for any of this.
+```bash
+# macOS
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+xcode-select --install
+
+# Windows
+winget install Rustlang.Rustup
+winget install Microsoft.VisualStudio.2022.BuildTools --override "--quiet --wait --add Microsoft.VisualStudio.Workload.VCTools"
+```
+
+The first build compiles a few hundred crates and takes several minutes. After that it is seconds.
+
+REWIND then lives in the tray or menu bar. **Capture runs from launch — there is nothing to start.**
+The tray shows `● Recording` or `⏸ Paused` at all times, and pausing is how you stop it (§7, §84).
+
+On macOS the first run asks for Accessibility. Without it REWIND sees which application is active but
+not its window titles, and the titles are most of the signal — so the window says so rather than
+pretending. REWIND takes no screenshots and never requests Screen Recording.
+
+### The development harness
+
+```bash
+pnpm studio       # replay golden sessions through the engine, at localhost:5273
+pnpm eval         # score the context engine against the ten golden sessions
+pnpm check        # format + typecheck + tests + the forbidden-API gate
+```
+
+`pnpm studio` is a **web page and a development tool**, not the product — a browser cannot control
+capture without the localhost HTTP server ADR 0001 D-5 forbids. It exists to develop the context
+engine against fixtures, and to see the engine's reasoning next to the ground truth.
 
 Rust work needs the toolchain from [`CONTRIBUTING.md`](CONTRIBUTING.md) (ticket P1-000).
 
