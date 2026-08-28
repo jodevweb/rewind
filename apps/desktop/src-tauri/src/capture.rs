@@ -78,6 +78,12 @@ fn parse_offset(text: &str) -> Option<i64> {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
+/// This application, so the capture loop can skip its own window.
+///
+/// Kept in step with `identifier` in tauri.conf.json by a test below, because a silent mismatch
+/// here would quietly reintroduce the very noise this exists to remove.
+const SELF_BUNDLE_ID: &str = "com.danim.rewind";
+
 pub struct CaptureStatus {
     pub recording: bool,
     pub paused_until: Option<u64>,
@@ -210,6 +216,21 @@ pub fn spawn(capture: Arc<Capture>) {
             *capture.title_access.lock().expect("title access") = window.title_access();
             *capture.diagnostics.lock().expect("diagnostics") = window.diagnostics();
 
+            // Never record REWIND looking at itself.
+            //
+            // Opening the window to read your own day is not part of your day, and recording it
+            // makes the tool the subject of everything it observes: contexts named after this
+            // application, an application chain that always begins with it, and time attributed
+            // to consulting rather than to working. The more useful the window is, the more it
+            // corrupts what it shows — which is the worst shape a measurement error can take.
+            //
+            // The open span is left alone. Reading your history for a minute is an excursion
+            // from what you were doing, not the end of it, and closing the span here would cut
+            // a piece of work in two every time you glanced at the window.
+            if snapshot.app_id == SELF_BUNDLE_ID {
+                continue;
+            }
+
             let key = format!("{}|{}", snapshot.app_id, stable_title(&snapshot.title));
             if key == last_key {
                 continue;
@@ -291,6 +312,20 @@ fn stable_title(title: &str) -> String {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn the_self_bundle_id_matches_the_manifest() {
+        // A hardcoded identifier that drifts from tauri.conf.json fails silently: capture simply
+        // starts recording this application again, and the noise looks like a regression in the
+        // engine rather than a stale constant.
+        let manifest = include_str!("../tauri.conf.json");
+        let needle = format!("\"identifier\": \"{}\"", super::SELF_BUNDLE_ID);
+        assert!(
+            manifest.contains(&needle),
+            "SELF_BUNDLE_ID is {} but tauri.conf.json says otherwise",
+            super::SELF_BUNDLE_ID
+        );
+    }
+
     use super::*;
 
     /// A store of its own, in a temporary directory. A test must never touch the user's database.
