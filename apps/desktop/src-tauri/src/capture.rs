@@ -248,9 +248,8 @@ pub fn spawn(capture: Arc<Capture>) {
             // computed (§69), not by dropping events.
             let _ = idle.idle();
 
-            if snapshot.title.trim().is_empty() {
-                continue;
-            }
+            // A titleless event is still an event: without Accessibility the application name is
+            // all there is, and showing that beats showing nothing (ADR 0003 D-22).
 
             // Fail closed. If redaction cannot complete, the event is dropped — never stored.
             let Some((title, stamp)) = redactor.redact(&snapshot.title) else {
