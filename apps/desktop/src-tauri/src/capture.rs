@@ -185,7 +185,9 @@ pub fn spawn(capture: Arc<Capture>) {
                 title: snapshot.title,
                 pid: snapshot.pid,
             });
-            capture.events_today.store(events.len() as u64, Ordering::Relaxed);
+            capture
+                .events_today
+                .store(events.len() as u64, Ordering::Relaxed);
         }
     });
 }
@@ -212,7 +214,10 @@ mod tests {
         assert!(capture.is_recording());
 
         capture.pause(0);
-        assert!(!capture.is_recording(), "an indefinite pause must not expire");
+        assert!(
+            !capture.is_recording(),
+            "an indefinite pause must not expire"
+        );
 
         capture.resume();
         assert!(capture.is_recording());
