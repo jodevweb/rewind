@@ -1283,3 +1283,12 @@ button.ghost:hover {
   font-size: 10px;
   white-space: nowrap;
 }
+
+/* Flex children shrink by default, and a scrolling flex column is exactly where that goes wrong:
+   instead of overflowing so the column can scroll, every card is squeezed until the whole day fits.
+   Cards showed a quarter of their content and everything below the fold was compressed to nothing —
+   which is why the forecast panels looked absent rather than short. */
+.col-body > *,
+.timeline > * {
+  flex: 0 0 auto;
+}
