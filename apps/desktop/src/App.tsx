@@ -12,6 +12,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { check as checkForUpdate, type Update } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
+import { getVersion } from '@tauri-apps/api/app';
 
 import type { GoldenSession } from '@rewind/fixtures/authoring';
 import {
@@ -130,6 +131,19 @@ export function App() {
   const [, forceRender] = useState(0);
   const [update, setUpdate] = useState<Update | null>(null);
   const [updating, setUpdating] = useState(false);
+  const [version, setVersion] = useState('');
+  /**
+   * What the last update check did.
+   *
+   * It used to swallow every failure, on the reasoning that no network and no release yet are both
+   * normal. That reasoning is right and the conclusion was wrong: it also swallowed a permission
+   * error that made the check fail every single time, and an application that never finds an update
+   * looks exactly like one that is up to date. Whatever happened is now written down and shown.
+   */
+  const [checkState, setCheckState] = useState<
+    | { status: 'never' | 'checking' | 'clean' | 'found'; at?: number }
+    | { status: 'error'; reason: string }
+  >({ status: 'never' });
 
   const refresh = useCallback(async () => {
     try {
@@ -151,19 +165,30 @@ export function App() {
     return () => clearInterval(timer);
   }, [refresh]);
 
-  // Check for an update on launch, then hourly. Offered, never applied on its own: an application
-  // that restarts itself while you are working is a worse problem than a stale version.
+  // Offered, never applied on its own: an application that restarts itself while you are working is
+  // a worse problem than a stale version.
+  const checkNow = useCallback(async () => {
+    setCheckState({ status: 'checking' });
+    try {
+      const found = await checkForUpdate();
+      setUpdate(found ?? null);
+      setCheckState({ status: found ? 'found' : 'clean', at: Date.now() });
+    } catch (err) {
+      setCheckState({ status: 'error', reason: String(err) });
+    }
+  }, []);
+
   useEffect(() => {
-    const look = () =>
-      checkForUpdate()
-        .then((found) => setUpdate(found ?? null))
-        .catch(() => {
-          // No network, no release yet, or a signature that does not verify. None of those are
-          // worth interrupting anyone over.
-        });
-    void look();
-    const timer = setInterval(() => void look(), 3_600_000);
+    void checkNow();
+    const timer = setInterval(() => void checkNow(), 3_600_000);
     return () => clearInterval(timer);
+  }, [checkNow]);
+
+  // The running version, so "am I on the new one?" is answerable by looking.
+  useEffect(() => {
+    getVersion()
+      .then(setVersion)
+      .catch(() => setVersion(''));
   }, []);
 
   const applyUpdate = async () => {
@@ -209,6 +234,7 @@ export function App() {
         <div className="brand">
           <span className={`pulse ${status?.recording ? '' : 'paused'}`} aria-hidden />
           <span className="wordmark">REWIND</span>
+          {version && <span className="version">{version}</span>}
           <span className="sub">
             {status?.recording
               ? t('app.recording')
@@ -244,6 +270,14 @@ export function App() {
             </span>
           )}
         </div>
+
+        <button
+          className="ghost"
+          disabled={checkState.status === 'checking'}
+          onClick={() => void checkNow()}
+        >
+          {checkState.status === 'checking' ? t('update.checking') : t('update.check')}
+        </button>
 
         <div className="locale">
           {(['fr', 'en'] as Locale[]).map((l) => (
@@ -298,6 +332,16 @@ export function App() {
           <span>·</span>
           <span className="mono" title={status.storePath}>
             {status.eventsTotal} {t('header.kept')}
+          </span>
+          <span>·</span>
+          <span className={checkState.status === 'error' ? 'diag-bad' : undefined}>
+            {checkState.status === 'error'
+              ? `${t('update.failed')} ${checkState.reason}`
+              : checkState.status === 'checking'
+                ? t('update.checking')
+                : checkState.status === 'never'
+                  ? t('update.never')
+                  : `${checkState.status === 'found' ? '' : `${t('update.upToDate')} · `}${t('update.lastCheck')} ${clock(checkState.at ?? Date.now())}`}
           </span>
         </footer>
       )}
