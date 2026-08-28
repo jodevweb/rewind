@@ -515,6 +515,27 @@ function EventDetail({
   );
 }
 
+/**
+ * Where the work happened: repository, branch, declared project.
+ *
+ * Under the name, never in it. These used to BE the name — a context called "Importer.Ts" or
+ * "Travail dans rewind-desktop" told you where you were and never what you were doing.
+ */
+function Place({ place }: { place: EngineContext['place'] }) {
+  const parts = [place.project, place.repository, place.branch].filter(Boolean) as string[];
+  if (parts.length === 0) return null;
+  return (
+    <div className="place">
+      {parts.map((p, i) => (
+        <span key={p}>
+          {i > 0 && <span className="sep">·</span>}
+          <span className="mono">{p}</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export function AppChain({ apps }: { apps: string[] }) {
   const shown = apps.slice(0, 6);
   return (
@@ -550,6 +571,7 @@ function ContextCard({
         </span>
         <span className="ctx-dur">{formatDuration(context.activeMs)}</span>
       </div>
+      <Place place={context.place} />
       <AppChain apps={context.appChain} />
       <div className="ctx-foot">
         {context.eventRefs.length} {t('header.events')} · {t('today.confidence')}{' '}
