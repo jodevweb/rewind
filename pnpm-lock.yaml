@@ -29,6 +29,19 @@ importers:
 
   apps/browser-extension: {}
 
+  apps/capture-probe:
+    dependencies:
+      '@rewind/protocol':
+        specifier: workspace:*
+        version: link:../../packages/protocol
+    devDependencies:
+      '@rewind/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      tsx:
+        specifier: ^4.19.2
+        version: 4.23.12
+
   apps/desktop: {}
 
   apps/native-host: {}
