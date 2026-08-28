@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "tauri dev",
     "build": "tauri build",
-    "vite": "vite --port 5274",
+    "frontend:dev": "vite --port 5274",
+    "frontend:build": "vite build",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
