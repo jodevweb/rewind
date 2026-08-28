@@ -14,7 +14,8 @@
     "@rewind/engine-v0": "workspace:*",
     "@rewind/fixtures": "workspace:*",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "@rewind/ui": "workspace:*"
   },
   "devDependencies": {
     "@rewind/config": "workspace:*",

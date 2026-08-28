@@ -3,13 +3,26 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Design system components and tokens (ticket P1-006).",
+  "description": "The product's interface: Today, Resume and Timeline, plus the design tokens and i18n. Shared by the desktop application and the studio so there is one interface, not two.",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles.css"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@rewind/engine-v0": "workspace:*",
+    "@rewind/fixtures": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
   "devDependencies": {
-    "@rewind/config": "workspace:*"
+    "@rewind/config": "workspace:*",
+    "@types/react": "^19.0.2",
+    "react": "^19.0.0"
   }
 }

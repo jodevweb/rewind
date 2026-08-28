@@ -44,6 +44,15 @@ importers:
 
   apps/desktop:
     dependencies:
+      '@rewind/engine-v0':
+        specifier: workspace:*
+        version: link:../../packages/engine-v0
+      '@rewind/fixtures':
+        specifier: workspace:*
+        version: link:../../packages/fixtures
+      '@rewind/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@tauri-apps/api':
         specifier: ^2.1.1
         version: 2.11.1
@@ -85,6 +94,9 @@ importers:
       '@rewind/fixtures':
         specifier: workspace:*
         version: link:../../packages/fixtures
+      '@rewind/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       react:
         specifier: ^19.0.0
         version: 19.2.8
@@ -163,10 +175,23 @@ importers:
         version: link:../config
 
   packages/ui:
+    dependencies:
+      '@rewind/engine-v0':
+        specifier: workspace:*
+        version: link:../engine-v0
+      '@rewind/fixtures':
+        specifier: workspace:*
+        version: link:../fixtures
     devDependencies:
       '@rewind/config':
         specifier: workspace:*
         version: link:../config
+      '@types/react':
+        specifier: ^19.0.2
+        version: 19.2.18
+      react:
+        specifier: ^19.0.0
+        version: 19.2.8
 
 packages:
 

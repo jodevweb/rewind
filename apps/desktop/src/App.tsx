@@ -1,16 +1,20 @@
 /**
  * REWIND — the desktop window.
  *
- * Deliberately small for the first Rust commit. Its job is to prove the chain end to end: the daemon
- * captures continuously, the tray reflects it, the window shows it, and pause actually stops capture
- * at the source.
+ * The same interface the studio renders, on real events from the daemon. It was a bare event list
+ * for one commit while the real interface lived only in the studio; that gap is closed.
  *
- * There is no start button, and there will not be one. Capture runs from launch and the user pauses
- * (§7, §84) — the studio's `pnpm capture` was the wrong model, and this is the correction.
+ * There is no start button and there will not be one. Capture runs from launch and you pause it
+ * (§7, §84).
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
+
+import type { GoldenSession } from '@rewind/fixtures/authoring';
+import { getLocale, setLocale, t, tPlural, Workspace, type Locale } from '@rewind/ui';
+import { runEngine } from '@rewind/engine-v0';
+import '@rewind/ui/styles.css';
 
 interface CaptureStatus {
   recording: boolean;
@@ -20,7 +24,7 @@ interface CaptureStatus {
   platform: 'macos' | 'windows' | 'other';
 }
 
-interface FocusEvent {
+interface DaemonEvent {
   timestamp: number;
   endTimestamp: number | null;
   appId: string;
@@ -32,23 +36,62 @@ interface FocusEvent {
 const clock = (ms: number) =>
   new Date(ms).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
-const PAUSES: { label: string; minutes: number }[] = [
+const PAUSES = [
   { label: '5 min', minutes: 5 },
   { label: '30 min', minutes: 30 },
   { label: '1 h', minutes: 60 },
   { label: "Jusqu'à reprise", minutes: 0 },
 ];
 
+/**
+ * Adapt the daemon's focus events into the session shape the engine consumes.
+ *
+ * The daemon speaks a narrow struct; the engine speaks the event model. Converting here rather than
+ * widening either keeps the daemon small and the engine platform-agnostic — and it is the seam the
+ * Rust port replaces, since the engine will eventually consume these events directly.
+ */
+function toSession(events: DaemonEvent[]): GoldenSession {
+  const tz = -new Date().getTimezoneOffset();
+  const ordered = [...events].sort((a, b) => a.timestamp - b.timestamp);
+  return {
+    id: 'live',
+    name: 'Aujourd’hui',
+    description: 'Activité capturée sur cette machine.',
+    tests: '',
+    day: new Date().toISOString().slice(0, 10),
+    tzOffsetMinutes: tz,
+    expected: { contextCount: 0, contexts: [], noiseEventRefs: [] },
+    events: ordered.map((e, i) => ({
+      id: `live-${i}`,
+      ref: `live-${String(i).padStart(5, '0')}`,
+      timestamp: e.timestamp,
+      ...(e.endTimestamp !== null ? { endTimestamp: e.endTimestamp } : {}),
+      tzOffsetMinutes: tz,
+      source: 'system' as const,
+      type: 'system.window.focus',
+      producer: { name: 'rewind-daemon', version: '0.1.0' },
+      app: e.appId,
+      appDisplay: e.appDisplay,
+      title: e.title,
+      metadata: { bundleId: e.appId, ...(e.pid !== null ? { pid: e.pid } : {}) },
+      privacyLevel: 'normal' as const,
+      redaction: { patternsVersion: '1.0.1', applied: [], count: 0 },
+      importance: 30,
+    })),
+  };
+}
+
 export function App() {
   const [status, setStatus] = useState<CaptureStatus | null>(null);
-  const [events, setEvents] = useState<FocusEvent[]>([]);
+  const [events, setEvents] = useState<DaemonEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [, forceRender] = useState(0);
 
   const refresh = useCallback(async () => {
     try {
       const [s, e] = await Promise.all([
         invoke<CaptureStatus>('capture_status'),
-        invoke<FocusEvent[]>('recent_events', { limit: 60 }),
+        invoke<DaemonEvent[]>('recent_events', { limit: 400 }),
       ]);
       setStatus(s);
       setEvents(e);
@@ -60,34 +103,39 @@ export function App() {
 
   useEffect(() => {
     void refresh();
-    const timer = setInterval(() => void refresh(), 2000);
+    const timer = setInterval(() => void refresh(), 3000);
     return () => clearInterval(timer);
   }, [refresh]);
 
+  const session = useMemo(() => toSession(events), [events]);
+  const contextCount = useMemo(
+    () => (session.events.length > 0 ? runEngine(session).contexts.length : 0),
+    [session],
+  );
+
   const setPaused = async (minutes: number | null) => {
-    const next = await invoke<CaptureStatus>('set_paused', { minutes });
-    setStatus(next);
+    setStatus(await invoke<CaptureStatus>('set_paused', { minutes }));
+  };
+
+  const switchLocale = (next: Locale) => {
+    setLocale(next);
+    forceRender((n) => n + 1);
   };
 
   return (
     <div className="app">
-      <header>
+      <header className="topbar">
         <div className="brand">
-          <span className={`dot ${status?.recording ? 'on' : 'off'}`} aria-hidden />
+          <span className={`pulse ${status?.recording ? '' : 'paused'}`} aria-hidden />
           <span className="wordmark">REWIND</span>
+          <span className="sub">
+            {status?.recording
+              ? t('app.recording')
+              : status?.pausedUntil
+                ? `${t('app.pausedUntil')} ${clock(status.pausedUntil)}`
+                : t('app.paused')}
+          </span>
         </div>
-
-        <span className="state">
-          {status?.recording
-            ? 'Enregistrement'
-            : status?.pausedUntil
-              ? `En pause jusqu'à ${clock(status.pausedUntil)}`
-              : 'En pause'}
-        </span>
-
-        <div className="spacer" />
-
-        <span className="count">{status?.eventsToday ?? 0} événements</span>
 
         <div className="pauses">
           {status?.recording ? (
@@ -98,48 +146,43 @@ export function App() {
             ))
           ) : (
             <button className="primary" onClick={() => void setPaused(null)}>
-              Reprendre
+              {t('app.resume')}
             </button>
           )}
         </div>
+
+        <div className="spacer" />
+
+        <div className="stat">
+          <b>{session.events.length}</b> {t('header.events')}
+          <span className="arrow">→</span>
+          <b>{contextCount}</b> {tPlural('header.contexts', contextCount)}
+        </div>
+
+        <div className="locale">
+          {(['fr', 'en'] as Locale[]).map((l) => (
+            <button
+              key={l}
+              className={getLocale() === l ? 'on' : ''}
+              onClick={() => switchLocale(l)}
+            >
+              {l.toUpperCase()}
+            </button>
+          ))}
+        </div>
       </header>
 
-      {/* macOS cannot read window titles without Accessibility. Saying so is the whole of ADR 0003
-          D-22's degraded mode: never pretend the capture is as good as it would be. */}
+      {/* macOS cannot read window titles without Accessibility, and the titles are most of the
+          signal. Say so rather than pretending the capture is as good (ADR 0003 D-22). */}
       {status?.titleAccess === 'denied' && (
-        <div className="warn">
-          <strong>Accessibility n’est pas accordée.</strong> REWIND voit quelle application est
-          active mais pas le titre de ses fenêtres — et le titre est l’essentiel du signal. Réglages
-          Système → Confidentialité et sécurité → Accessibilité. REWIND ne prend aucune capture
-          d’écran et ne demande jamais l’enregistrement d’écran.
+        <div className="banner warn">
+          <strong>{t('perm.title')}</strong> {t('perm.body')}
         </div>
       )}
 
-      {error && <div className="warn">{error}</div>}
+      {error && <div className="banner warn">{error}</div>}
 
-      <main>
-        {events.length === 0 ? (
-          <p className="empty">
-            REWIND apprend ton travail. Utilise ta machine normalement — les premiers événements
-            apparaissent ici en quelques secondes.
-          </p>
-        ) : (
-          <ul className="events">
-            {events.map((e, i) => (
-              <li key={`${e.timestamp}-${i}`}>
-                <span className="at">{clock(e.timestamp)}</span>
-                <span className="app">{e.appDisplay}</span>
-                <span className="title">{e.title || <em>sans titre</em>}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </main>
-
-      <footer>
-        {status?.platform === 'macos' ? 'macOS' : status?.platform === 'windows' ? 'Windows' : '—'}{' '}
-        · tout reste sur cette machine
-      </footer>
+      <Workspace session={session} emptyMessage={t('app.empty')} />
     </div>
   );
 }

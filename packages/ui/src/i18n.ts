@@ -17,6 +17,14 @@ export const DEFAULT_LOCALE: Locale = 'fr';
 const fr = {
   'app.subtitle': 'Studio',
   'app.recording': 'Enregistrement',
+  'app.paused': 'En pause',
+  'app.pausedUntil': 'En pause jusqu’à',
+  'app.resume': 'Reprendre',
+  'app.empty':
+    'REWIND apprend ton travail. Utilise ta machine normalement — les premiers contextes apparaissent après quelques minutes.',
+  'perm.title': 'Accessibility n’est pas accordée.',
+  'perm.body':
+    'REWIND voit quelle application est active mais pas le titre de ses fenêtres — et le titre est l’essentiel du signal. Réglages Système → Confidentialité et sécurité → Accessibilité. REWIND ne prend aucune capture d’écran et ne demande jamais l’enregistrement d’écran.',
 
   'badge.fixture': 'FICTIF — données de test écrites à la main',
   'badge.real': 'RÉEL — capturé sur cette machine',
@@ -39,6 +47,8 @@ const fr = {
   'today.unassigned_other': 'événements laissés de côté',
   'today.unassigned_why': '— interruptions et bruit que le moteur a refusé de rattacher.',
   'today.confidence': 'confiance',
+  'today.none':
+    'Aucun contexte pour l’instant. Il faut au moins deux événements partageant une ancre — continue à travailler.',
   'today.loose': 'Hors contexte',
   'today.looseHint':
     'Ces événements ont bien été capturés. Le moteur n’a simplement pas trouvé assez de liens pour en faire un contexte — il faut au moins deux événements qui partagent une ancre.',
@@ -89,6 +99,14 @@ type Key = keyof typeof fr;
 const en: Record<Key, string> = {
   'app.subtitle': 'Studio',
   'app.recording': 'Recording',
+  'app.paused': 'Paused',
+  'app.pausedUntil': 'Paused until',
+  'app.resume': 'Resume',
+  'app.empty':
+    'REWIND is learning your work. Use your machine normally — the first contexts appear after a few minutes.',
+  'perm.title': 'Accessibility is not granted.',
+  'perm.body':
+    'REWIND sees which application is active but not its window titles — and the titles are most of the signal. System Settings → Privacy & Security → Accessibility. REWIND takes no screenshots and never requests Screen Recording.',
 
   'badge.fixture': 'FIXTURE — authored test data',
   'badge.real': 'REAL — captured on this machine',
@@ -111,6 +129,7 @@ const en: Record<Key, string> = {
   'today.unassigned_other': 'events left unassigned',
   'today.unassigned_why': '— interruptions and noise the engine declined to attach.',
   'today.confidence': 'confidence',
+  'today.none': 'No context yet. Two events sharing an anchor are needed — keep working.',
   'today.loose': 'Outside any context',
   'today.looseHint':
     'These events were captured. The engine simply did not find enough links to form a context — it needs at least two events sharing an anchor.',
