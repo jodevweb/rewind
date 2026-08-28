@@ -30,6 +30,9 @@ import {
   type NextStep,
 } from '@rewind/engine-v0';
 
+import { predict, type Predictions } from '@rewind/predict';
+
+import { Forecast } from './forecast.js';
 import { formatDuration, t, tPlural } from './i18n.js';
 
 const clock = (ts: number, tz: number) => new Date(ts + tz * 60_000).toISOString().slice(11, 16);
@@ -151,17 +154,27 @@ export function Workspace({
   aside,
   emptyMessage,
   actions,
+  now,
 }: {
   session: GoldenSession;
   aside?: ReactNode;
   emptyMessage?: ReactNode;
   actions?: WorkspaceActions;
+  /**
+   * Wall clock, injected rather than read. Predictions depend on the hour, so passing it keeps the
+   * whole view a pure function of its inputs — which is what makes it testable and reproducible.
+   */
+  now?: number;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [inspected, setInspected] = useState<string | null>(null);
   const [showEarlier, setShowEarlier] = useState(false);
 
   const result = useMemo(() => runEngine(session), [session]);
+  const predictions: Predictions = useMemo(
+    () => predict(session, now ?? Date.now()),
+    [session, now],
+  );
   const byRef = useMemo(() => new Map(session.events.map((e) => [e.ref, e])), [session]);
   const tz = session.tzOffsetMinutes;
 
@@ -269,6 +282,16 @@ export function Workspace({
           )}
 
           {!inspectedEvent && active && <Anchors context={active} />}
+          {!inspectedEvent && (
+            <Forecast
+              predictions={predictions}
+              tz={tz}
+              onSelect={(label) => {
+                const match = result.contexts.find((c) => c.label === label);
+                if (match) setSelected(match.id);
+              }}
+            />
+          )}
         </div>
       </section>
 

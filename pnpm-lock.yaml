@@ -165,6 +165,22 @@ importers:
         specifier: ^4.19.2
         version: 4.23.12
 
+  packages/predict:
+    dependencies:
+      '@rewind/engine-v0':
+        specifier: workspace:*
+        version: link:../engine-v0
+      '@rewind/fixtures':
+        specifier: workspace:*
+        version: link:../fixtures
+    devDependencies:
+      '@rewind/config':
+        specifier: workspace:*
+        version: link:../config
+      vitest:
+        specifier: ^2.1.9
+        version: 2.1.9(@types/node@22.20.1)
+
   packages/protocol:
     devDependencies:
       '@rewind/config':
@@ -188,6 +204,9 @@ importers:
       '@rewind/fixtures':
         specifier: workspace:*
         version: link:../fixtures
+      '@rewind/predict':
+        specifier: workspace:*
+        version: link:../predict
     devDependencies:
       '@rewind/config':
         specifier: workspace:*
