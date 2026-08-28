@@ -9,7 +9,15 @@
 
 import type { GoldenEvent, GoldenSession } from '@rewind/fixtures/authoring';
 
-import { anchorsForSession, matchingAnchors, strength, type Anchor } from './anchors.js';
+import {
+  anchorsForSession,
+  matchingAnchors,
+  strength,
+  normalize,
+  subjectAnchors,
+  titlePhrases,
+  type Anchor,
+} from './anchors.js';
 
 export interface Activity {
   id: string;
@@ -34,6 +42,13 @@ export interface EngineContext {
   /** Applications in first-touch order: the "Slack → Linear → Figma" chain. */
   appChain: string[];
   anchors: Anchor[];
+  /**
+   * Where the work happened: repository, branch, declared project.
+   *
+   * Separate from `label` on purpose. These used to BE the label, which is how every context
+   * ended up called after a folder. They belong under the name, not in it.
+   */
+  place: { repository?: string; branch?: string; project?: string };
   confidence: number;
   /**
    * When this context last saw an activity that actually carried identity.
@@ -373,6 +388,7 @@ export function runEngine(
         activeMs: 0,
         appChain: [],
         anchors: [],
+        place: {},
         confidence: 0,
         lastAnchoredTimestamp: activity.startTimestamp,
         labelIsFallback: false,
@@ -425,8 +441,9 @@ export function runEngine(
     return false;
   });
 
+  const subjects = subjectAnchors(session.events);
   for (const c of kept) {
-    const named = namedFrom(c);
+    const named = namedFrom(c, subjects, byRef);
     c.label = named ?? c.appChain[0] ?? '';
     c.labelIsFallback = named === null;
     c.confidence = confidenceOf(c);
@@ -468,15 +485,50 @@ function absorb(into: EngineContext, other: EngineContext): void {
 }
 
 /** Returns a real name, or null when nothing in the context is distinctive enough to name it. */
-function namedFrom(c: EngineContext): string | null {
+/**
+ * What to call a context, and where to say it happened.
+ *
+ * The order used to be `project ?? keyword ?? document ?? branch`. `project` and the paths
+ * behind it are locations; `document` is a filename. So contexts were named "Importer.Ts" and
+ * "Travail dans rewind-desktop" — where the work was, never what it was. The one genuinely
+ * subject-shaped anchor came third.
+ *
+ * Now the subject leads, and location is not consulted for the name at all: it is collected
+ * separately into `place`, for the interface to show underneath. A branch outranks a filename
+ * because branches are usually named after the task and filenames after an artefact of it.
+ *
+ * When nothing names the work, the caller falls back to the application and marks the label a
+ * placeholder. That is honest, and better than a confident wrong name.
+ */
+function namedFrom(
+  c: EngineContext,
+  subjects: Map<string, Anchor>,
+  byRef: Map<string, GoldenEvent>,
+): string | null {
   const byConfidence = [...c.anchors].sort((a, b) => b.confidence - a.confidence);
   const issue = byConfidence.find((a) => a.type === 'issue');
-  const project = byConfidence.find((a) => a.type === 'project');
-  const keyword = byConfidence.find((a) => a.type === 'keyword');
   const doc = byConfidence.find((a) => a.type === 'document');
   const branch = byConfidence.find((a) => a.type === 'branch');
 
-  const subject = project ?? keyword ?? doc ?? branch;
+  // Where it happened, for display. Never part of the name.
+  const repository = byConfidence.find((a) => a.type === 'repository')?.value;
+  const project = byConfidence.find((a) => a.type === 'project')?.value;
+  c.place.repository = repository;
+  // A declared project that merely repeats the repository name says nothing twice.
+  c.place.project = project === repository ? undefined : project;
+  c.place.branch = branch?.value;
+
+  // The subject that best covers THIS context: the most confident one appearing in its own
+  // titles. Session-wide subjects are ranked across the whole day, so the top one overall is
+  // often about some other piece of work entirely.
+  const topic = bestSubject(c, subjects, byRef);
+
+  // No keyword fallback. Keywords are the same raw material as subjects but without the
+  // place filter, so they were the route by which "Myapp" and "Acme" — a repository and an
+  // organisation — still arrived as context names. A subject is strictly better evidence from
+  // the same source, and where there is none, a branch or a filename is more honest than an
+  // unfiltered phrase.
+  const subject = topic ?? branch ?? doc;
   const pretty = (s: string) =>
     s
       .replace(/^(fix|feat|chore|refactor|investigate)\//, '')
@@ -487,6 +539,60 @@ function namedFrom(c: EngineContext): string | null {
   if (issue) return issue.value;
   if (subject) return pretty(subject.value);
   return null;
+}
+
+/** Subjects appearing in this context's own window titles, and how many of its events carry them. */
+function subjectsIn(
+  c: EngineContext,
+  subjects: Map<string, Anchor>,
+  byRef: Map<string, GoldenEvent>,
+): Map<string, number> {
+  const counts = new Map<string, number>();
+  for (const ref of c.eventRefs) {
+    const title = byRef.get(ref)?.title;
+    if (!title) continue;
+    const seen = new Set<string>();
+    for (const phrase of titlePhrases(title)) {
+      const key = normalize(phrase);
+      if (!subjects.has(key) || seen.has(key)) continue;
+      seen.add(key);
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+  }
+  return counts;
+}
+
+/**
+ * The subject that best identifies this context.
+ *
+ * Coverage times distinctiveness, and nothing else. A third factor was tried — penalising a
+ * phrase for also appearing in other contexts — on the reasoning that an organisation name
+ * shared by every context distinguishes none of them. That reasoning is sound and the result
+ * was worse: it preferred rarer, emptier words, turning "Pricing (MKT-118)" into
+ * "Update (MKT-118)". Softening it to a square root changed nothing. Rarity across contexts
+ * turns out to be a poor proxy for meaning, so it is not used.
+ *
+ * The cost is that an organisation name can still surface as a label when a context has no
+ * better phrase in its titles. That is a vague name rather than a wrong one, and the place
+ * shown beneath it carries the detail.
+ */
+function bestSubject(
+  c: EngineContext,
+  subjects: Map<string, Anchor>,
+  byRef: Map<string, GoldenEvent>,
+): Anchor | undefined {
+  let best: Anchor | undefined;
+  let bestScore = 0;
+  for (const [key, count] of subjectsIn(c, subjects, byRef)) {
+    const anchor = subjects.get(key)!;
+    // A phrase in one title out of twenty describes a moment, not the work.
+    const score = (count / c.eventRefs.length) * anchor.confidence;
+    if (score > bestScore) {
+      bestScore = score;
+      best = anchor;
+    }
+  }
+  return best;
 }
 
 function confidenceOf(c: EngineContext): number {

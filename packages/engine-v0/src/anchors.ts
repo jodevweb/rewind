@@ -13,7 +13,21 @@
 import type { GoldenEvent } from '@rewind/fixtures/authoring';
 
 export type AnchorType =
-  'issue' | 'project' | 'repository' | 'branch' | 'worktree' | 'document' | 'url' | 'keyword';
+  | 'issue'
+  | 'project'
+  | 'repository'
+  | 'branch'
+  | 'worktree'
+  | 'document'
+  | 'url'
+  | 'keyword'
+  /**
+   * What the work is about, read from what recurs distinctively across window titles.
+   *
+   * Naming only. It never reaches the grouping code, and `strength` never sees it — see
+   * subjectAnchors below for why that separation is load-bearing.
+   */
+  | 'subject';
 
 export interface Anchor {
   type: AnchorType;
@@ -390,6 +404,97 @@ export function keywordAnchors(events: GoldenEvent[]): Map<string, Anchor> {
       normalizedValue: key,
       // A phrase seen in more applications is more likely to be the subject.
       confidence: Math.min(0.8, 0.4 + 0.12 * apps.size),
+      source: 'window_title',
+    });
+  }
+  return out;
+}
+
+/**
+ * What each piece of work is ABOUT, for naming it. Grouping never sees this.
+ *
+ * Contexts used to be named by `namedFrom` reaching for a `project` anchor first — derived from
+ * a working directory or a workspace path — and then a filename. So they were named after where
+ * the work happened: "Importer.Ts", "Travail dans rewind-desktop". An engine whose founding
+ * claim is that the application and the location are never the reason cannot name its contexts
+ * after the location.
+ *
+ * This is deliberately kept OUT of grouping. Subjects were tried as grouping anchors first and
+ * cost eight points of F1: window titles are full of repository and organisation names, so the
+ * "subject" quietly became the location again, promoted from weak evidence to medium, and false
+ * merges on the chaotic-day fixture went from 2.6 % to 17.5 %. Naming and grouping are different
+ * jobs with different tolerances — a label that is occasionally vague costs a reader a moment,
+ * while a grouping key that is occasionally wrong silently rewrites the history of a day.
+ *
+ * Distinctiveness rather than mere recurrence: a phrase identifies work when it is frequent in
+ * one part of the day and rare across the rest of it. "importer" in six titles out of two
+ * hundred is a subject; "Chrome" in ninety is furniture. Nothing here is language-specific — a
+ * word that is common in your day is demoted by the statistics whatever language it is in.
+ */
+export function subjectAnchors(events: GoldenEvent[]): Map<string, Anchor> {
+  const titled = events.filter((e) => Boolean(e.title));
+  if (titled.length === 0) return new Map();
+
+  // Values that name a PLACE. None of them may become a subject, or the rename achieves
+  // nothing: "myapp" and "acme" are exactly the words this is meant to stop showing.
+  const places = new Set<string>();
+  for (const e of events) {
+    if (e.app) places.add(normalize(e.app));
+    if (e.appDisplay) places.add(normalize(e.appDisplay));
+    for (const anchor of extractAnchors(e)) {
+      if (anchor.type !== 'repository' && anchor.type !== 'project' && anchor.type !== 'worktree') {
+        continue;
+      }
+      places.add(anchor.normalizedValue);
+      for (const part of anchor.normalizedValue.split('-')) {
+        if (part.length >= 4) places.add(part);
+      }
+    }
+  }
+
+  const titlesByPhrase = new Map<string, number>();
+  const appsByPhrase = new Map<string, Set<string>>();
+  const displayByPhrase = new Map<string, string>();
+
+  for (const e of titled) {
+    const app = e.app ?? 'unknown';
+    // Per title, not per occurrence: a phrase repeated inside one long title is not more of a
+    // subject for it.
+    const seen = new Set<string>();
+    for (const phrase of titlePhrases(e.title!)) {
+      const key = normalize(phrase);
+      if (key.length < 4 || seen.has(key) || places.has(key)) continue;
+      seen.add(key);
+      titlesByPhrase.set(key, (titlesByPhrase.get(key) ?? 0) + 1);
+      const apps = appsByPhrase.get(key) ?? new Set<string>();
+      apps.add(app);
+      appsByPhrase.set(key, apps);
+      if (!displayByPhrase.has(key)) displayByPhrase.set(key, phrase);
+    }
+  }
+
+  const out = new Map<string, Anchor>();
+  for (const [key, titleCount] of titlesByPhrase) {
+    // Seen once is an accident, not a subject.
+    if (titleCount < 2) continue;
+    // Present in half the day: furniture, whatever it says.
+    if (titleCount / titled.length > 0.5) continue;
+
+    const idf = Math.log(titled.length / titleCount);
+    const distinctiveness = Math.min(1, idf / Math.log(titled.length));
+    const support = Math.min(1, (titleCount - 1) / 3);
+    // Crossing applications remains the strongest sign that a phrase names the work rather than
+    // the tool, which is what the older keyword rule required outright.
+    const crossApp = Math.min(1, ((appsByPhrase.get(key)?.size ?? 1) - 1) / 2);
+
+    const confidence = 0.35 + 0.25 * distinctiveness + 0.2 * support + 0.2 * crossApp;
+    if (confidence < 0.5) continue;
+
+    out.set(key, {
+      type: 'subject',
+      value: displayByPhrase.get(key) ?? key,
+      normalizedValue: key,
+      confidence: Math.min(0.9, confidence),
       source: 'window_title',
     });
   }
