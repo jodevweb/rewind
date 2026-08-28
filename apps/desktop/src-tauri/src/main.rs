@@ -20,7 +20,7 @@ mod platform;
 use std::sync::Arc;
 
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem, Submenu};
-use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
+use tauri::tray::{MouseButton, TrayIconBuilder, TrayIconEvent};
 use tauri::{AppHandle, Manager, State, WindowEvent};
 
 use capture::{Capture, CaptureStatus, FocusEvent};
@@ -123,7 +123,6 @@ fn build_tray(app: &AppHandle) -> tauri::Result<()> {
             // Windows convention: a double click opens the window directly.
             if let TrayIconEvent::DoubleClick {
                 button: MouseButton::Left,
-                button_state: MouseButtonState::Up,
                 ..
             } = event
             {
