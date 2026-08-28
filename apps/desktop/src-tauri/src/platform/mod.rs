@@ -148,11 +148,7 @@ pub fn reveal_target(target: &str) -> Result<(), String> {
     let args = vec![format!("/select,{target}")];
     // Elsewhere there is no reveal, so open the containing folder.
     #[cfg(not(any(target_os = "macos", target_os = "windows")))]
-    let args = vec![path
-        .parent()
-        .unwrap_or(path)
-        .to_string_lossy()
-        .into_owned()];
+    let args = vec![path.parent().unwrap_or(path).to_string_lossy().into_owned()];
 
     spawn_opener(&args)
 }
