@@ -41,11 +41,9 @@ jobs:
           - os: macos-latest
             label: macOS
             platform: darwin-aarch64
-            args: '--target aarch64-apple-darwin'
           - os: windows-latest
             label: Windows
             platform: windows-x86_64
-            args: ''
 
     steps:
       - uses: actions/checkout@v4
@@ -69,8 +67,6 @@ jobs:
         run: node -p "'version='+require('./apps/desktop/package.json').version" >> "$GITHUB_OUTPUT"
 
       - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.os == 'macos-latest' && 'aarch64-apple-darwin' || '' }}
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: apps/desktop/src-tauri
@@ -82,15 +78,15 @@ jobs:
           pnpm check:forbidden-apis
           pnpm --filter @rewind/protocol test
 
-      # No tagName, so tauri-action builds and signs without creating a release here. Publishing is
-      # the next job's problem, because it publishes somewhere else.
-      - uses: tauri-apps/tauri-action@v0
+      # The same command build.yml uses, rather than tauri-action. tauri-action picks a package
+      # manager from a lockfile in its projectPath, and apps/desktop has none, so it fell back to
+      # `npm run tauri` and failed. It was only ever here to create the release, which this workflow
+      # no longer asks it to do — the release goes to another repository.
+      - name: Build
+        run: pnpm --filter @rewind/desktop build
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
-        with:
-          projectPath: apps/desktop
-          args: ${{ matrix.args }}
 
       - name: Collect assets
         run: node scripts/collect-release-assets.mjs ${{ matrix.platform }} ${{ steps.version.outputs.version }}
