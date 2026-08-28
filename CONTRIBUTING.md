@@ -21,7 +21,7 @@ Both macOS and Windows are shipped targets (ADR 0004 D-29).
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 xcode-select --install     # Command Line Tools, if not already present
-pnpm app                   # builds and launches REWIND
+pnpm dev                   # builds and launches REWIND
 ```
 
 **Windows**
@@ -30,7 +30,7 @@ pnpm app                   # builds and launches REWIND
 winget install Rustlang.Rustup
 winget install Microsoft.VisualStudio.2022.BuildTools --override "--quiet --wait --add Microsoft.VisualStudio.Workload.VCTools"
 # WebView2 ships with Windows 11.
-pnpm app
+pnpm dev
 ```
 
 **Known blocker — Windows Smart App Control.** If `rustc` fails with
