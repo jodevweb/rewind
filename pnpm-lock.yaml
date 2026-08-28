@@ -148,9 +148,6 @@ importers:
       '@rewind/fixtures':
         specifier: workspace:*
         version: link:../fixtures
-      '@rewind/predict':
-        specifier: workspace:*
-        version: link:../predict
     devDependencies:
       '@rewind/config':
         specifier: workspace:*
