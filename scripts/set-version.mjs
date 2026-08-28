@@ -45,8 +45,9 @@ function stampOnce(file, pattern, replacement) {
   return file;
 }
 
-// `\r?$` rather than `$`: a Windows checkout has CRLF line endings, and without it the anchor never
-// matches there — which is exactly how this failed the first time it ran.
+// No end-of-line anchor: a Windows checkout has CRLF line endings, and `$` does not match before
+// a carriage return, so anchoring there silently matches nothing. That is how this failed the
+// first time it ran. Ending each pattern at the closing quote works on both.
 const stamped = [
   stampOnce(
     'apps/desktop/src-tauri/tauri.conf.json',
