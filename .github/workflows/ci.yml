@@ -95,13 +95,21 @@ jobs:
             echo "macos=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          CHANGED=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
-          if echo "$CHANGED" | grep -qE "(macos|Cargo\.(toml|lock)|tauri\.conf\.json|capabilities/)"; then
+          # Every commit in this push, not just the last: a push of three commits whose first
+          # touched a macOS provider still has to be checked on macOS.
+          BEFORE="${{ github.event.before }}"
+          if [ -n "$BEFORE" ] && git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            CHANGED=$(git diff --name-only "$BEFORE" HEAD)
+          else
+            CHANGED=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
+          fi
+          if echo "$CHANGED" | grep -qE "(macos|Cargo[.](toml|lock)|tauri[.]conf[.]json|capabilities/)"; then
+            echo "Running the macOS job: macOS-specific files changed."
             echo "macos=true" >> "$GITHUB_OUTPUT"
           else
+            echo "Skipping the macOS job: nothing macOS-specific changed, and it bills at 10x."
             echo "macos=false" >> "$GITHUB_OUTPUT"
           fi
-          echo "macOS Rust job: ${{ steps.check.outputs.macos }}"
 
   rust:
     name: Rust (windows)
