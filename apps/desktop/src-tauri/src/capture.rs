@@ -140,12 +140,12 @@ impl Default for Capture {
 /// Polling at one second is the placeholder the provider interface hides; P2-004 replaces it with
 /// `SetWinEventHook` on Windows and `NSWorkspace` notifications on macOS, and nothing outside the
 /// provider changes when it does.
+// `::default()` rather than the bare type name: which of these is a unit struct differs per
+// platform, and only the generic call compiles on both.
+#[allow(clippy::default_constructed_unit_structs)]
 pub fn spawn(capture: Arc<Capture>) {
     std::thread::spawn(move || {
         let mut window = PlatformActiveWindow::default();
-        // `::default()` rather than the bare name: the concrete type differs per platform, and only
-        // some of them are unit structs.
-        #[allow(clippy::default_constructed_unit_structs)]
         let idle = PlatformIdle::default();
         let mut last_key = String::new();
 
