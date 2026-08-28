@@ -1173,3 +1173,18 @@ button.ghost:hover {
 .cite:hover {
   color: var(--text);
 }
+
+/* The running version, so "am I on the new one?" is answerable by looking rather than by asking. */
+.version {
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font: 600 10.5px/1.5 var(--mono);
+}
+
+/* An update check that failed says so here. It used to say nothing at all, which read as "no update
+   available" — the one thing it could not truthfully claim. */
+.diag-bad {
+  color: var(--danger, #e5484d);
+}
