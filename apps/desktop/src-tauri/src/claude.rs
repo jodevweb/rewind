@@ -24,7 +24,7 @@
 //! REWIND** — it is skipped and counted.
 
 use std::collections::BTreeMap;
-use std::io::{BufRead, BufReader, Seek, SeekFrom};
+use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 
 use serde::Deserialize;
