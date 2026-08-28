@@ -29,6 +29,9 @@ pub struct WindowSnapshot {
 /// This exists because "Figma" carries no context and "Figma — Home Staging V3" carries all of it.
 /// A platform that cannot read titles is not broken, but it is much less useful, and the user has to
 /// be told which of the two they are in.
+// Every variant is constructed on some platform and none on all of them: `NotRequired` is Windows,
+// `Denied` is macOS. That is the shape of a cross-platform enum, not dead code (ADR 0004 D-30).
+#[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TitleAccess {
     /// Titles are readable.

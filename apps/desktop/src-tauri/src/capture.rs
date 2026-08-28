@@ -15,7 +15,6 @@ use serde::Serialize;
 
 use crate::platform::{
     ActiveWindowProvider, IdleProvider, PlatformActiveWindow, PlatformIdle, TitleAccess,
-    WindowSnapshot,
 };
 
 pub fn now_ms() -> u64 {
@@ -144,6 +143,9 @@ impl Default for Capture {
 pub fn spawn(capture: Arc<Capture>) {
     std::thread::spawn(move || {
         let mut window = PlatformActiveWindow::default();
+        // `::default()` rather than the bare name: the concrete type differs per platform, and only
+        // some of them are unit structs.
+        #[allow(clippy::default_constructed_unit_structs)]
         let idle = PlatformIdle::default();
         let mut last_key = String::new();
 
