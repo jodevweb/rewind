@@ -228,8 +228,9 @@ export function extractAnchors(event: GoldenEvent): Anchor[] {
     if (v) issuesFrom(v, key === 'url' ? 'url' : 'branch', out);
   }
 
-  // 3. Git and worktree identity.
-  const branch = str('to') ?? str('branch');
+  // 3. Git and worktree identity. `gitBranch` comes from Claude Code sessions, where it is present
+  // on every record — a branch name carries the ticket id, so this is an anchor for free.
+  const branch = str('to') ?? str('branch') ?? str('gitBranch');
   if (branch) {
     pushAnchor(out, {
       type: 'branch',
@@ -284,6 +285,23 @@ export function extractAnchors(event: GoldenEvent): Anchor[] {
       confidence: 0.45,
       source: 'path',
     });
+  }
+
+  // 4a-bis. Files an agent touched are as much evidence as files a person opened.
+  const touched = meta['filesTouched'];
+  if (Array.isArray(touched)) {
+    for (const raw of touched.slice(0, 25)) {
+      if (typeof raw !== 'string') continue;
+      const name = raw.split(/[/\\]/).filter(Boolean).pop();
+      if (!name) continue;
+      pushAnchor(out, {
+        type: 'document',
+        value: name,
+        normalizedValue: normalize(name.replace(/.[a-z0-9]{1,6}$/i, '')),
+        confidence: 0.8,
+        source: 'agent',
+      });
+    }
   }
 
   // 4b. Documents the user actually opened, and Finder directories — the anchor that carries

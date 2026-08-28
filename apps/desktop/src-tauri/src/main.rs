@@ -15,6 +15,7 @@
 //!     and there is no third state in which capture happens quietly (§158).
 
 mod capture;
+mod claude;
 mod platform;
 mod redact;
 mod store;
@@ -25,7 +26,8 @@ use tauri::menu::{Menu, MenuItem, PredefinedMenuItem, Submenu};
 use tauri::tray::{MouseButton, TrayIconBuilder, TrayIconEvent};
 use tauri::{AppHandle, Manager, State, WindowEvent};
 
-use capture::{Capture, CaptureStatus, FocusEvent};
+use capture::{Capture, CaptureStatus};
+use store::Event;
 
 struct AppState {
     capture: Arc<Capture>,
@@ -37,7 +39,7 @@ fn capture_status(state: State<'_, AppState>) -> CaptureStatus {
 }
 
 #[tauri::command]
-fn recent_events(state: State<'_, AppState>, limit: usize) -> Vec<FocusEvent> {
+fn recent_events(state: State<'_, AppState>, limit: usize) -> Vec<Event> {
     state.capture.recent(limit.min(500))
 }
 
@@ -155,11 +157,14 @@ fn build_tray(app: &AppHandle) -> tauri::Result<()> {
 fn main() {
     // If the store cannot be opened there is nowhere to put events, and running would silently
     // discard the day. Failing loudly is the honest outcome.
-    let store = store::Store::open().expect("REWIND: could not open the event store");
+    let store = Arc::new(store::Store::open().expect("REWIND: could not open the event store"));
     println!("REWIND: store at {}", store.path().display());
 
-    let capture = Arc::new(Capture::new(store));
+    let capture = Arc::new(Capture::new(Arc::clone(&store)));
     capture::spawn(Arc::clone(&capture));
+
+    // Claude Code sessions: the deepest autonomous source in this workflow (ADR 0003 D-27).
+    claude::spawn(store, capture::local_offset_minutes());
 
     tauri::Builder::default()
         .manage(AppState {
