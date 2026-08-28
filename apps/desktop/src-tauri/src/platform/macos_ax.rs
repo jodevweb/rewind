@@ -195,7 +195,12 @@ mod tests {
     /// way to ask for a third. If someone adds a content attribute, this fails.
     #[test]
     fn only_structural_attributes_are_ever_requested() {
-        let source = include_str!("macos_ax.rs");
+        // Only the code above this test module. Scanning the whole file made the test fail on its
+        // own banned list, which is a test that can never pass rather than a guarantee.
+        let source = include_str!("macos_ax.rs")
+            .split("#[cfg(test)]")
+            .next()
+            .expect("split always yields at least one part");
         for banned in [
             "AXValue",
             "AXSelectedText",
