@@ -20,7 +20,8 @@
     "codegen": "turbo run codegen",
     "build:fixtures": "pnpm --filter @rewind/fixtures build",
     "check:forbidden-apis": "node scripts/check-forbidden-apis.mjs",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm check:forbidden-apis"
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm check:forbidden-apis",
+    "capture:where": "pnpm --filter @rewind/capture-probe capture:where"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
