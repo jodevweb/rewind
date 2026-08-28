@@ -3,6 +3,12 @@ name: Release
 # Publishes a signed release that the application updates itself from — so a new version reaches
 # both machines without a git pull and a local build on each.
 #
+# Distribution goes to a SEPARATE PUBLIC repository. This one is private, and GitHub serves a
+# private repository's release assets only to an authenticated client. The application has no token
+# and must not have one (ADR 0005 D-13: no API connections, nothing to configure), so it could never
+# read a manifest published here — the updater would stay silent forever while looking healthy.
+# `rewind-dist` therefore holds the built installers and nothing else; the source stays private.
+#
 # Signing happens only here. The private key never leaves CI, so an update can only come from a
 # build that ran in this repository; the application refuses anything that does not verify against
 # the public key in tauri.conf.json.
@@ -19,10 +25,13 @@ on:
     tags: ['v*']
 
 permissions:
-  contents: write
+  contents: read
+
+env:
+  DIST_REPO: jodevweb/rewind-dist
 
 jobs:
-  release:
+  build:
     name: ${{ matrix.label }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -31,9 +40,11 @@ jobs:
         include:
           - os: macos-latest
             label: macOS
+            platform: darwin-aarch64
             args: '--target aarch64-apple-darwin'
           - os: windows-latest
             label: Windows
+            platform: windows-x86_64
             args: ''
 
     steps:
@@ -47,10 +58,15 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       # `__VERSION__` is filled from tauri.conf.json, so without this the version typed into the
-      # Actions tab is ignored and the run republishes whatever version is already committed.
+      # Actions tab is ignored and the run rebuilds whatever version is already committed.
       - name: Set version
         if: inputs.version != ''
         run: node scripts/set-version.mjs "${{ inputs.version }}"
+
+      - name: Read version
+        id: version
+        shell: bash
+        run: node -p "'version='+require('./apps/desktop/package.json').version" >> "$GITHUB_OUTPUT"
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -66,18 +82,65 @@ jobs:
           pnpm check:forbidden-apis
           pnpm --filter @rewind/protocol test
 
+      # No tagName, so tauri-action builds and signs without creating a release here. Publishing is
+      # the next job's problem, because it publishes somewhere else.
       - uses: tauri-apps/tauri-action@v0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
         with:
           projectPath: apps/desktop
-          tagName: v__VERSION__
-          releaseName: 'REWIND v__VERSION__'
-          releaseBody: 'Mise à jour automatique depuis l’application, ou téléchargement ci-dessous.'
-          releaseDraft: false
-          prerelease: false
-          # Publishes latest.json alongside the installers — the manifest the application polls.
-          includeUpdaterJson: true
           args: ${{ matrix.args }}
+
+      - name: Collect assets
+        run: node scripts/collect-release-assets.mjs ${{ matrix.platform }} ${{ steps.version.outputs.version }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: assets-${{ matrix.platform }}
+          path: release-assets/
+          retention-days: 7
+
+  publish:
+    name: Publish
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Both platforms merge into one directory: two sets of installers and two descriptors.
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-assets/
+          pattern: assets-*
+          merge-multiple: true
+
+      # The checkout is clean, so package.json carries the committed version rather than the one the
+      # build jobs stamped. A dispatched version wins over it.
+      - name: Resolve version
+        id: version
+        run: |
+          VERSION="${{ inputs.version }}"
+          if [ -z "$VERSION" ]; then
+            VERSION=$(node -p "require('./apps/desktop/package.json').version")
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build the update manifest
+        run: node scripts/build-latest-json.mjs "${{ steps.version.outputs.version }}" "$DIST_REPO"
+
+      - name: Publish
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: ${{ env.DIST_REPO }}
+          # A PAT, because GITHUB_TOKEN is scoped to this repository and cannot write to another.
+          token: ${{ secrets.DIST_TOKEN }}
+          tag_name: v${{ steps.version.outputs.version }}
+          name: REWIND v${{ steps.version.outputs.version }}
+          body: |
+            Mise à jour automatique depuis l’application, ou téléchargement ci-dessous.
+
+            Ce dépôt ne contient que les installeurs. Le code source est privé.
+          draft: false
+          prerelease: false
+          files: release-assets/*
