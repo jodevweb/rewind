@@ -20,17 +20,25 @@ interface CaptureStatus {
   recording: boolean;
   pausedUntil: number | null;
   eventsToday: number;
+  eventsTotal: number;
   titleAccess: 'granted' | 'denied' | 'not_required';
   platform: 'macos' | 'windows' | 'other';
+  /** Where the events actually live. Shown so it is never a mystery (PRIVACY §12). */
+  storePath: string;
 }
 
 interface DaemonEvent {
   timestamp: number;
   endTimestamp: number | null;
+  tzOffsetMinutes: number;
   appId: string;
   appDisplay: string;
   title: string;
   pid: number | null;
+  redactionVersion: string;
+  redactionApplied: string[];
+  redactionCount: number;
+  importance: number;
 }
 
 const clock = (ms: number) =>
@@ -75,8 +83,12 @@ function toSession(events: DaemonEvent[]): GoldenSession {
       title: e.title,
       metadata: { bundleId: e.appId, ...(e.pid !== null ? { pid: e.pid } : {}) },
       privacyLevel: 'normal' as const,
-      redaction: { patternsVersion: '1.0.1', applied: [], count: 0 },
-      importance: 30,
+      redaction: {
+        patternsVersion: e.redactionVersion,
+        applied: e.redactionApplied,
+        count: e.redactionCount,
+      },
+      importance: e.importance,
     })),
   };
 }
@@ -153,10 +165,15 @@ export function App() {
 
         <div className="spacer" />
 
-        <div className="stat">
+        <div className="stat" title={status?.storePath ?? ''}>
           <b>{session.events.length}</b> {t('header.events')}
           <span className="arrow">→</span>
           <b>{contextCount}</b> {tPlural('header.contexts', contextCount)}
+          {status && status.eventsTotal > status.eventsToday && (
+            <span className="total">
+              · {status.eventsTotal} {t('header.kept')}
+            </span>
+          )}
         </div>
 
         <div className="locale">
