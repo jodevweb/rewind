@@ -54,6 +54,12 @@ export interface EngineConfig {
   activityGapMs: number;
   /** Hard cap so a long stretch in one application still yields granular activities. */
   activityMaxMs: number;
+  /**
+   * How long an activity with no anchors at all will still attach to nearby work. Beyond this it
+   * starts its own context. This is the only grouping signal available at Level 1, where a window
+   * title is all there is.
+   */
+  driftMs: number;
   assignThreshold: number;
   recencyHalfLifeMs: number;
   minContextEvents: number;
@@ -62,6 +68,7 @@ export interface EngineConfig {
 export const DEFAULT_CONFIG: EngineConfig = {
   activityGapMs: 90_000,
   activityMaxMs: 20 * 60 * 1000,
+  driftMs: 10 * 60 * 1000,
   assignThreshold: 0.22,
   recencyHalfLifeMs: 3 * 60 * 60 * 1000,
   minContextEvents: 2,
@@ -257,10 +264,25 @@ function score(
   // ADR 0002 D-15 says. The single exception is a direct continuation: same application, under two
   // minutes apart, which is one interaction split across two activities rather than a new subject.
   if (shared.length === 0) {
-    // The only anchor-free assignment allowed: this activity directly continues the previous one,
-    // in the same application, within two minutes. "The application appears somewhere in this
-    // context's history" is NOT continuation — that reading merged GS-03's two projects, which are
-    // adjacent in time and both use Chrome.
+    // Absence of evidence is not evidence of difference, and treating them alike is what made real
+    // Level 1 capture unusable: window titles carry no paths, branches or tickets, so most
+    // activities have no anchors at all, every one became its own context, and the whole day landed
+    // outside any context.
+    //
+    // So the two cases are separated. An activity that carries NO identity cannot contradict
+    // anything: it joins what surrounds it, with the confidence that deserves. An activity that
+    // carries identity and shares none of it starts something new — that is GS-04's protection and
+    // it is untouched.
+    const activityHasAnchors = activity.anchors.length > 0;
+    if (!activityHasAnchors) {
+      // Attaching to nearby work is what a person does with an unlabelled stretch of their day:
+      // "between nine and ten you were on something", rather than forty orphans.
+      const nearby = gap < config.driftMs;
+      return { total: nearby ? config.assignThreshold * (1 - gap / config.driftMs) : 0, shared };
+    }
+
+    // It has identity and shares none: only a direct continuation of the previous activity, in the
+    // same application, within two minutes.
     const continuation =
       previousContextId === context.id &&
       previousApp !== undefined &&

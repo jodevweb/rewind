@@ -139,6 +139,17 @@ pause it from there.
 **Not signed yet.** macOS will warn on first open — right-click → Open, once. Signing and
 notarisation are deliberately not blocking the prototype (ADR 0003 D-23).
 
+### Installers without a local toolchain
+
+If you cannot build locally — Windows Smart App Control blocks an unsigned `rustc`, and disabling it
+is irreversible — CI builds both platforms for you:
+
+**Actions → Build installers → Run workflow.** It produces `rewind-macos` (.app and .dmg) and
+`rewind-windows` (NSIS installer) as downloadable artifacts.
+
+The privacy gates run in that workflow too. An installer that skipped them would be the one build
+where the guarantees did not hold.
+
 ### The development harness
 
 ```bash

@@ -15,6 +15,7 @@
 use std::process::Command;
 use std::time::Duration;
 
+use super::macos_ax;
 use super::{ActiveWindowProvider, IdleProvider, TitleAccess, WindowSnapshot};
 
 const SCRIPT: &str = r#"
@@ -26,13 +27,14 @@ tell application "System Events"
 	on error
 		set appId to appName
 	end try
+	set appPid to unix id of frontApp
 	try
 		set winTitle to name of front window of frontApp
 	on error
 		set winTitle to ""
 	end try
 end tell
-return appId & tab & appName & tab & winTitle
+return appId & tab & appName & tab & appPid & tab & winTitle
 "#;
 
 #[derive(Default)]
@@ -104,7 +106,7 @@ impl ActiveWindowProvider for MacActiveWindow {
             app_id,
             app_display,
             title,
-            pid: None,
+            pid,
         })
     }
 
@@ -113,14 +115,13 @@ impl ActiveWindowProvider for MacActiveWindow {
     }
 
     fn title_access(&self) -> TitleAccess {
-        if self.denied {
-            TitleAccess::Denied
-        } else if self.seen_title {
+        // Asked, not inferred. The heuristic — a run of titleless samples across several
+        // applications — was slow to conclude and wrong when the real problem was Automation rather
+        // than Accessibility.
+        if macos_ax::is_trusted() {
             TitleAccess::Granted
         } else {
-            // Not yet known. Reported as granted so the UI does not accuse the user of withholding a
-            // permission before there is any evidence they did.
-            TitleAccess::Granted
+            TitleAccess::Denied
         }
     }
 }
@@ -137,6 +138,14 @@ impl MacActiveWindow {
             None => parts.push("aucun relevé exploitable".to_owned()),
         }
         parts.push(format!("{} application(s) vues", self.apps_seen.len()));
+        parts.push(format!(
+            "accessibility : {}",
+            if macos_ax::is_trusted() {
+                "accordée"
+            } else {
+                "refusée"
+            }
+        ));
         if let Some(err) = &self.last_error {
             parts.push(format!("erreur osascript : {err}"));
         }
