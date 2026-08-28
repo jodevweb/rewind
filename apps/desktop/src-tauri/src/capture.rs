@@ -104,12 +104,16 @@ pub struct CaptureStatus {
     pub title_access: &'static str,
     pub platform: &'static str,
     pub store_path: String,
+    /// What the platform provider last observed, verbatim. Shown in the window so a permission
+    /// problem reads as a sentence rather than as an empty screen.
+    pub diagnostics: String,
 }
 
 pub struct Capture {
     recording: AtomicBool,
     paused_until: AtomicU64,
     title_access: Mutex<TitleAccess>,
+    diagnostics: Mutex<String>,
     store: Store,
 }
 
@@ -119,6 +123,7 @@ impl Capture {
             recording: AtomicBool::new(true),
             paused_until: AtomicU64::new(0),
             title_access: Mutex::new(TitleAccess::Granted),
+            diagnostics: Mutex::new(String::new()),
             store,
         }
     }
@@ -184,6 +189,7 @@ impl Capture {
                 "other"
             },
             store_path: self.store.path().display().to_string(),
+            diagnostics: self.diagnostics.lock().expect("diagnostics").clone(),
         }
     }
 
@@ -220,6 +226,7 @@ pub fn spawn(capture: Arc<Capture>) {
                 continue;
             };
             *capture.title_access.lock().expect("title access") = window.title_access();
+            *capture.diagnostics.lock().expect("diagnostics") = window.diagnostics();
 
             let key = format!("{}|{}", snapshot.app_id, stable_title(&snapshot.title));
             if key == last_key {

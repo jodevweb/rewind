@@ -40,6 +40,10 @@ const fr = {
   'header.contexts_other': 'contextes',
   'header.deterministic': 'déterministe, sans LLM',
   'header.kept': 'conservés',
+  'diag.titles': 'titres de fenêtres :',
+  'diag.granted': 'accessibles',
+  'diag.denied': 'refusés',
+  'diag.not_required': 'aucune permission requise',
 
   'today.title': "Aujourd'hui",
   'today.hint':
@@ -123,6 +127,10 @@ const en: Record<Key, string> = {
   'header.contexts_other': 'contexts',
   'header.deterministic': 'deterministic, no LLM',
   'header.kept': 'kept',
+  'diag.titles': 'window titles:',
+  'diag.granted': 'readable',
+  'diag.denied': 'denied',
+  'diag.not_required': 'no permission needed',
 
   'today.title': 'Today',
   'today.hint':

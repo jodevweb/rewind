@@ -58,6 +58,10 @@ impl ActiveWindowProvider for WindowsActiveWindow {
     fn title_access(&self) -> TitleAccess {
         TitleAccess::NotRequired
     }
+
+    fn diagnostics(&self) -> String {
+        "Windows : aucune permission requise pour lire les titres de fenêtres".to_owned()
+    }
 }
 
 unsafe fn window_title(hwnd: HWND) -> String {
