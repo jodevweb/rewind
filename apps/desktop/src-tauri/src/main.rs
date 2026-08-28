@@ -16,6 +16,8 @@
 
 mod capture;
 mod platform;
+mod redact;
+mod store;
 
 use std::sync::Arc;
 
@@ -151,7 +153,12 @@ fn build_tray(app: &AppHandle) -> tauri::Result<()> {
 }
 
 fn main() {
-    let capture = Arc::new(Capture::new());
+    // If the store cannot be opened there is nowhere to put events, and running would silently
+    // discard the day. Failing loudly is the honest outcome.
+    let store = store::Store::open().expect("REWIND: could not open the event store");
+    println!("REWIND: store at {}", store.path().display());
+
+    let capture = Arc::new(Capture::new(store));
     capture::spawn(Arc::clone(&capture));
 
     tauri::Builder::default()
