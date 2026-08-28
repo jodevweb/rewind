@@ -1188,3 +1188,23 @@ button.ghost:hover {
 .diag-bad {
   color: var(--danger, #e5484d);
 }
+
+/* The location, under the name. It is context for the name, never a substitute for it. */
+.place {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+  margin: 3px 0 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.place .mono {
+  font-family: var(--mono);
+}
+
+.place .sep {
+  margin-right: 4px;
+  opacity: 0.5;
+}
