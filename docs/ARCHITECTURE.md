@@ -176,9 +176,14 @@ evaluated against golden fixtures without launching the GUI (INITIAL_ANALYSIS §
 
 ## 6. OS abstraction (portability without a rewrite)
 
-> **Superseded by [ADR 0002](adr/0002-work-context-first-macos.md) D-11: macOS is now first.** The
-> boundary below is unchanged and the Windows implementations are retained — they are simply no longer
-> the first target. Provider names follow ADR 0002.
+> **macOS and Windows are both shipped targets** ([ADR 0004](adr/0004-windows-is-a-shipped-target.md)
+> D-29), with macOS first because it is the machine where the product's value is measurable. Neither
+> column below is a port of the other: every provider has an implementation on both, or an explicit
+> `unimplemented!` with a ticket. Silence is how a second platform quietly rots.
+>
+> One asymmetry worth carrying in your head: **Windows needs no permission to read window titles,
+> macOS does.** So Windows is the better place to develop the context engine against real data, and
+> macOS is the only place to judge whether the product is useful.
 
 | Provider                   | macOS (MVP)                                       | Windows (retained, future)       |
 | -------------------------- | ------------------------------------------------- | -------------------------------- |
