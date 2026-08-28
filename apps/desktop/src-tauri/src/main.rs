@@ -167,6 +167,8 @@ fn main() {
     claude::spawn(store, capture::local_offset_minutes());
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
         .manage(AppState {
             capture: Arc::clone(&capture),
         })

@@ -10,6 +10,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
+import { check as checkForUpdate, type Update } from '@tauri-apps/plugin-updater';
+import { relaunch } from '@tauri-apps/plugin-process';
 
 import type { GoldenSession } from '@rewind/fixtures/authoring';
 import { getLocale, setLocale, t, tPlural, Workspace, type Locale } from '@rewind/ui';
@@ -118,6 +120,8 @@ export function App() {
   const [events, setEvents] = useState<DaemonEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [, forceRender] = useState(0);
+  const [update, setUpdate] = useState<Update | null>(null);
+  const [updating, setUpdating] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
@@ -138,6 +142,32 @@ export function App() {
     const timer = setInterval(() => void refresh(), 3000);
     return () => clearInterval(timer);
   }, [refresh]);
+
+  // Check for an update on launch, then hourly. Offered, never applied on its own: an application
+  // that restarts itself while you are working is a worse problem than a stale version.
+  useEffect(() => {
+    const look = () =>
+      checkForUpdate()
+        .then((found) => setUpdate(found ?? null))
+        .catch(() => {
+          // No network, no release yet, or a signature that does not verify. None of those are
+          // worth interrupting anyone over.
+        });
+    void look();
+    const timer = setInterval(() => void look(), 3_600_000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const applyUpdate = async () => {
+    if (!update) return;
+    setUpdating(true);
+    try {
+      await update.downloadAndInstall();
+      await relaunch();
+    } catch {
+      setUpdating(false);
+    }
+  };
 
   const session = useMemo(() => toSession(events), [events]);
   const contextCount = useMemo(
@@ -214,6 +244,18 @@ export function App() {
       {status?.titleAccess === 'denied' && (
         <div className="banner warn">
           <strong>{t('perm.title')}</strong> {t('perm.body')}
+        </div>
+      )}
+
+      {update && (
+        <div className="banner update">
+          <strong>
+            {t('update.available')} {update.version}
+          </strong>{' '}
+          {(update.body ?? '').split(/\r?\n/)[0]}
+          <button className="ghost" disabled={updating} onClick={() => void applyUpdate()}>
+            {updating ? t('update.installing') : t('update.install')}
+          </button>
         </div>
       )}
 

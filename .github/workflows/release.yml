@@ -1,0 +1,77 @@
+name: Release
+
+# Publishes a signed release that the application updates itself from — so a new version reaches
+# both machines without a git pull and a local build on each.
+#
+# Signing happens only here. The private key never leaves CI, so an update can only come from a
+# build that ran in this repository; the application refuses anything that does not verify against
+# the public key in tauri.conf.json.
+#
+# Run it from the Actions tab, or push a v* tag.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version, e.g. 0.2.0'
+        required: true
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            label: macOS
+            args: '--target aarch64-apple-darwin'
+          - os: windows-latest
+            label: Windows
+            args: ''
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.os == 'macos-latest' && 'aarch64-apple-darwin' || '' }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/desktop/src-tauri
+
+      # A release that skipped the privacy gates would be the one build where the guarantees did not
+      # hold. That is exactly backwards, so they run before anything is published.
+      - name: Privacy gates
+        run: |
+          pnpm check:forbidden-apis
+          pnpm --filter @rewind/protocol test
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
+        with:
+          projectPath: apps/desktop
+          tagName: v__VERSION__
+          releaseName: 'REWIND v__VERSION__'
+          releaseBody: 'Mise à jour automatique depuis l’application, ou téléchargement ci-dessous.'
+          releaseDraft: false
+          prerelease: false
+          # Publishes latest.json alongside the installers — the manifest the application polls.
+          includeUpdaterJson: true
+          args: ${{ matrix.args }}
