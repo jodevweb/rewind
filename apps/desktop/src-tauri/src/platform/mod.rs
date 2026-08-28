@@ -104,6 +104,8 @@ pub use windows::{WindowsActiveWindow as PlatformActiveWindow, WindowsIdle as Pl
 #[cfg(target_os = "macos")]
 mod macos;
 #[cfg(target_os = "macos")]
+mod macos_ax;
+#[cfg(target_os = "macos")]
 pub use macos::{MacActiveWindow as PlatformActiveWindow, MacIdle as PlatformIdle};
 
 #[cfg(not(any(target_os = "windows", target_os = "macos")))]

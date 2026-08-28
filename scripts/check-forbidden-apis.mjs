@@ -65,7 +65,15 @@ const SKIP_DIRS = new Set([
 ]);
 
 // This file necessarily contains every forbidden string, and the documents describe the policy.
-const ALLOWLIST = [join('scripts', 'check-forbidden-apis.mjs'), 'docs' + sep];
+const ALLOWLIST = [
+  join('scripts', 'check-forbidden-apis.mjs'),
+  'docs' + sep,
+  // The one audited module that wraps the raw accessibility read (ADR 0005 D-35). It requests two
+  // structural attributes — AXFocusedWindow and AXTitle — and exposes no way to ask for a third; its
+  // own test fails if a content attribute ever appears in it. This is the "role-scoped helper" the
+  // ban's message points at, and it is exempt because it *is* the safeguard.
+  join('apps', 'desktop', 'src-tauri', 'src', 'platform', 'macos_ax.rs'),
+];
 
 const SCAN_EXTENSIONS = new Set([
   '.rs',
