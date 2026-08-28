@@ -24,7 +24,10 @@ pub fn data_dir() -> PathBuf {
     }
     #[cfg(target_os = "macos")]
     {
-        return home().join("Library").join("Application Support").join("REWIND");
+        return home()
+            .join("Library")
+            .join("Application Support")
+            .join("REWIND");
     }
     #[cfg(not(any(target_os = "windows", target_os = "macos")))]
     {
