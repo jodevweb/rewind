@@ -1,0 +1,1029 @@
+{
+  "$schema": "../schemas/golden-session.json",
+  "id": "gs-04-two-tasks-same-repo",
+  "name": "Two similar tasks, same repository",
+  "description": "An authentication expiry bug and a permissions UI feature, back to back, in the same repository, sharing one source file.",
+  "tests": "The most important fixture in the set. Repository is identical and one file is shared, so an engine that leans on repositoryId as a proxy for context collapses these into one. Separation must come from the ticket, the branch, the distinct file clusters and the distinct documentation. If `repoId` ever becomes an intellectual shortcut in the engine, this fixture is what catches it.",
+  "day": "2026-03-18",
+  "tzOffsetMinutes": 60,
+  "expected": {
+    "contextCount": 2,
+    "contexts": [
+      {
+        "tag": "authbug",
+        "label": "Session expiry bug (AUTH-221)",
+        "labelMatches": "(?i)auth|session|expiry|AUTH-221",
+        "outcome": "fix_implemented",
+        "expectedNextStep": "Push fix/AUTH-221-session-expiry and open a PR",
+        "startTimestamp": 1773821700000,
+        "endTimestamp": 1773823080000,
+        "eventRefs": [
+          "gs-04-two-tasks-same-repo-e001",
+          "gs-04-two-tasks-same-repo-e002",
+          "gs-04-two-tasks-same-repo-e003",
+          "gs-04-two-tasks-same-repo-e004",
+          "gs-04-two-tasks-same-repo-e005",
+          "gs-04-two-tasks-same-repo-e006",
+          "gs-04-two-tasks-same-repo-e007",
+          "gs-04-two-tasks-same-repo-e008",
+          "gs-04-two-tasks-same-repo-e009",
+          "gs-04-two-tasks-same-repo-e010",
+          "gs-04-two-tasks-same-repo-e011",
+          "gs-04-two-tasks-same-repo-e012",
+          "gs-04-two-tasks-same-repo-e013",
+          "gs-04-two-tasks-same-repo-e014",
+          "gs-04-two-tasks-same-repo-e015",
+          "gs-04-two-tasks-same-repo-e016",
+          "gs-04-two-tasks-same-repo-e017",
+          "gs-04-two-tasks-same-repo-e018",
+          "gs-04-two-tasks-same-repo-e019",
+          "gs-04-two-tasks-same-repo-e020"
+        ],
+        "importantEventRefs": [
+          "gs-04-two-tasks-same-repo-e004",
+          "gs-04-two-tasks-same-repo-e006",
+          "gs-04-two-tasks-same-repo-e007",
+          "gs-04-two-tasks-same-repo-e009",
+          "gs-04-two-tasks-same-repo-e014",
+          "gs-04-two-tasks-same-repo-e019",
+          "gs-04-two-tasks-same-repo-e020"
+        ]
+      },
+      {
+        "tag": "permsui",
+        "label": "Permissions panel (PERM-88)",
+        "labelMatches": "(?i)permission|PERM-88|panel|ui",
+        "outcome": "unresolved",
+        "expectedNextStep": "Fix the undefined canManageMembers read in PermissionsPanel.tsx:63",
+        "startTimestamp": 1773823080000,
+        "endTimestamp": 1773824520000,
+        "eventRefs": [
+          "gs-04-two-tasks-same-repo-e021",
+          "gs-04-two-tasks-same-repo-e022",
+          "gs-04-two-tasks-same-repo-e023",
+          "gs-04-two-tasks-same-repo-e024",
+          "gs-04-two-tasks-same-repo-e025",
+          "gs-04-two-tasks-same-repo-e026",
+          "gs-04-two-tasks-same-repo-e027",
+          "gs-04-two-tasks-same-repo-e028",
+          "gs-04-two-tasks-same-repo-e029",
+          "gs-04-two-tasks-same-repo-e030",
+          "gs-04-two-tasks-same-repo-e031",
+          "gs-04-two-tasks-same-repo-e032",
+          "gs-04-two-tasks-same-repo-e033",
+          "gs-04-two-tasks-same-repo-e034",
+          "gs-04-two-tasks-same-repo-e035",
+          "gs-04-two-tasks-same-repo-e036"
+        ],
+        "importantEventRefs": [
+          "gs-04-two-tasks-same-repo-e022",
+          "gs-04-two-tasks-same-repo-e023",
+          "gs-04-two-tasks-same-repo-e025",
+          "gs-04-two-tasks-same-repo-e026",
+          "gs-04-two-tasks-same-repo-e033",
+          "gs-04-two-tasks-same-repo-e034"
+        ],
+        "note": "Shares src/auth/user.ts with the auth bug and still must be its own context."
+      }
+    ],
+    "noiseEventRefs": []
+  },
+  "events": [
+    {
+      "id": "00576952-6952-7000-8000-000000000001",
+      "ref": "gs-04-two-tasks-same-repo-e001",
+      "timestamp": 1773821700000,
+      "endTimestamp": 1773821780000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000002",
+      "ref": "gs-04-two-tasks-same-repo-e002",
+      "timestamp": 1773821704000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.workspace.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "workspacePath": "C:/dev/myapp",
+        "ideName": "vscode",
+        "ideVersion": "1.96.0"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000003",
+      "ref": "gs-04-two-tasks-same-repo-e003",
+      "timestamp": 1773821709000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.repo.detected",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp",
+        "remoteUrl": "https://github.com/acme/myapp.git",
+        "defaultBranch": "main"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000004",
+      "ref": "gs-04-two-tasks-same-repo-e004",
+      "timestamp": 1773821740000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.branch.checkout",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "from": "main",
+        "to": "fix/AUTH-221-session-expiry",
+        "isNewBranch": true
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 80
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000005",
+      "ref": "gs-04-two-tasks-same-repo-e005",
+      "timestamp": 1773821780000,
+      "endTimestamp": 1773821940000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "AUTH-221 Sessions expire an hour early — Linear",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000006",
+      "ref": "gs-04-two-tasks-same-repo-e006",
+      "timestamp": 1773821790000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "AUTH-221 Sessions expire an hour early — Linear",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 11,
+        "url": "https://linear.app/acme/issue/AUTH-221",
+        "host": "linear.app",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000007",
+      "ref": "gs-04-two-tasks-same-repo-e007",
+      "timestamp": 1773821870000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Session expiry — BetterAuth",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 12,
+        "url": "https://better-auth.com/docs/concepts/session",
+        "host": "better-auth.com",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000008",
+      "ref": "gs-04-two-tasks-same-repo-e008",
+      "timestamp": 1773821940000,
+      "endTimestamp": 1773822540000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "session.ts — myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000009",
+      "ref": "gs-04-two-tasks-same-repo-e009",
+      "timestamp": 1773821960000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/auth/session.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/auth/session.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "00576952-6952-7000-8000-00000000000a",
+      "ref": "gs-04-two-tasks-same-repo-e010",
+      "timestamp": 1773822100000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/auth/user.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/auth/user.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45,
+      "$note": "SHARED FILE. Also touched by the permissions task later. File overlap alone must not merge the two contexts."
+    },
+    {
+      "id": "00576952-6952-7000-8000-00000000000b",
+      "ref": "gs-04-two-tasks-same-repo-e011",
+      "timestamp": 1773822250000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/auth/session.ts",
+        "languageId": "typescript",
+        "changedLines": 12
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "00576952-6952-7000-8000-00000000000c",
+      "ref": "gs-04-two-tasks-same-repo-e012",
+      "timestamp": 1773822450000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/auth/session.ts",
+        "languageId": "typescript",
+        "changedLines": 4
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "00576952-6952-7000-8000-00000000000d",
+      "ref": "gs-04-two-tasks-same-repo-e013",
+      "timestamp": 1773822540000,
+      "endTimestamp": 1773822620000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "WindowsTerminal.exe",
+      "appDisplay": "Windows Terminal",
+      "title": "pwsh — myapp",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "00576952-6952-7000-8000-00000000000e",
+      "ref": "gs-04-two-tasks-same-repo-e014",
+      "timestamp": 1773822550000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "pnpm test auth",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 1,
+        "durationMs": 8700,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 95
+    },
+    {
+      "id": "00576952-6952-7000-8000-00000000000f",
+      "ref": "gs-04-two-tasks-same-repo-e015",
+      "timestamp": 1773822560000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.error_tail",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "lines": ["expected 3600000 to be 7200000", "  at test/auth.test.ts:44:23"],
+        "lineCount": 2,
+        "truncated": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 85
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000010",
+      "ref": "gs-04-two-tasks-same-repo-e016",
+      "timestamp": 1773822620000,
+      "endTimestamp": 1773823080000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "auth.test.ts — myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000011",
+      "ref": "gs-04-two-tasks-same-repo-e017",
+      "timestamp": 1773822670000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/test/auth.test.ts",
+        "languageId": "typescript",
+        "changedLines": 6
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000012",
+      "ref": "gs-04-two-tasks-same-repo-e018",
+      "timestamp": 1773822860000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/auth/user.ts",
+        "languageId": "typescript",
+        "changedLines": 3
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70,
+      "$note": "The shared file, edited from the auth-bug side."
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000013",
+      "ref": "gs-04-two-tasks-same-repo-e019",
+      "timestamp": 1773823000000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "pnpm test auth",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 0,
+        "durationMs": 8900,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000014",
+      "ref": "gs-04-two-tasks-same-repo-e020",
+      "timestamp": 1773823050000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.commit",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "sha": "b93e17a5c8d2f4b6a1e3c7d9f2b4a6c8e1d3f5a7",
+        "messageRedacted": "fix(auth): use absolute expiry instead of a rolling window (AUTH-221)",
+        "filesChanged": ["src/auth/session.ts", "src/auth/user.ts", "test/auth.test.ts"],
+        "insertions": 21,
+        "deletions": 14,
+        "authorIsUser": true
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 90
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000015",
+      "ref": "gs-04-two-tasks-same-repo-e021",
+      "timestamp": 1773823080000,
+      "endTimestamp": 1773823320000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "PERM-88 Permissions panel for team admins — Linear",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000016",
+      "ref": "gs-04-two-tasks-same-repo-e022",
+      "timestamp": 1773823100000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "PERM-88 Permissions panel for team admins — Linear",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 13,
+        "url": "https://linear.app/acme/issue/PERM-88",
+        "host": "linear.app",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60,
+      "$note": "A different ticket. The single strongest discriminator available."
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000017",
+      "ref": "gs-04-two-tasks-same-repo-e023",
+      "timestamp": 1773823210000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Checkbox — Radix Primitives",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 14,
+        "url": "https://www.radix-ui.com/primitives/docs/components/checkbox",
+        "host": "radix-ui.com",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000018",
+      "ref": "gs-04-two-tasks-same-repo-e024",
+      "timestamp": 1773823320000,
+      "endTimestamp": 1773824160000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000019",
+      "ref": "gs-04-two-tasks-same-repo-e025",
+      "timestamp": 1773823340000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.branch.checkout",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "from": "fix/AUTH-221-session-expiry",
+        "to": "feat/PERM-88-permissions-ui",
+        "isNewBranch": true
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 80
+    },
+    {
+      "id": "00576952-6952-7000-8000-00000000001a",
+      "ref": "gs-04-two-tasks-same-repo-e026",
+      "timestamp": 1773823380000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/ui/PermissionsPanel.tsx",
+        "languageId": "typescriptreact",
+        "repoRelativePath": "src/ui/PermissionsPanel.tsx"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "00576952-6952-7000-8000-00000000001b",
+      "ref": "gs-04-two-tasks-same-repo-e027",
+      "timestamp": 1773823470000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/auth/user.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/auth/user.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45,
+      "$note": "The shared file again, now from the permissions side."
+    },
+    {
+      "id": "00576952-6952-7000-8000-00000000001c",
+      "ref": "gs-04-two-tasks-same-repo-e028",
+      "timestamp": 1773823610000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/api/permissions.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/api/permissions.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "00576952-6952-7000-8000-00000000001d",
+      "ref": "gs-04-two-tasks-same-repo-e029",
+      "timestamp": 1773823760000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/ui/PermissionsPanel.tsx",
+        "languageId": "typescriptreact",
+        "changedLines": 78
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "00576952-6952-7000-8000-00000000001e",
+      "ref": "gs-04-two-tasks-same-repo-e030",
+      "timestamp": 1773823960000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/api/permissions.ts",
+        "languageId": "typescript",
+        "changedLines": 31
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "00576952-6952-7000-8000-00000000001f",
+      "ref": "gs-04-two-tasks-same-repo-e031",
+      "timestamp": 1773824050000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/auth/user.ts",
+        "languageId": "typescript",
+        "changedLines": 5
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000020",
+      "ref": "gs-04-two-tasks-same-repo-e032",
+      "timestamp": 1773824160000,
+      "endTimestamp": 1773824250000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "WindowsTerminal.exe",
+      "appDisplay": "Windows Terminal",
+      "title": "pwsh — myapp",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000021",
+      "ref": "gs-04-two-tasks-same-repo-e033",
+      "timestamp": 1773824170000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "pnpm test permissions",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 1,
+        "durationMs": 7300,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 95
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000022",
+      "ref": "gs-04-two-tasks-same-repo-e034",
+      "timestamp": 1773824180000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.error_tail",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "lines": [
+          "Cannot read properties of undefined (reading 'canManageMembers')",
+          "  at src/ui/PermissionsPanel.tsx:63:18"
+        ],
+        "lineCount": 2,
+        "truncated": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 85
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000023",
+      "ref": "gs-04-two-tasks-same-repo-e035",
+      "timestamp": 1773824250000,
+      "endTimestamp": 1773824520000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "PermissionsPanel.tsx — myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "00576952-6952-7000-8000-000000000024",
+      "ref": "gs-04-two-tasks-same-repo-e036",
+      "timestamp": 1773824380000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/ui/PermissionsPanel.tsx",
+        "languageId": "typescriptreact",
+        "changedLines": 9
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    }
+  ]
+}

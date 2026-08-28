@@ -1,0 +1,15 @@
+{"id":"git-sha-full","text":"git show a72c91f4e8b3d2a1c5e9f7b6d4a8c2e1f9b3d7a5","mustSurvive":"a72c91f4e8b3d2a1c5e9f7b6d4a8c2e1f9b3d7a5","why":"Commit SHAs are primary evidence (SEARCH.md §8). Over-redaction here breaks citations."}
+{"id":"git-sha-short","text":"Commit a72c91f — handle invoice.created ordering","mustSurvive":"a72c91f","why":"Short SHAs appear in every commit reference in the UI."}
+{"id":"uuid-v4","text":"contextId 550e8400-e29b-41d4-a716-446655440000","mustSurvive":"550e8400-e29b-41d4-a716-446655440000","why":"Our own identifiers are high-entropy and must round-trip."}
+{"id":"iso-timestamp","text":"event at 2026-08-28T14:32:11.482Z","mustSurvive":"2026-08-28T14:32:11.482Z","why":"Timestamps anchor every temporal query."}
+{"id":"semver","text":"upgraded to v2.14.3-rc.1","mustSurvive":"v2.14.3-rc.1","why":"Version strings are meaningful work signal."}
+{"id":"ordinary-command","text":"pnpm test stripe","mustSurvive":"pnpm test stripe","why":"The single most important kind of terminal evidence."}
+{"id":"commit-message","text":"git commit -m \"handle invoice.created before subscription.updated\"","mustSurvive":"invoice.created before subscription.updated","why":"Commit messages carry the reasoning we cite."}
+{"id":"docs-url","text":"https://stripe.com/docs/api/invoices","mustSurvive":"https://stripe.com/docs/api/invoices","why":"Research URLs are the answer to 'find that doc'."}
+{"id":"file-path","text":"src/billing/stripe.webhook.ts","mustSurvive":"src/billing/stripe.webhook.ts","why":"File paths are the backbone of context linking."}
+{"id":"branch-name","text":"git checkout feature/stripe-renewal-DNM-3921","mustSurvive":"feature/stripe-renewal-DNM-3921","why":"Branch names carry ticket IDs, the strongest context signal."}
+{"id":"sha256-digest","text":"integrity sha256-e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","mustSurvive":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","why":"Lockfile digests are noise, not secrets, and must not be flagged."}
+{"id":"header-name-only","text":"The endpoint requires an Authorization header","mustSurvive":"Authorization header","why":"Mentioning a header name is not a secret."}
+{"id":"sk-prefix-too-short","text":"the sk_live prefix identifies production keys","mustSurvive":"sk_live","why":"Discussing a key format is not a key."}
+{"id":"ipv4","text":"connecting to 192.168.1.104","mustSurvive":"192.168.1.104","why":"Local addresses are structure, not credentials."}
+{"id":"window-title-ordinary","text":"stripe.webhook.ts — myapp — Visual Studio Code","mustSurvive":"stripe.webhook.ts — myapp — Visual Studio Code","why":"The most common event text in the product must pass through untouched."}

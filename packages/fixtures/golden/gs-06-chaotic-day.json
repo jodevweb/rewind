@@ -1,0 +1,3128 @@
+{
+  "$schema": "../schemas/golden-session.json",
+  "id": "gs-06-chaotic-day",
+  "name": "Chaotic realistic day",
+  "description": "A full working day: two repositories, three real pieces of work fragmented into six blocks, a PR review, an hour of lunch, Slack, email, personal browsing and a CI failure at the end of the day.",
+  "tests": "The primary benchmark. Separating three contexts is the easy half; the hard half is reassembling each one from blocks separated by hours and by other work — the checkout bug spans 09:02 to 16:34 in three blocks, and onboarding spans two blocks either side of lunch. An engine that only groups contiguous activity fragments this day into six or more contexts. An engine that groups on temporal proximity alone merges the noise into whatever it sits between.",
+  "day": "2026-03-23",
+  "tzOffsetMinutes": 60,
+  "expected": {
+    "contextCount": 3,
+    "contexts": [
+      {
+        "tag": "checkout",
+        "label": "Checkout rounding bug (DNM-4102)",
+        "labelMatches": "(?i)checkout|rounding|DNM-4102|total",
+        "outcome": "blocked",
+        "expectedNextStep": "Pin the locale in the e2e setup — CI runs en_US and formats currency differently",
+        "startTimestamp": 1774252920000,
+        "endTimestamp": 1774280040000,
+        "eventRefs": [
+          "gs-06-chaotic-day-e001",
+          "gs-06-chaotic-day-e002",
+          "gs-06-chaotic-day-e003",
+          "gs-06-chaotic-day-e004",
+          "gs-06-chaotic-day-e005",
+          "gs-06-chaotic-day-e006",
+          "gs-06-chaotic-day-e007",
+          "gs-06-chaotic-day-e008",
+          "gs-06-chaotic-day-e009",
+          "gs-06-chaotic-day-e010",
+          "gs-06-chaotic-day-e011",
+          "gs-06-chaotic-day-e012",
+          "gs-06-chaotic-day-e013",
+          "gs-06-chaotic-day-e014",
+          "gs-06-chaotic-day-e015",
+          "gs-06-chaotic-day-e016",
+          "gs-06-chaotic-day-e017",
+          "gs-06-chaotic-day-e018",
+          "gs-06-chaotic-day-e019",
+          "gs-06-chaotic-day-e020",
+          "gs-06-chaotic-day-e021",
+          "gs-06-chaotic-day-e022",
+          "gs-06-chaotic-day-e023",
+          "gs-06-chaotic-day-e024",
+          "gs-06-chaotic-day-e025",
+          "gs-06-chaotic-day-e026",
+          "gs-06-chaotic-day-e070",
+          "gs-06-chaotic-day-e071",
+          "gs-06-chaotic-day-e072",
+          "gs-06-chaotic-day-e073",
+          "gs-06-chaotic-day-e074",
+          "gs-06-chaotic-day-e075",
+          "gs-06-chaotic-day-e076",
+          "gs-06-chaotic-day-e077",
+          "gs-06-chaotic-day-e078",
+          "gs-06-chaotic-day-e079",
+          "gs-06-chaotic-day-e080",
+          "gs-06-chaotic-day-e081",
+          "gs-06-chaotic-day-e082",
+          "gs-06-chaotic-day-e083",
+          "gs-06-chaotic-day-e084",
+          "gs-06-chaotic-day-e103",
+          "gs-06-chaotic-day-e104",
+          "gs-06-chaotic-day-e105",
+          "gs-06-chaotic-day-e106",
+          "gs-06-chaotic-day-e107",
+          "gs-06-chaotic-day-e108",
+          "gs-06-chaotic-day-e109",
+          "gs-06-chaotic-day-e110",
+          "gs-06-chaotic-day-e111"
+        ],
+        "importantEventRefs": [
+          "gs-06-chaotic-day-e002",
+          "gs-06-chaotic-day-e007",
+          "gs-06-chaotic-day-e008",
+          "gs-06-chaotic-day-e013",
+          "gs-06-chaotic-day-e017",
+          "gs-06-chaotic-day-e018",
+          "gs-06-chaotic-day-e025",
+          "gs-06-chaotic-day-e071",
+          "gs-06-chaotic-day-e076",
+          "gs-06-chaotic-day-e080",
+          "gs-06-chaotic-day-e083",
+          "gs-06-chaotic-day-e104",
+          "gs-06-chaotic-day-e108",
+          "gs-06-chaotic-day-e109",
+          "gs-06-chaotic-day-e110",
+          "gs-06-chaotic-day-e111"
+        ],
+        "note": "Three blocks: 09:02–10:05, 13:22–14:36, 16:10–16:34. Must be ONE context."
+      },
+      {
+        "tag": "review",
+        "label": "Review of dashboard PR #914",
+        "labelMatches": "(?i)review|pull request|914|pagination|members",
+        "outcome": "fix_implemented",
+        "expectedNextStep": "None — the review was submitted",
+        "startTimestamp": 1774257120000,
+        "endTimestamp": 1774260240000,
+        "eventRefs": [
+          "gs-06-chaotic-day-e031",
+          "gs-06-chaotic-day-e032",
+          "gs-06-chaotic-day-e033",
+          "gs-06-chaotic-day-e034",
+          "gs-06-chaotic-day-e035",
+          "gs-06-chaotic-day-e036",
+          "gs-06-chaotic-day-e037",
+          "gs-06-chaotic-day-e038",
+          "gs-06-chaotic-day-e039",
+          "gs-06-chaotic-day-e040",
+          "gs-06-chaotic-day-e041",
+          "gs-06-chaotic-day-e042",
+          "gs-06-chaotic-day-e043",
+          "gs-06-chaotic-day-e044",
+          "gs-06-chaotic-day-e045",
+          "gs-06-chaotic-day-e046",
+          "gs-06-chaotic-day-e047"
+        ],
+        "importantEventRefs": [
+          "gs-06-chaotic-day-e032",
+          "gs-06-chaotic-day-e036",
+          "gs-06-chaotic-day-e039",
+          "gs-06-chaotic-day-e042",
+          "gs-06-chaotic-day-e045",
+          "gs-06-chaotic-day-e046"
+        ],
+        "note": "A single block, in the dashboard repo, sharing that repo with the onboarding context."
+      },
+      {
+        "tag": "onboarding",
+        "label": "Onboarding empty state (DSH-77)",
+        "labelMatches": "(?i)onboarding|empty state|DSH-77|workspace",
+        "outcome": "pr_opened",
+        "expectedNextStep": "Wait for review on PR #921",
+        "startTimestamp": 1774260840000,
+        "endTimestamp": 1774278120000,
+        "eventRefs": [
+          "gs-06-chaotic-day-e051",
+          "gs-06-chaotic-day-e052",
+          "gs-06-chaotic-day-e053",
+          "gs-06-chaotic-day-e054",
+          "gs-06-chaotic-day-e055",
+          "gs-06-chaotic-day-e056",
+          "gs-06-chaotic-day-e057",
+          "gs-06-chaotic-day-e058",
+          "gs-06-chaotic-day-e059",
+          "gs-06-chaotic-day-e060",
+          "gs-06-chaotic-day-e061",
+          "gs-06-chaotic-day-e062",
+          "gs-06-chaotic-day-e063",
+          "gs-06-chaotic-day-e064",
+          "gs-06-chaotic-day-e065",
+          "gs-06-chaotic-day-e088",
+          "gs-06-chaotic-day-e089",
+          "gs-06-chaotic-day-e090",
+          "gs-06-chaotic-day-e091",
+          "gs-06-chaotic-day-e092",
+          "gs-06-chaotic-day-e093",
+          "gs-06-chaotic-day-e094",
+          "gs-06-chaotic-day-e095",
+          "gs-06-chaotic-day-e096",
+          "gs-06-chaotic-day-e097",
+          "gs-06-chaotic-day-e098",
+          "gs-06-chaotic-day-e099",
+          "gs-06-chaotic-day-e100",
+          "gs-06-chaotic-day-e101",
+          "gs-06-chaotic-day-e102"
+        ],
+        "importantEventRefs": [
+          "gs-06-chaotic-day-e052",
+          "gs-06-chaotic-day-e053",
+          "gs-06-chaotic-day-e055",
+          "gs-06-chaotic-day-e056",
+          "gs-06-chaotic-day-e061",
+          "gs-06-chaotic-day-e089",
+          "gs-06-chaotic-day-e099",
+          "gs-06-chaotic-day-e100",
+          "gs-06-chaotic-day-e102"
+        ],
+        "note": "Two blocks either side of lunch. Same repository as the PR review, so repository alone cannot separate them."
+      }
+    ],
+    "noiseEventRefs": [
+      "gs-06-chaotic-day-e027",
+      "gs-06-chaotic-day-e028",
+      "gs-06-chaotic-day-e029",
+      "gs-06-chaotic-day-e030",
+      "gs-06-chaotic-day-e048",
+      "gs-06-chaotic-day-e049",
+      "gs-06-chaotic-day-e050",
+      "gs-06-chaotic-day-e066",
+      "gs-06-chaotic-day-e067",
+      "gs-06-chaotic-day-e068",
+      "gs-06-chaotic-day-e069",
+      "gs-06-chaotic-day-e085",
+      "gs-06-chaotic-day-e086",
+      "gs-06-chaotic-day-e087",
+      "gs-06-chaotic-day-e112",
+      "gs-06-chaotic-day-e113"
+    ]
+  },
+  "events": [
+    {
+      "id": "c84e3253-3253-7000-8000-000000000001",
+      "ref": "gs-06-chaotic-day-e001",
+      "timestamp": 1774252920000,
+      "endTimestamp": 1774253160000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "DNM-4102 Checkout total off by one cent — Linear",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000002",
+      "ref": "gs-06-chaotic-day-e002",
+      "timestamp": 1774252940000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "DNM-4102 Checkout total off by one cent — Linear",
+      "metadata": {
+        "tabId": 101,
+        "url": "https://linear.app/acme/issue/DNM-4102",
+        "host": "linear.app",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000003",
+      "ref": "gs-06-chaotic-day-e003",
+      "timestamp": 1774253080000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "DNM-4102 — attachments — Linear",
+      "metadata": {
+        "tabId": 101,
+        "url": "https://linear.app/acme/issue/DNM-4102",
+        "host": "linear.app",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000004",
+      "ref": "gs-06-chaotic-day-e004",
+      "timestamp": 1774253160000,
+      "endTimestamp": 1774253880000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000005",
+      "ref": "gs-06-chaotic-day-e005",
+      "timestamp": 1774253165000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.workspace.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "workspacePath": "C:/dev/myapp",
+        "ideName": "vscode",
+        "ideVersion": "1.96.0"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000006",
+      "ref": "gs-06-chaotic-day-e006",
+      "timestamp": 1774253171000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.repo.detected",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp",
+        "remoteUrl": "https://github.com/acme/myapp.git",
+        "defaultBranch": "main"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000007",
+      "ref": "gs-06-chaotic-day-e007",
+      "timestamp": 1774253200000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.branch.checkout",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "from": "main",
+        "to": "fix/DNM-4102-checkout-rounding",
+        "isNewBranch": true
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 80
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000008",
+      "ref": "gs-06-chaotic-day-e008",
+      "timestamp": 1774253240000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/checkout/total.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/checkout/total.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000009",
+      "ref": "gs-06-chaotic-day-e009",
+      "timestamp": 1774253390000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/checkout/tax.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/checkout/tax.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000000a",
+      "ref": "gs-06-chaotic-day-e010",
+      "timestamp": 1774253600000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/money/decimal.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/money/decimal.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000000b",
+      "ref": "gs-06-chaotic-day-e011",
+      "timestamp": 1774253800000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/checkout/total.ts",
+        "languageId": "typescript",
+        "changedLines": 9
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000000c",
+      "ref": "gs-06-chaotic-day-e012",
+      "timestamp": 1774253880000,
+      "endTimestamp": 1774253970000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "WindowsTerminal.exe",
+      "appDisplay": "Windows Terminal",
+      "title": "pwsh — myapp",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000000d",
+      "ref": "gs-06-chaotic-day-e013",
+      "timestamp": 1774253890000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "pnpm test checkout",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 1,
+        "durationMs": 10200,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 95
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000000e",
+      "ref": "gs-06-chaotic-day-e014",
+      "timestamp": 1774253901000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.error_tail",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "lines": ["expected 4199 to be 4200", "  at test/checkout.total.test.ts:31:18"],
+        "lineCount": 2,
+        "truncated": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 85
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000000f",
+      "ref": "gs-06-chaotic-day-e015",
+      "timestamp": 1774253970000,
+      "endTimestamp": 1774254660000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Number.prototype.toFixed() — MDN",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000010",
+      "ref": "gs-06-chaotic-day-e016",
+      "timestamp": 1774253990000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Number.prototype.toFixed() — MDN",
+      "metadata": {
+        "tabId": 102,
+        "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed",
+        "host": "developer.mozilla.org",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000011",
+      "ref": "gs-06-chaotic-day-e017",
+      "timestamp": 1774254220000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Floating point and currency — Stack Overflow",
+      "metadata": {
+        "tabId": 103,
+        "url": "https://stackoverflow.com/questions/588004/is-floating-point-math-broken",
+        "host": "stackoverflow.com",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000012",
+      "ref": "gs-06-chaotic-day-e018",
+      "timestamp": 1774254490000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "dinerojs — Working with currencies",
+      "metadata": {
+        "tabId": 104,
+        "url": "https://v2.dinerojs.com/docs/guides/formatting-and-rounding",
+        "host": "dinerojs.com",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000013",
+      "ref": "gs-06-chaotic-day-e019",
+      "timestamp": 1774254660000,
+      "endTimestamp": 1774256460000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "decimal.ts — myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000014",
+      "ref": "gs-06-chaotic-day-e020",
+      "timestamp": 1774254920000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/money/decimal.ts",
+        "languageId": "typescript",
+        "changedLines": 26
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000015",
+      "ref": "gs-06-chaotic-day-e021",
+      "timestamp": 1774255270000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/checkout/tax.ts",
+        "languageId": "typescript",
+        "changedLines": 14
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000016",
+      "ref": "gs-06-chaotic-day-e022",
+      "timestamp": 1774255650000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.diagnostic.error",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/money/decimal.ts",
+        "line": 88,
+        "severity": "error",
+        "code": "TS2362",
+        "messageRedacted": "The left-hand side of an arithmetic operation must be of type any, number, bigint or an enum type."
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 85
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000017",
+      "ref": "gs-06-chaotic-day-e023",
+      "timestamp": 1774255960000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/money/decimal.ts",
+        "languageId": "typescript",
+        "changedLines": 7
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000018",
+      "ref": "gs-06-chaotic-day-e024",
+      "timestamp": 1774256290000,
+      "tzOffsetMinutes": 60,
+      "source": "filesystem",
+      "type": "fs.batch",
+      "producer": {
+        "name": "rewind-filesystem",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "paths": ["C:/dev/myapp/src/money/decimal.ts", "C:/dev/myapp/src/checkout/tax.ts"],
+        "count": 9,
+        "changeTypes": ["modified"]
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 40
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000019",
+      "ref": "gs-06-chaotic-day-e025",
+      "timestamp": 1774256460000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "pnpm test checkout",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 1,
+        "durationMs": 10400,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 95
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000001a",
+      "ref": "gs-06-chaotic-day-e026",
+      "timestamp": 1774256472000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.error_tail",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "lines": ["expected 4201 to be 4200", "  at test/checkout.total.test.ts:31:18"],
+        "lineCount": 2,
+        "truncated": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 85
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000001b",
+      "ref": "gs-06-chaotic-day-e027",
+      "timestamp": 1774256700000,
+      "endTimestamp": 1774256960000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "slack.exe",
+      "appDisplay": "Slack",
+      "title": "acme — #engineering — Slack",
+      "metadata": {},
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000001c",
+      "ref": "gs-06-chaotic-day-e028",
+      "timestamp": 1774256960000,
+      "endTimestamp": 1774256984000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Spotify.exe",
+      "appDisplay": "Spotify",
+      "title": "Spotify Premium",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 15
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000001d",
+      "ref": "gs-06-chaotic-day-e029",
+      "timestamp": 1774256984000,
+      "endTimestamp": 1774257110000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Hacker News",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000001e",
+      "ref": "gs-06-chaotic-day-e030",
+      "timestamp": 1774256995000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Hacker News",
+      "metadata": {
+        "tabId": 110,
+        "url": "https://news.ycombinator.com/",
+        "host": "news.ycombinator.com",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000001f",
+      "ref": "gs-06-chaotic-day-e031",
+      "timestamp": 1774257120000,
+      "endTimestamp": 1774258140000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Add server-side pagination to the members table by nadia · Pull Request #914 · acme/dashboard",
+      "repositoryId": "dashboard",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000020",
+      "ref": "gs-06-chaotic-day-e032",
+      "timestamp": 1774257140000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Add server-side pagination to the members table by nadia · Pull Request #914 · acme/dashboard",
+      "repositoryId": "dashboard",
+      "metadata": {
+        "tabId": 111,
+        "url": "https://github.com/acme/dashboard/pull/914",
+        "host": "github.com",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000021",
+      "ref": "gs-06-chaotic-day-e033",
+      "timestamp": 1774257400000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Files changed · Pull Request #914 · acme/dashboard",
+      "repositoryId": "dashboard",
+      "metadata": {
+        "tabId": 111,
+        "url": "https://github.com/acme/dashboard/pull/914/files",
+        "host": "github.com",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000022",
+      "ref": "gs-06-chaotic-day-e034",
+      "timestamp": 1774257870000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Keyset pagination — PostgreSQL Wiki",
+      "repositoryId": "dashboard",
+      "metadata": {
+        "tabId": 112,
+        "url": "https://wiki.postgresql.org/wiki/Loose_indexscan",
+        "host": "wiki.postgresql.org",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000023",
+      "ref": "gs-06-chaotic-day-e035",
+      "timestamp": 1774258140000,
+      "endTimestamp": 1774259520000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "dashboard — Visual Studio Code",
+      "repositoryId": "dashboard",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000024",
+      "ref": "gs-06-chaotic-day-e036",
+      "timestamp": 1774258146000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.workspace.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "workspacePath": "C:/dev/dashboard",
+        "ideName": "vscode",
+        "ideVersion": "1.96.0"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000025",
+      "ref": "gs-06-chaotic-day-e037",
+      "timestamp": 1774258154000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.repo.detected",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "path": "C:/dev/dashboard",
+        "remoteUrl": "https://github.com/acme/dashboard.git",
+        "defaultBranch": "main"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000026",
+      "ref": "gs-06-chaotic-day-e038",
+      "timestamp": 1774258190000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "commandRedacted": "gh pr checkout 914",
+        "cwd": "C:/dev/dashboard",
+        "exitCode": 0,
+        "durationMs": 3100,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000027",
+      "ref": "gs-06-chaotic-day-e039",
+      "timestamp": 1774258200000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.branch.checkout",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "from": "main",
+        "to": "nadia/members-pagination",
+        "isNewBranch": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 80
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000028",
+      "ref": "gs-06-chaotic-day-e040",
+      "timestamp": 1774258280000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "path": "C:/dev/dashboard/src/members/MembersTable.tsx",
+        "languageId": "typescriptreact",
+        "repoRelativePath": "src/members/MembersTable.tsx"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000029",
+      "ref": "gs-06-chaotic-day-e041",
+      "timestamp": 1774258600000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "path": "C:/dev/dashboard/src/api/members.query.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/api/members.query.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000002a",
+      "ref": "gs-06-chaotic-day-e042",
+      "timestamp": 1774259050000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "commandRedacted": "pnpm test members",
+        "cwd": "C:/dev/dashboard",
+        "exitCode": 0,
+        "durationMs": 14300,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000002b",
+      "ref": "gs-06-chaotic-day-e043",
+      "timestamp": 1774259310000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "path": "C:/dev/dashboard/test/members.query.test.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "test/members.query.test.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000002c",
+      "ref": "gs-06-chaotic-day-e044",
+      "timestamp": 1774259520000,
+      "endTimestamp": 1774260240000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Files changed · Pull Request #914 · acme/dashboard",
+      "repositoryId": "dashboard",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000002d",
+      "ref": "gs-06-chaotic-day-e045",
+      "timestamp": 1774259960000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Review changes · Pull Request #914 · acme/dashboard",
+      "repositoryId": "dashboard",
+      "metadata": {
+        "tabId": 111,
+        "url": "https://github.com/acme/dashboard/pull/914/files",
+        "host": "github.com",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000002e",
+      "ref": "gs-06-chaotic-day-e046",
+      "timestamp": 1774260190000,
+      "tzOffsetMinutes": 60,
+      "source": "manual",
+      "type": "manual.note",
+      "producer": {
+        "name": "rewind-manual",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "text": "Approved #914 but asked nadia to add a keyset cursor test for the empty-page case."
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 90
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000002f",
+      "ref": "gs-06-chaotic-day-e047",
+      "timestamp": 1774260240000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "commandRedacted": "git checkout main",
+        "cwd": "C:/dev/dashboard",
+        "exitCode": 0,
+        "durationMs": 620,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000030",
+      "ref": "gs-06-chaotic-day-e048",
+      "timestamp": 1774260300000,
+      "endTimestamp": 1774260570000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Order history — Amazon.fr",
+      "metadata": {},
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000031",
+      "ref": "gs-06-chaotic-day-e049",
+      "timestamp": 1774260320000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Order history — Amazon.fr",
+      "metadata": {
+        "tabId": 120,
+        "url": "https://www.amazon.fr/gp/css/order-history",
+        "host": "amazon.fr",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000032",
+      "ref": "gs-06-chaotic-day-e050",
+      "timestamp": 1774260570000,
+      "endTimestamp": 1774260820000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "olk.exe",
+      "appDisplay": "Outlook",
+      "title": "Inbox — Outlook",
+      "metadata": {},
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000033",
+      "ref": "gs-06-chaotic-day-e051",
+      "timestamp": 1774260840000,
+      "endTimestamp": 1774261080000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "DSH-77 Empty state for new workspaces — Linear",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000034",
+      "ref": "gs-06-chaotic-day-e052",
+      "timestamp": 1774260860000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "DSH-77 Empty state for new workspaces — Linear",
+      "metadata": {
+        "tabId": 121,
+        "url": "https://linear.app/acme/issue/DSH-77",
+        "host": "linear.app",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000035",
+      "ref": "gs-06-chaotic-day-e053",
+      "timestamp": 1774261000000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Onboarding empty states — Figma",
+      "metadata": {
+        "tabId": 122,
+        "url": "https://www.figma.com/file/8Kd2/dashboard-onboarding",
+        "host": "figma.com",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000036",
+      "ref": "gs-06-chaotic-day-e054",
+      "timestamp": 1774261080000,
+      "endTimestamp": 1774263120000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "dashboard — Visual Studio Code",
+      "repositoryId": "dashboard",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000037",
+      "ref": "gs-06-chaotic-day-e055",
+      "timestamp": 1774261110000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.branch.checkout",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "from": "main",
+        "to": "feat/DSH-77-empty-state",
+        "isNewBranch": true
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 80
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000038",
+      "ref": "gs-06-chaotic-day-e056",
+      "timestamp": 1774261150000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "path": "C:/dev/dashboard/src/onboarding/EmptyWorkspace.tsx",
+        "languageId": "typescriptreact",
+        "repoRelativePath": "src/onboarding/EmptyWorkspace.tsx"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000039",
+      "ref": "gs-06-chaotic-day-e057",
+      "timestamp": 1774261420000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "path": "C:/dev/dashboard/src/onboarding/steps.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/onboarding/steps.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000003a",
+      "ref": "gs-06-chaotic-day-e058",
+      "timestamp": 1774261880000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "path": "C:/dev/dashboard/src/onboarding/EmptyWorkspace.tsx",
+        "languageId": "typescriptreact",
+        "changedLines": 92
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000003b",
+      "ref": "gs-06-chaotic-day-e059",
+      "timestamp": 1774262390000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "path": "C:/dev/dashboard/src/onboarding/steps.ts",
+        "languageId": "typescript",
+        "changedLines": 28
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000003c",
+      "ref": "gs-06-chaotic-day-e060",
+      "timestamp": 1774262770000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "path": "C:/dev/dashboard/src/onboarding/EmptyWorkspace.tsx",
+        "languageId": "typescriptreact",
+        "changedLines": 17
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000003d",
+      "ref": "gs-06-chaotic-day-e061",
+      "timestamp": 1774263120000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "commandRedacted": "pnpm test onboarding",
+        "cwd": "C:/dev/dashboard",
+        "exitCode": 1,
+        "durationMs": 8800,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 95
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000003e",
+      "ref": "gs-06-chaotic-day-e062",
+      "timestamp": 1774263131000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.error_tail",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "lines": [
+          "Unable to find an element with the text: Create your first project",
+          "  at test/onboarding.test.tsx:22:14"
+        ],
+        "lineCount": 2,
+        "truncated": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 85
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000003f",
+      "ref": "gs-06-chaotic-day-e063",
+      "timestamp": 1774263380000,
+      "endTimestamp": 1774264680000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "EmptyWorkspace.tsx — dashboard — Visual Studio Code",
+      "repositoryId": "dashboard",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000040",
+      "ref": "gs-06-chaotic-day-e064",
+      "timestamp": 1774263880000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "path": "C:/dev/dashboard/test/onboarding.test.tsx",
+        "languageId": "typescriptreact",
+        "changedLines": 11
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000041",
+      "ref": "gs-06-chaotic-day-e065",
+      "timestamp": 1774264450000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "path": "C:/dev/dashboard/src/onboarding/EmptyWorkspace.tsx",
+        "languageId": "typescriptreact",
+        "changedLines": 6
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000042",
+      "ref": "gs-06-chaotic-day-e066",
+      "timestamp": 1774264710000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.idle.start",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "metadata": {
+        "idleSeconds": 0
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 50
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000043",
+      "ref": "gs-06-chaotic-day-e067",
+      "timestamp": 1774264800000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.session.lock",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 50
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000044",
+      "ref": "gs-06-chaotic-day-e068",
+      "timestamp": 1774268400000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.session.unlock",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 50
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000045",
+      "ref": "gs-06-chaotic-day-e069",
+      "timestamp": 1774268430000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.idle.end",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "metadata": {
+        "idleSeconds": 3720
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 50,
+      "$note": "Sixty-two minutes idle. Must never be counted as working time (§69)."
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000046",
+      "ref": "gs-06-chaotic-day-e070",
+      "timestamp": 1774268520000,
+      "endTimestamp": 1774269840000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "total.ts — myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000047",
+      "ref": "gs-06-chaotic-day-e071",
+      "timestamp": 1774268540000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.workspace.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "workspacePath": "C:/dev/myapp",
+        "ideName": "vscode",
+        "ideVersion": "1.96.0"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45,
+      "$note": "The return. Same repo, same branch, same files as block 1 — four hours later, with two other contexts in between."
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000048",
+      "ref": "gs-06-chaotic-day-e072",
+      "timestamp": 1774268560000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.status.summary",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "branch": "fix/DNM-4102-checkout-rounding",
+        "dirtyFiles": 3,
+        "ahead": 0,
+        "behind": 0
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000049",
+      "ref": "gs-06-chaotic-day-e073",
+      "timestamp": 1774268600000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/money/decimal.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/money/decimal.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000004a",
+      "ref": "gs-06-chaotic-day-e074",
+      "timestamp": 1774268980000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/money/decimal.ts",
+        "languageId": "typescript",
+        "changedLines": 19
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000004b",
+      "ref": "gs-06-chaotic-day-e075",
+      "timestamp": 1774269370000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/test/checkout.total.test.ts",
+        "languageId": "typescript",
+        "changedLines": 13
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000004c",
+      "ref": "gs-06-chaotic-day-e076",
+      "timestamp": 1774269840000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "pnpm test checkout",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 0,
+        "durationMs": 10800,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000004d",
+      "ref": "gs-06-chaotic-day-e077",
+      "timestamp": 1774269980000,
+      "endTimestamp": 1774271520000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "decimal.ts — myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000004e",
+      "ref": "gs-06-chaotic-day-e078",
+      "timestamp": 1774270360000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/checkout/total.ts",
+        "languageId": "typescript",
+        "changedLines": 8
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000004f",
+      "ref": "gs-06-chaotic-day-e079",
+      "timestamp": 1774270990000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "pnpm lint",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 0,
+        "durationMs": 21400,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000050",
+      "ref": "gs-06-chaotic-day-e080",
+      "timestamp": 1774271520000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.commit",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "sha": "d52f8b1c9a3e7d4f6b2c8a0e5d1f3b7c9a2e4d6f",
+        "messageRedacted": "fix(checkout): compute totals in minor units to avoid float rounding (DNM-4102)",
+        "filesChanged": [
+          "src/money/decimal.ts",
+          "src/checkout/total.ts",
+          "src/checkout/tax.ts",
+          "test/checkout.total.test.ts"
+        ],
+        "insertions": 74,
+        "deletions": 41,
+        "authorIsUser": true
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 90
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000051",
+      "ref": "gs-06-chaotic-day-e081",
+      "timestamp": 1774271610000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "git push -u origin fix/DNM-4102-checkout-rounding",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 0,
+        "durationMs": 2600,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000052",
+      "ref": "gs-06-chaotic-day-e082",
+      "timestamp": 1774271700000,
+      "endTimestamp": 1774272960000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Pull Request #2210 · acme/myapp",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000053",
+      "ref": "gs-06-chaotic-day-e083",
+      "timestamp": 1774271780000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Pull Request #2210 · acme/myapp",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 130,
+        "url": "https://github.com/acme/myapp/pull/2210",
+        "host": "github.com",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000054",
+      "ref": "gs-06-chaotic-day-e084",
+      "timestamp": 1774272700000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Checks · Pull Request #2210 · acme/myapp",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 130,
+        "url": "https://github.com/acme/myapp/pull/2210/checks",
+        "host": "github.com",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000055",
+      "ref": "gs-06-chaotic-day-e085",
+      "timestamp": 1774272960000,
+      "endTimestamp": 1774273460000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "slack.exe",
+      "appDisplay": "Slack",
+      "title": "acme — nadia — Slack",
+      "metadata": {},
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000056",
+      "ref": "gs-06-chaotic-day-e086",
+      "timestamp": 1774273460000,
+      "endTimestamp": 1774273630000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Teams.exe",
+      "appDisplay": "Microsoft Teams",
+      "title": "Weekly sync — Microsoft Teams",
+      "metadata": {},
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000057",
+      "ref": "gs-06-chaotic-day-e087",
+      "timestamp": 1774273630000,
+      "endTimestamp": 1774273651000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "explorer.exe",
+      "appDisplay": "File Explorer",
+      "title": "Downloads",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 15
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000058",
+      "ref": "gs-06-chaotic-day-e088",
+      "timestamp": 1774273680000,
+      "endTimestamp": 1774275720000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "EmptyWorkspace.tsx — dashboard — Visual Studio Code",
+      "repositoryId": "dashboard",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000059",
+      "ref": "gs-06-chaotic-day-e089",
+      "timestamp": 1774273700000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.status.summary",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "branch": "feat/DSH-77-empty-state",
+        "dirtyFiles": 3,
+        "ahead": 0,
+        "behind": 0
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45,
+      "$note": "Second return of the day, to a different context than block 4."
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000005a",
+      "ref": "gs-06-chaotic-day-e090",
+      "timestamp": 1774274020000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "path": "C:/dev/dashboard/src/onboarding/EmptyWorkspace.tsx",
+        "languageId": "typescriptreact",
+        "changedLines": 34
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000005b",
+      "ref": "gs-06-chaotic-day-e091",
+      "timestamp": 1774274530000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "commandRedacted": "pnpm test onboarding",
+        "cwd": "C:/dev/dashboard",
+        "exitCode": 1,
+        "durationMs": 9100,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 95
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000005c",
+      "ref": "gs-06-chaotic-day-e092",
+      "timestamp": 1774274541000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.error_tail",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "lines": ["Found multiple elements with the text: Create your first project"],
+        "lineCount": 1,
+        "truncated": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 85
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000005d",
+      "ref": "gs-06-chaotic-day-e093",
+      "timestamp": 1774275090000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "path": "C:/dev/dashboard/test/onboarding.test.tsx",
+        "languageId": "typescriptreact",
+        "changedLines": 9
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000005e",
+      "ref": "gs-06-chaotic-day-e094",
+      "timestamp": 1774275580000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "path": "C:/dev/dashboard/src/onboarding/steps.ts",
+        "languageId": "typescript",
+        "changedLines": 12
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000005f",
+      "ref": "gs-06-chaotic-day-e095",
+      "timestamp": 1774275720000,
+      "endTimestamp": 1774276380000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Onboarding empty states — Figma",
+      "repositoryId": "dashboard",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000060",
+      "ref": "gs-06-chaotic-day-e096",
+      "timestamp": 1774275790000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Onboarding empty states — Figma",
+      "repositoryId": "dashboard",
+      "metadata": {
+        "tabId": 122,
+        "url": "https://www.figma.com/file/8Kd2/dashboard-onboarding",
+        "host": "figma.com",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000061",
+      "ref": "gs-06-chaotic-day-e097",
+      "timestamp": 1774276380000,
+      "endTimestamp": 1774277880000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "EmptyWorkspace.tsx — dashboard — Visual Studio Code",
+      "repositoryId": "dashboard",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000062",
+      "ref": "gs-06-chaotic-day-e098",
+      "timestamp": 1774276880000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "path": "C:/dev/dashboard/src/onboarding/EmptyWorkspace.tsx",
+        "languageId": "typescriptreact",
+        "changedLines": 21
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000063",
+      "ref": "gs-06-chaotic-day-e099",
+      "timestamp": 1774277560000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "commandRedacted": "pnpm test onboarding",
+        "cwd": "C:/dev/dashboard",
+        "exitCode": 0,
+        "durationMs": 9600,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000064",
+      "ref": "gs-06-chaotic-day-e100",
+      "timestamp": 1774277880000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.commit",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "sha": "e71c4a8b2d6f9e3c5a7b1d4f8c2e6a0b3d5f7c9e",
+        "messageRedacted": "feat(onboarding): empty workspace state with first-project call to action (DSH-77)",
+        "filesChanged": [
+          "src/onboarding/EmptyWorkspace.tsx",
+          "src/onboarding/steps.ts",
+          "test/onboarding.test.tsx"
+        ],
+        "insertions": 168,
+        "deletions": 22,
+        "authorIsUser": true
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 90
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000065",
+      "ref": "gs-06-chaotic-day-e101",
+      "timestamp": 1774278020000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "dashboard",
+      "metadata": {
+        "commandRedacted": "git push -u origin feat/DSH-77-empty-state",
+        "cwd": "C:/dev/dashboard",
+        "exitCode": 0,
+        "durationMs": 2400,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000066",
+      "ref": "gs-06-chaotic-day-e102",
+      "timestamp": 1774278120000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Pull Request #921 · acme/dashboard",
+      "repositoryId": "dashboard",
+      "metadata": {
+        "tabId": 131,
+        "url": "https://github.com/acme/dashboard/pull/921",
+        "host": "github.com",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000067",
+      "ref": "gs-06-chaotic-day-e103",
+      "timestamp": 1774278600000,
+      "endTimestamp": 1774278960000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Checks · Pull Request #2210 · acme/myapp",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000068",
+      "ref": "gs-06-chaotic-day-e104",
+      "timestamp": 1774278620000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "e2e (ubuntu-latest) failed · Pull Request #2210 · acme/myapp",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 130,
+        "url": "https://github.com/acme/myapp/pull/2210/checks",
+        "host": "github.com",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60,
+      "$note": "Third block of the same context, seven hours after it started."
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000069",
+      "ref": "gs-06-chaotic-day-e105",
+      "timestamp": 1774278960000,
+      "endTimestamp": 1774279800000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "checkout.e2e.ts — myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000006a",
+      "ref": "gs-06-chaotic-day-e106",
+      "timestamp": 1774279060000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/e2e/checkout.e2e.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "e2e/checkout.e2e.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000006b",
+      "ref": "gs-06-chaotic-day-e107",
+      "timestamp": 1774279450000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/e2e/checkout.e2e.ts",
+        "languageId": "typescript",
+        "changedLines": 7
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000006c",
+      "ref": "gs-06-chaotic-day-e108",
+      "timestamp": 1774279800000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "pnpm e2e checkout",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 1,
+        "durationMs": 48200,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 95
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000006d",
+      "ref": "gs-06-chaotic-day-e109",
+      "timestamp": 1774279860000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.error_tail",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "lines": [
+          "expected \"42,00 €\" to equal \"42.00 EUR\"",
+          "  at e2e/checkout.e2e.ts:58:22",
+          "locale formatting differs between CI and local"
+        ],
+        "lineCount": 3,
+        "truncated": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 85
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000006e",
+      "ref": "gs-06-chaotic-day-e110",
+      "timestamp": 1774280000000,
+      "tzOffsetMinutes": 60,
+      "source": "manual",
+      "type": "manual.note",
+      "producer": {
+        "name": "rewind-manual",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "text": "e2e fails only in CI — the runner locale is en_US and formats currency differently. Pin the locale in the e2e setup tomorrow."
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 90
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-00000000006f",
+      "ref": "gs-06-chaotic-day-e111",
+      "timestamp": 1774280040000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.status.summary",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "branch": "fix/DNM-4102-checkout-rounding",
+        "dirtyFiles": 1,
+        "ahead": 1,
+        "behind": 0
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000070",
+      "ref": "gs-06-chaotic-day-e112",
+      "timestamp": 1774280160000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.idle.start",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "metadata": {
+        "idleSeconds": 0
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 50
+    },
+    {
+      "id": "c84e3253-3253-7000-8000-000000000071",
+      "ref": "gs-06-chaotic-day-e113",
+      "timestamp": 1774282320000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.session.lock",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 50
+    }
+  ]
+}

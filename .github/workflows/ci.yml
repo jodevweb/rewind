@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typescript:
+    name: TypeScript (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Format check
+        run: pnpm lint
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Golden fixtures are up to date
+        run: pnpm --filter @rewind/fixtures build:check
+      - name: Test
+        run: pnpm test
+
+  privacy-gates:
+    name: Privacy gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      # PRIVACY.md §2 promises these APIs are absent from the product. This makes it a build gate
+      # rather than a policy statement (ticket P0-008).
+      - name: Forbidden API check (no keylogger, no clipboard, no screen capture)
+        run: pnpm check:forbidden-apis
+
+      # TESTING.md §11: any failing privacy test blocks the release.
+      - name: Redaction corpus
+        run: pnpm --filter @rewind/protocol test
+
+      # TESTING.md §11: context quality is release-blocking. The harness validates itself via the
+      # oracle baseline, so a broken metric fails here rather than silently reporting good numbers.
+      - name: Context engine benchmark
+        run: pnpm --filter @rewind/eval test
+
+  # Enabled once the Rust workspace lands in Phase 1 (ticket P1-001).
+  rust:
+    name: Rust
+    if: false
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - run: cargo fmt --check
+        working-directory: apps/desktop/src-tauri
+      - run: cargo clippy --all-targets -- -D warnings
+        working-directory: apps/desktop/src-tauri
+      - run: cargo test
+        working-directory: apps/desktop/src-tauri

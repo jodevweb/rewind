@@ -1,0 +1,1109 @@
+{
+  "$schema": "../schemas/golden-session.json",
+  "id": "gs-03-real-context-switch",
+  "name": "Real context switch",
+  "description": "Thirty minutes refactoring a payment provider interface in one repository, then a sustained forty-minute switch to marketing copy in a different repository.",
+  "tests": "The mirror image of GS-02. Here the switch is real and must produce two contexts. An engine tuned only to avoid false splits — one that merges on temporal proximity alone — fails here by producing a single blurred context.",
+  "day": "2026-03-17",
+  "tzOffsetMinutes": 60,
+  "expected": {
+    "contextCount": 2,
+    "contexts": [
+      {
+        "tag": "payments",
+        "label": "Payment provider interface refactor",
+        "labelMatches": "(?i)payment|provider|adyen|refactor",
+        "outcome": "blocked",
+        "expectedNextStep": "Restore the stash and fix provider.capture in adyen.adapter.ts",
+        "startTimestamp": 1773738000000,
+        "endTimestamp": 1773739260000,
+        "eventRefs": [
+          "gs-03-real-context-switch-e001",
+          "gs-03-real-context-switch-e002",
+          "gs-03-real-context-switch-e003",
+          "gs-03-real-context-switch-e004",
+          "gs-03-real-context-switch-e005",
+          "gs-03-real-context-switch-e006",
+          "gs-03-real-context-switch-e007",
+          "gs-03-real-context-switch-e008",
+          "gs-03-real-context-switch-e009",
+          "gs-03-real-context-switch-e010",
+          "gs-03-real-context-switch-e011",
+          "gs-03-real-context-switch-e012",
+          "gs-03-real-context-switch-e013",
+          "gs-03-real-context-switch-e014",
+          "gs-03-real-context-switch-e015",
+          "gs-03-real-context-switch-e016",
+          "gs-03-real-context-switch-e017",
+          "gs-03-real-context-switch-e018",
+          "gs-03-real-context-switch-e019",
+          "gs-03-real-context-switch-e020"
+        ],
+        "importantEventRefs": [
+          "gs-03-real-context-switch-e004",
+          "gs-03-real-context-switch-e005",
+          "gs-03-real-context-switch-e008",
+          "gs-03-real-context-switch-e017",
+          "gs-03-real-context-switch-e018",
+          "gs-03-real-context-switch-e020"
+        ],
+        "note": "Ends parked in a stash with a failing test. Resume must surface both."
+      },
+      {
+        "tag": "site",
+        "label": "Pricing page copy (MKT-118)",
+        "labelMatches": "(?i)pricing|copy|MKT-118|site",
+        "outcome": "fix_implemented",
+        "expectedNextStep": "Open a PR for mkt-118-pricing-copy",
+        "startTimestamp": 1773739260000,
+        "endTimestamp": 1773741480000,
+        "eventRefs": [
+          "gs-03-real-context-switch-e021",
+          "gs-03-real-context-switch-e022",
+          "gs-03-real-context-switch-e023",
+          "gs-03-real-context-switch-e024",
+          "gs-03-real-context-switch-e025",
+          "gs-03-real-context-switch-e026",
+          "gs-03-real-context-switch-e027",
+          "gs-03-real-context-switch-e028",
+          "gs-03-real-context-switch-e029",
+          "gs-03-real-context-switch-e030",
+          "gs-03-real-context-switch-e031",
+          "gs-03-real-context-switch-e032",
+          "gs-03-real-context-switch-e033",
+          "gs-03-real-context-switch-e034",
+          "gs-03-real-context-switch-e035",
+          "gs-03-real-context-switch-e036",
+          "gs-03-real-context-switch-e037",
+          "gs-03-real-context-switch-e038",
+          "gs-03-real-context-switch-e039"
+        ],
+        "importantEventRefs": [
+          "gs-03-real-context-switch-e022",
+          "gs-03-real-context-switch-e024",
+          "gs-03-real-context-switch-e027",
+          "gs-03-real-context-switch-e038"
+        ]
+      }
+    ],
+    "noiseEventRefs": []
+  },
+  "events": [
+    {
+      "id": "86510153-0153-7000-8000-000000000001",
+      "ref": "gs-03-real-context-switch-e001",
+      "timestamp": 1773738000000,
+      "endTimestamp": 1773738150000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000002",
+      "ref": "gs-03-real-context-switch-e002",
+      "timestamp": 1773738003000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.workspace.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "workspacePath": "C:/dev/myapp",
+        "ideName": "vscode",
+        "ideVersion": "1.96.0"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000003",
+      "ref": "gs-03-real-context-switch-e003",
+      "timestamp": 1773738008000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.repo.detected",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp",
+        "remoteUrl": "https://github.com/acme/myapp.git",
+        "defaultBranch": "main"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000004",
+      "ref": "gs-03-real-context-switch-e004",
+      "timestamp": 1773738030000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.branch.checkout",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "from": "main",
+        "to": "refactor/payment-provider-interface",
+        "isNewBranch": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 80
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000005",
+      "ref": "gs-03-real-context-switch-e005",
+      "timestamp": 1773738070000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/payments/provider.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/payments/provider.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000006",
+      "ref": "gs-03-real-context-switch-e006",
+      "timestamp": 1773738120000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/payments/adyen.adapter.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/payments/adyen.adapter.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000007",
+      "ref": "gs-03-real-context-switch-e007",
+      "timestamp": 1773738150000,
+      "endTimestamp": 1773738420000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Adyen Checkout API — Documentation",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000008",
+      "ref": "gs-03-real-context-switch-e008",
+      "timestamp": 1773738160000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Adyen Checkout API — Documentation",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 21,
+        "url": "https://docs.adyen.com/api-explorer/Checkout/71/post/payments",
+        "host": "docs.adyen.com",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000009",
+      "ref": "gs-03-real-context-switch-e009",
+      "timestamp": 1773738320000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Idempotency — Adyen Documentation",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 21,
+        "url": "https://docs.adyen.com/development-resources/api-idempotency",
+        "host": "docs.adyen.com",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "86510153-0153-7000-8000-00000000000a",
+      "ref": "gs-03-real-context-switch-e010",
+      "timestamp": 1773738420000,
+      "endTimestamp": 1773739140000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "provider.ts — myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "86510153-0153-7000-8000-00000000000b",
+      "ref": "gs-03-real-context-switch-e011",
+      "timestamp": 1773738570000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/payments/provider.ts",
+        "languageId": "typescript",
+        "changedLines": 34
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "86510153-0153-7000-8000-00000000000c",
+      "ref": "gs-03-real-context-switch-e012",
+      "timestamp": 1773738760000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/payments/adyen.adapter.ts",
+        "languageId": "typescript",
+        "changedLines": 22
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "86510153-0153-7000-8000-00000000000d",
+      "ref": "gs-03-real-context-switch-e013",
+      "timestamp": 1773738850000,
+      "tzOffsetMinutes": 60,
+      "source": "filesystem",
+      "type": "fs.batch",
+      "producer": {
+        "name": "rewind-filesystem",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "paths": [
+          "C:/dev/myapp/src/payments/provider.ts",
+          "C:/dev/myapp/src/payments/adyen.adapter.ts"
+        ],
+        "count": 7,
+        "changeTypes": ["modified"]
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 40
+    },
+    {
+      "id": "86510153-0153-7000-8000-00000000000e",
+      "ref": "gs-03-real-context-switch-e014",
+      "timestamp": 1773739010000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/payments/stripe.adapter.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/payments/stripe.adapter.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "86510153-0153-7000-8000-00000000000f",
+      "ref": "gs-03-real-context-switch-e015",
+      "timestamp": 1773739100000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/payments/stripe.adapter.ts",
+        "languageId": "typescript",
+        "changedLines": 19
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000010",
+      "ref": "gs-03-real-context-switch-e016",
+      "timestamp": 1773739140000,
+      "endTimestamp": 1773739260000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "WindowsTerminal.exe",
+      "appDisplay": "Windows Terminal",
+      "title": "pwsh — myapp",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000011",
+      "ref": "gs-03-real-context-switch-e017",
+      "timestamp": 1773739155000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "pnpm test payments",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 1,
+        "durationMs": 9800,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 95
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000012",
+      "ref": "gs-03-real-context-switch-e018",
+      "timestamp": 1773739166000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.error_tail",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "lines": [
+          "TypeError: provider.capture is not a function",
+          "  at src/payments/adyen.adapter.ts:112:24"
+        ],
+        "lineCount": 2,
+        "truncated": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 85
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000013",
+      "ref": "gs-03-real-context-switch-e019",
+      "timestamp": 1773739240000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "git stash push -m \"wip provider interface\"",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 0,
+        "durationMs": 340,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000014",
+      "ref": "gs-03-real-context-switch-e020",
+      "timestamp": 1773739250000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.stash",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "target": "refactor/payment-provider-interface",
+        "conflicted": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30,
+      "$note": "Work parked mid-refactor. Resume must be able to say so."
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000015",
+      "ref": "gs-03-real-context-switch-e021",
+      "timestamp": 1773739260000,
+      "endTimestamp": 1773739440000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "MKT-118 Update pricing page copy — Linear",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000016",
+      "ref": "gs-03-real-context-switch-e022",
+      "timestamp": 1773739280000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "MKT-118 Update pricing page copy — Linear",
+      "metadata": {
+        "tabId": 30,
+        "url": "https://linear.app/acme/issue/MKT-118",
+        "host": "linear.app",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000017",
+      "ref": "gs-03-real-context-switch-e023",
+      "timestamp": 1773739440000,
+      "endTimestamp": 1773739980000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "acme-site — Visual Studio Code",
+      "repositoryId": "acme-site",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000018",
+      "ref": "gs-03-real-context-switch-e024",
+      "timestamp": 1773739445000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.workspace.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "acme-site",
+      "metadata": {
+        "workspacePath": "C:/dev/acme-site",
+        "ideName": "vscode",
+        "ideVersion": "1.96.0"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45,
+      "$note": "Different workspace AND different repository, held for 40 minutes. This is a real switch, not an excursion."
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000019",
+      "ref": "gs-03-real-context-switch-e025",
+      "timestamp": 1773739452000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.repo.detected",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "acme-site",
+      "metadata": {
+        "path": "C:/dev/acme-site",
+        "remoteUrl": "https://github.com/acme/acme-site.git",
+        "defaultBranch": "main"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "86510153-0153-7000-8000-00000000001a",
+      "ref": "gs-03-real-context-switch-e026",
+      "timestamp": 1773739480000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.branch.checkout",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "acme-site",
+      "metadata": {
+        "from": "main",
+        "to": "mkt-118-pricing-copy",
+        "isNewBranch": true
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 80
+    },
+    {
+      "id": "86510153-0153-7000-8000-00000000001b",
+      "ref": "gs-03-real-context-switch-e027",
+      "timestamp": 1773739520000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "acme-site",
+      "metadata": {
+        "path": "C:/dev/acme-site/content/pricing.mdx",
+        "languageId": "mdx",
+        "repoRelativePath": "content/pricing.mdx"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "86510153-0153-7000-8000-00000000001c",
+      "ref": "gs-03-real-context-switch-e028",
+      "timestamp": 1773739690000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "acme-site",
+      "metadata": {
+        "path": "C:/dev/acme-site/content/pricing.mdx",
+        "languageId": "mdx",
+        "changedLines": 41
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "86510153-0153-7000-8000-00000000001d",
+      "ref": "gs-03-real-context-switch-e029",
+      "timestamp": 1773739890000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "acme-site",
+      "metadata": {
+        "path": "C:/dev/acme-site/components/PricingTable.tsx",
+        "languageId": "typescriptreact",
+        "changedLines": 16
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "86510153-0153-7000-8000-00000000001e",
+      "ref": "gs-03-real-context-switch-e030",
+      "timestamp": 1773739980000,
+      "endTimestamp": 1773740070000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "WindowsTerminal.exe",
+      "appDisplay": "Windows Terminal",
+      "title": "pwsh — acme-site",
+      "repositoryId": "acme-site",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "86510153-0153-7000-8000-00000000001f",
+      "ref": "gs-03-real-context-switch-e031",
+      "timestamp": 1773739990000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "acme-site",
+      "metadata": {
+        "commandRedacted": "pnpm dev",
+        "cwd": "C:/dev/acme-site",
+        "exitCode": 0,
+        "durationMs": 2100,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000020",
+      "ref": "gs-03-real-context-switch-e032",
+      "timestamp": 1773740070000,
+      "endTimestamp": 1773740760000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Pricing — Acme (localhost:3000)",
+      "repositoryId": "acme-site",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000021",
+      "ref": "gs-03-real-context-switch-e033",
+      "timestamp": 1773740080000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Pricing — Acme (localhost:3000)",
+      "repositoryId": "acme-site",
+      "metadata": {
+        "tabId": 31,
+        "url": "http://localhost:3000/pricing",
+        "host": "localhost",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000022",
+      "ref": "gs-03-real-context-switch-e034",
+      "timestamp": 1773740420000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Typography — Tailwind CSS",
+      "repositoryId": "acme-site",
+      "metadata": {
+        "tabId": 32,
+        "url": "https://tailwindcss.com/docs/typography-plugin",
+        "host": "tailwindcss.com",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000023",
+      "ref": "gs-03-real-context-switch-e035",
+      "timestamp": 1773740760000,
+      "endTimestamp": 1773741480000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "PricingTable.tsx — acme-site — Visual Studio Code",
+      "repositoryId": "acme-site",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000024",
+      "ref": "gs-03-real-context-switch-e036",
+      "timestamp": 1773740920000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "acme-site",
+      "metadata": {
+        "path": "C:/dev/acme-site/components/PricingTable.tsx",
+        "languageId": "typescriptreact",
+        "changedLines": 24
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000025",
+      "ref": "gs-03-real-context-switch-e037",
+      "timestamp": 1773741190000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "acme-site",
+      "metadata": {
+        "path": "C:/dev/acme-site/content/pricing.mdx",
+        "languageId": "mdx",
+        "changedLines": 8
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000026",
+      "ref": "gs-03-real-context-switch-e038",
+      "timestamp": 1773741440000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.commit",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "acme-site",
+      "metadata": {
+        "sha": "f18b3c7d9e2a4b6c8d0e1f3a5b7c9d1e2f4a6b8c",
+        "messageRedacted": "content(pricing): rewrite tier descriptions and align table copy (MKT-118)",
+        "filesChanged": ["content/pricing.mdx", "components/PricingTable.tsx"],
+        "insertions": 63,
+        "deletions": 39,
+        "authorIsUser": true
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 90
+    },
+    {
+      "id": "86510153-0153-7000-8000-000000000027",
+      "ref": "gs-03-real-context-switch-e039",
+      "timestamp": 1773741480000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "acme-site",
+      "metadata": {
+        "commandRedacted": "git push -u origin mkt-118-pricing-copy",
+        "cwd": "C:/dev/acme-site",
+        "exitCode": 0,
+        "durationMs": 2200,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    }
+  ]
+}

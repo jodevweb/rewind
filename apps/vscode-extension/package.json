@@ -1,0 +1,7 @@
+{
+  "name": "@rewind/vscode-extension",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "VS Code / Cursor / Windsurf extension: workspace and file events (Phase 4)."
+}
