@@ -8,18 +8,19 @@
     "node": ">=22"
   },
   "scripts": {
+    "dev": "pnpm --filter @rewind/studio dev",
+    "capture": "pnpm --filter @rewind/capture-probe capture",
+    "capture:clear": "pnpm --filter @rewind/capture-probe capture:clear",
+    "eval": "pnpm --filter @rewind/eval eval",
     "build": "turbo run build",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "lint": "prettier --check .",
     "format": "prettier --write .",
     "codegen": "turbo run codegen",
-    "check:forbidden-apis": "node scripts/check-forbidden-apis.mjs",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm check:forbidden-apis",
-    "eval": "pnpm --filter @rewind/eval eval",
     "build:fixtures": "pnpm --filter @rewind/fixtures build",
-    "capture": "pnpm --filter @rewind/capture-probe capture",
-    "capture:clear": "pnpm --filter @rewind/capture-probe capture:clear"
+    "check:forbidden-apis": "node scripts/check-forbidden-apis.mjs",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm check:forbidden-apis"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
