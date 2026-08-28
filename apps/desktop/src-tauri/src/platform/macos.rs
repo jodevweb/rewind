@@ -35,20 +35,12 @@ end tell
 return appId & tab & appName & tab & winTitle
 "#;
 
+#[derive(Default)]
 pub struct MacActiveWindow {
     /// Set once we have seen a real title, so a later empty one is read as "this window has no
     /// title" rather than as "the permission was revoked".
     seen_title: bool,
     denied: bool,
-}
-
-impl Default for MacActiveWindow {
-    fn default() -> Self {
-        Self {
-            seen_title: false,
-            denied: false,
-        }
-    }
 }
 
 impl ActiveWindowProvider for MacActiveWindow {
