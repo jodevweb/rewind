@@ -1,0 +1,17 @@
+node_modules/
+dist/
+build/
+.turbo/
+target/
+*.tsbuildinfo
+.DS_Store
+*.log
+coverage/
+.env
+.env.*
+!.env.example
+apps/desktop/src-tauri/gen/
+packages/protocol/src/generated.ts
+
+# macOS
+.DS_Store

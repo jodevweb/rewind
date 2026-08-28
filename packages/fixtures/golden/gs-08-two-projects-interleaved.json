@@ -1,0 +1,959 @@
+{
+  "$schema": "../schemas/golden-session.json",
+  "id": "gs-08-two-projects-interleaved",
+  "name": "Two projects interleaved",
+  "description": "Home Staging and Pépithèque worked in short alternating slices across two hours, sharing Slack, Linear, Cockpit, Terminal, Mail, Notes and the browser.",
+  "tests": "The most important benchmark of the pivot. The two projects are temporally interleaved with no gap large enough to segment on, and they use the same applications — Cockpit appears in both, 25 minutes apart. Only the anchors separate them: Home Staging / DNM-4218 versus Pépithèque / PEP-77. A time-based or application-based segmentation scores near zero. This fixture is the reason Context Anchors exist as a first-class concept.",
+  "day": "2026-04-15",
+  "tzOffsetMinutes": 120,
+  "expected": {
+    "contextCount": 2,
+    "contexts": [
+      {
+        "tag": "homestaging",
+        "label": "Home Staging V3 (DNM-4218)",
+        "labelMatches": "(?i)home ?staging|DNM-4218",
+        "outcome": "pr_opened",
+        "expectedNextStep": "Review the masking run before moving DNM-4218 out of review",
+        "startTimestamp": 1776236400000,
+        "endTimestamp": 1776243360000,
+        "eventRefs": [
+          "gs-08-two-projects-interleaved-e001",
+          "gs-08-two-projects-interleaved-e002",
+          "gs-08-two-projects-interleaved-e005",
+          "gs-08-two-projects-interleaved-e006",
+          "gs-08-two-projects-interleaved-e010",
+          "gs-08-two-projects-interleaved-e011",
+          "gs-08-two-projects-interleaved-e013",
+          "gs-08-two-projects-interleaved-e014",
+          "gs-08-two-projects-interleaved-e015",
+          "gs-08-two-projects-interleaved-e018",
+          "gs-08-two-projects-interleaved-e019",
+          "gs-08-two-projects-interleaved-e025",
+          "gs-08-two-projects-interleaved-e026",
+          "gs-08-two-projects-interleaved-e030",
+          "gs-08-two-projects-interleaved-e031",
+          "gs-08-two-projects-interleaved-e032"
+        ],
+        "importantEventRefs": [
+          "gs-08-two-projects-interleaved-e001",
+          "gs-08-two-projects-interleaved-e002",
+          "gs-08-two-projects-interleaved-e005",
+          "gs-08-two-projects-interleaved-e011",
+          "gs-08-two-projects-interleaved-e014",
+          "gs-08-two-projects-interleaved-e019",
+          "gs-08-two-projects-interleaved-e026",
+          "gs-08-two-projects-interleaved-e031"
+        ]
+      },
+      {
+        "tag": "pepitheque",
+        "label": "Pépithèque catalog import (PEP-77)",
+        "labelMatches": "(?i)p[ée]pith[èe]que|PEP-77|catalog",
+        "outcome": "blocked",
+        "expectedNextStep": "Chase the partner for API credentials — the import fails with a 401",
+        "startTimestamp": 1776236960000,
+        "endTimestamp": 1776242790000,
+        "eventRefs": [
+          "gs-08-two-projects-interleaved-e003",
+          "gs-08-two-projects-interleaved-e004",
+          "gs-08-two-projects-interleaved-e007",
+          "gs-08-two-projects-interleaved-e008",
+          "gs-08-two-projects-interleaved-e009",
+          "gs-08-two-projects-interleaved-e012",
+          "gs-08-two-projects-interleaved-e016",
+          "gs-08-two-projects-interleaved-e017",
+          "gs-08-two-projects-interleaved-e020",
+          "gs-08-two-projects-interleaved-e021",
+          "gs-08-two-projects-interleaved-e022",
+          "gs-08-two-projects-interleaved-e023",
+          "gs-08-two-projects-interleaved-e024",
+          "gs-08-two-projects-interleaved-e027",
+          "gs-08-two-projects-interleaved-e028",
+          "gs-08-two-projects-interleaved-e029"
+        ],
+        "importantEventRefs": [
+          "gs-08-two-projects-interleaved-e003",
+          "gs-08-two-projects-interleaved-e004",
+          "gs-08-two-projects-interleaved-e008",
+          "gs-08-two-projects-interleaved-e017",
+          "gs-08-two-projects-interleaved-e020",
+          "gs-08-two-projects-interleaved-e022",
+          "gs-08-two-projects-interleaved-e023",
+          "gs-08-two-projects-interleaved-e024",
+          "gs-08-two-projects-interleaved-e027",
+          "gs-08-two-projects-interleaved-e029"
+        ],
+        "note": "Blocked on something outside the machine. Resume must be able to say that."
+      }
+    ],
+    "noiseEventRefs": []
+  },
+  "events": [
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000001",
+      "ref": "gs-08-two-projects-interleaved-e001",
+      "timestamp": 1776236400000,
+      "endTimestamp": 1776236660000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.tinyspeck.slackmacgap",
+      "appDisplay": "Slack",
+      "title": "danim — #product — Home Staging V3 — Slack",
+      "metadata": {
+        "bundleId": "com.tinyspeck.slackmacgap"
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000002",
+      "ref": "gs-08-two-projects-interleaved-e002",
+      "timestamp": 1776236670000,
+      "endTimestamp": 1776236950000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.linear",
+      "appDisplay": "Linear",
+      "title": "DNM-4218 Home Staging generation flow — Linear",
+      "metadata": {
+        "bundleId": "com.linear"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000003",
+      "ref": "gs-08-two-projects-interleaved-e003",
+      "timestamp": 1776236960000,
+      "endTimestamp": 1776237220000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.mail",
+      "appDisplay": "Mail",
+      "title": "Pépithèque — accès API partenaire — Mail",
+      "metadata": {
+        "bundleId": "com.apple.mail"
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30,
+      "$note": "Project B enters. Four minutes after project A, in a different app."
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000004",
+      "ref": "gs-08-two-projects-interleaved-e004",
+      "timestamp": 1776237230000,
+      "endTimestamp": 1776237360000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.finder",
+      "appDisplay": "Finder",
+      "title": "Pépithèque — Finder",
+      "metadata": {
+        "bundleId": "com.apple.finder",
+        "directory": "/Users/jordan/Documents/Pépithèque"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000005",
+      "ref": "gs-08-two-projects-interleaved-e005",
+      "timestamp": 1776237370000,
+      "endTimestamp": 1776237870000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.figma.Desktop",
+      "appDisplay": "Figma",
+      "title": "Home Staging V3 / Generation flow — Figma",
+      "metadata": {
+        "bundleId": "com.figma.Desktop"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30,
+      "$note": "Straight back to project A. Two minutes of gap — no temporal boundary to find."
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000006",
+      "ref": "gs-08-two-projects-interleaved-e006",
+      "timestamp": 1776237640000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.title_changed",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.figma.Desktop",
+      "appDisplay": "Figma",
+      "title": "Home Staging V3 / Masking — Figma",
+      "metadata": {
+        "previousTitle": "Home Staging V3 / Generation flow — Figma"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000007",
+      "ref": "gs-08-two-projects-interleaved-e007",
+      "timestamp": 1776237880000,
+      "endTimestamp": 1776238380000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.google.Chrome",
+      "appDisplay": "Google Chrome",
+      "title": "Pépithèque — partner API reference — Google Chrome",
+      "metadata": {
+        "bundleId": "com.google.Chrome"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000008",
+      "ref": "gs-08-two-projects-interleaved-e008",
+      "timestamp": 1776237895000,
+      "tzOffsetMinutes": 120,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "com.google.Chrome",
+      "appDisplay": "Google Chrome",
+      "metadata": {
+        "tabId": 301,
+        "url": "https://partners.pepitheque.fr/docs/api/catalog",
+        "host": "partners.pepitheque.fr",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000009",
+      "ref": "gs-08-two-projects-interleaved-e009",
+      "timestamp": 1776238150000,
+      "tzOffsetMinutes": 120,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "com.google.Chrome",
+      "appDisplay": "Google Chrome",
+      "metadata": {
+        "tabId": 301,
+        "url": "https://partners.pepitheque.fr/docs/api/authentication",
+        "host": "partners.pepitheque.fr",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-00000000000a",
+      "ref": "gs-08-two-projects-interleaved-e010",
+      "timestamp": 1776238390000,
+      "endTimestamp": 1776238560000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.acme.cockpit",
+      "appDisplay": "Cockpit",
+      "title": "Home Staging — Cockpit",
+      "metadata": {
+        "bundleId": "com.acme.cockpit"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-00000000000b",
+      "ref": "gs-08-two-projects-interleaved-e011",
+      "timestamp": 1776238420000,
+      "tzOffsetMinutes": 120,
+      "source": "external",
+      "type": "external.mission.started",
+      "producer": {
+        "name": "rewind-external",
+        "version": "0.1.0"
+      },
+      "app": "com.acme.cockpit",
+      "appDisplay": "Cockpit",
+      "metadata": {
+        "source": "cockpit",
+        "missionId": "msn_9012",
+        "mission": "Home Staging masking pass",
+        "project": "home-staging",
+        "anchors": [
+          {
+            "type": "issue",
+            "value": "DNM-4218"
+          },
+          {
+            "type": "project",
+            "value": "home-staging"
+          }
+        ]
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 75
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-00000000000c",
+      "ref": "gs-08-two-projects-interleaved-e012",
+      "timestamp": 1776238570000,
+      "endTimestamp": 1776238880000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.Notes",
+      "appDisplay": "Notes",
+      "title": "Pépithèque — questions partenaire — Notes",
+      "metadata": {
+        "bundleId": "com.apple.Notes"
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-00000000000d",
+      "ref": "gs-08-two-projects-interleaved-e013",
+      "timestamp": 1776238890000,
+      "endTimestamp": 1776239880000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.Terminal",
+      "appDisplay": "Terminal",
+      "title": "claude — danim-wt/DNM-4218 — Terminal",
+      "repositoryId": "danim",
+      "metadata": {
+        "bundleId": "com.apple.Terminal"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-00000000000e",
+      "ref": "gs-08-two-projects-interleaved-e014",
+      "timestamp": 1776238910000,
+      "tzOffsetMinutes": 120,
+      "source": "agent",
+      "type": "agent.session.started",
+      "producer": {
+        "name": "rewind-agent",
+        "version": "0.1.0"
+      },
+      "repositoryId": "danim",
+      "metadata": {
+        "agent": "claude-code",
+        "model": "claude-opus-5",
+        "projectPath": "/Users/jordan/dev/danim-wt/DNM-4218"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-00000000000f",
+      "ref": "gs-08-two-projects-interleaved-e015",
+      "timestamp": 1776239530000,
+      "tzOffsetMinutes": 120,
+      "source": "agent",
+      "type": "agent.activity",
+      "producer": {
+        "name": "rewind-agent",
+        "version": "0.1.0"
+      },
+      "repositoryId": "danim",
+      "metadata": {
+        "agent": "claude-code",
+        "toolCallCount": 22,
+        "filesTouched": ["src/staging/mask.ts"],
+        "outcome": "in_progress"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000010",
+      "ref": "gs-08-two-projects-interleaved-e016",
+      "timestamp": 1776239890000,
+      "endTimestamp": 1776240150000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.acme.cockpit",
+      "appDisplay": "Cockpit",
+      "title": "Pépithèque — Cockpit",
+      "metadata": {
+        "bundleId": "com.acme.cockpit"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30,
+      "$note": "Same application as project A used 25 minutes ago. Application identity carries no signal here."
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000011",
+      "ref": "gs-08-two-projects-interleaved-e017",
+      "timestamp": 1776239920000,
+      "tzOffsetMinutes": 120,
+      "source": "external",
+      "type": "external.mission.started",
+      "producer": {
+        "name": "rewind-external",
+        "version": "0.1.0"
+      },
+      "app": "com.acme.cockpit",
+      "appDisplay": "Cockpit",
+      "metadata": {
+        "source": "cockpit",
+        "missionId": "msn_9013",
+        "mission": "Pépithèque catalog import",
+        "project": "pepitheque",
+        "anchors": [
+          {
+            "type": "issue",
+            "value": "PEP-77"
+          },
+          {
+            "type": "project",
+            "value": "pepitheque"
+          }
+        ]
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 75
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000012",
+      "ref": "gs-08-two-projects-interleaved-e018",
+      "timestamp": 1776240160000,
+      "endTimestamp": 1776240420000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.Terminal",
+      "appDisplay": "Terminal",
+      "title": "pnpm test staging — danim-wt/DNM-4218 — Terminal",
+      "repositoryId": "danim",
+      "metadata": {
+        "bundleId": "com.apple.Terminal"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000013",
+      "ref": "gs-08-two-projects-interleaved-e019",
+      "timestamp": 1776240190000,
+      "tzOffsetMinutes": 120,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "danim",
+      "metadata": {
+        "commandRedacted": "pnpm test staging",
+        "cwd": "/Users/jordan/dev/danim-wt/DNM-4218",
+        "exitCode": 0,
+        "durationMs": 13800,
+        "shell": "zsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000014",
+      "ref": "gs-08-two-projects-interleaved-e020",
+      "timestamp": 1776240430000,
+      "endTimestamp": 1776240760000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.linear",
+      "appDisplay": "Linear",
+      "title": "PEP-77 Import catalogue partenaire — Linear",
+      "metadata": {
+        "bundleId": "com.linear"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30,
+      "$note": "Project B finally gets its own structured identifier. Before this, only the word \"Pépithèque\" tied its events together."
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000015",
+      "ref": "gs-08-two-projects-interleaved-e021",
+      "timestamp": 1776240770000,
+      "endTimestamp": 1776241560000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.Terminal",
+      "appDisplay": "Terminal",
+      "title": "claude — pepitheque — Terminal",
+      "repositoryId": "pepitheque",
+      "metadata": {
+        "bundleId": "com.apple.Terminal"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000016",
+      "ref": "gs-08-two-projects-interleaved-e022",
+      "timestamp": 1776240800000,
+      "tzOffsetMinutes": 120,
+      "source": "agent",
+      "type": "agent.session.started",
+      "producer": {
+        "name": "rewind-agent",
+        "version": "0.1.0"
+      },
+      "repositoryId": "pepitheque",
+      "metadata": {
+        "agent": "claude-code",
+        "model": "claude-opus-5",
+        "projectPath": "/Users/jordan/dev/pepitheque"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000017",
+      "ref": "gs-08-two-projects-interleaved-e023",
+      "timestamp": 1776241360000,
+      "tzOffsetMinutes": 120,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "pepitheque",
+      "metadata": {
+        "commandRedacted": "pnpm run import:catalog --dry-run",
+        "cwd": "/Users/jordan/dev/pepitheque",
+        "exitCode": 1,
+        "durationMs": 6400,
+        "shell": "zsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 95
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000018",
+      "ref": "gs-08-two-projects-interleaved-e024",
+      "timestamp": 1776241372000,
+      "tzOffsetMinutes": 120,
+      "source": "terminal",
+      "type": "terminal.error_tail",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "pepitheque",
+      "metadata": {
+        "lines": [
+          "401 Unauthorized from partners.pepitheque.fr",
+          "partner credentials appear to be missing"
+        ],
+        "lineCount": 2,
+        "truncated": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 85
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000019",
+      "ref": "gs-08-two-projects-interleaved-e025",
+      "timestamp": 1776241570000,
+      "endTimestamp": 1776241860000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.tinyspeck.slackmacgap",
+      "appDisplay": "Slack",
+      "title": "danim — #product — Home Staging V3 — Slack",
+      "metadata": {
+        "bundleId": "com.tinyspeck.slackmacgap"
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-00000000001a",
+      "ref": "gs-08-two-projects-interleaved-e026",
+      "timestamp": 1776241870000,
+      "endTimestamp": 1776242180000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.linear",
+      "appDisplay": "Linear",
+      "title": "DNM-4218 Home Staging generation flow — In Review — Linear",
+      "metadata": {
+        "bundleId": "com.linear"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-00000000001b",
+      "ref": "gs-08-two-projects-interleaved-e027",
+      "timestamp": 1776242190000,
+      "endTimestamp": 1776242520000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.mail",
+      "appDisplay": "Mail",
+      "title": "Re: Pépithèque — accès API partenaire — Mail",
+      "metadata": {
+        "bundleId": "com.apple.mail"
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-00000000001c",
+      "ref": "gs-08-two-projects-interleaved-e028",
+      "timestamp": 1776242530000,
+      "endTimestamp": 1776242790000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.Notes",
+      "appDisplay": "Notes",
+      "title": "Pépithèque — questions partenaire — Notes",
+      "metadata": {
+        "bundleId": "com.apple.Notes"
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-00000000001d",
+      "ref": "gs-08-two-projects-interleaved-e029",
+      "timestamp": 1776242710000,
+      "tzOffsetMinutes": 120,
+      "source": "manual",
+      "type": "manual.note",
+      "producer": {
+        "name": "rewind-manual",
+        "version": "0.1.0"
+      },
+      "metadata": {
+        "text": "Import catalogue bloqué sur un 401 — il manque les credentials partenaire. Relancer le partenaire par mail avant de reprendre PEP-77."
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 90
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-00000000001e",
+      "ref": "gs-08-two-projects-interleaved-e030",
+      "timestamp": 1776242800000,
+      "endTimestamp": 1776243060000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.acme.cockpit",
+      "appDisplay": "Cockpit",
+      "title": "Home Staging — run 2 — Cockpit",
+      "metadata": {
+        "bundleId": "com.acme.cockpit"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-00000000001f",
+      "ref": "gs-08-two-projects-interleaved-e031",
+      "timestamp": 1776242840000,
+      "tzOffsetMinutes": 120,
+      "source": "external",
+      "type": "external.run.finished",
+      "producer": {
+        "name": "rewind-external",
+        "version": "0.1.0"
+      },
+      "app": "com.acme.cockpit",
+      "appDisplay": "Cockpit",
+      "metadata": {
+        "source": "cockpit",
+        "missionId": "msn_9012",
+        "runId": "run_2",
+        "status": "succeeded",
+        "filesChanged": ["src/staging/mask.ts"]
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 75
+    },
+    {
+      "id": "6e9c5b90-5b90-7000-8000-000000000020",
+      "ref": "gs-08-two-projects-interleaved-e032",
+      "timestamp": 1776243070000,
+      "endTimestamp": 1776243360000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.figma.Desktop",
+      "appDisplay": "Figma",
+      "title": "Home Staging V3 / Masking — Figma",
+      "metadata": {
+        "bundleId": "com.figma.Desktop"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    }
+  ]
+}

@@ -1,0 +1,827 @@
+{
+  "$schema": "../schemas/golden-session.json",
+  "id": "gs-07-cross-app-feature-work",
+  "name": "Cross-app feature work",
+  "description": "Ninety minutes on one feature, crossing Slack, Linear, Figma, Notes, Chrome, Cockpit, Terminal, Claude Code and Mail. Nine applications, one piece of work.",
+  "tests": "The fixture that proves REWIND is work-context-first rather than developer-first. Almost every event is generic Level 1 window observation; there is no IDE, and the repository appears only after an hour. Grouping must come from anchors — \"Home Staging\", DNM-4218, the project name — and from temporal and semantic proximity. An engine that leans on repositoryId, workspace or file overlap recovers almost nothing here.",
+  "day": "2026-04-14",
+  "tzOffsetMinutes": 120,
+  "expected": {
+    "contextCount": 1,
+    "contexts": [
+      {
+        "tag": "homestaging",
+        "label": "Home Staging V3 (DNM-4218)",
+        "labelMatches": "(?i)home ?staging|DNM-4218",
+        "outcome": "unresolved",
+        "expectedNextStep": "Review Claude's implementation of the mask before merging DNM-4218",
+        "startTimestamp": 1776150720000,
+        "endTimestamp": 1776156150000,
+        "eventRefs": [
+          "gs-07-cross-app-feature-work-e001",
+          "gs-07-cross-app-feature-work-e002",
+          "gs-07-cross-app-feature-work-e003",
+          "gs-07-cross-app-feature-work-e004",
+          "gs-07-cross-app-feature-work-e005",
+          "gs-07-cross-app-feature-work-e006",
+          "gs-07-cross-app-feature-work-e007",
+          "gs-07-cross-app-feature-work-e008",
+          "gs-07-cross-app-feature-work-e009",
+          "gs-07-cross-app-feature-work-e010",
+          "gs-07-cross-app-feature-work-e011",
+          "gs-07-cross-app-feature-work-e012",
+          "gs-07-cross-app-feature-work-e013",
+          "gs-07-cross-app-feature-work-e014",
+          "gs-07-cross-app-feature-work-e015",
+          "gs-07-cross-app-feature-work-e016",
+          "gs-07-cross-app-feature-work-e017",
+          "gs-07-cross-app-feature-work-e018",
+          "gs-07-cross-app-feature-work-e019",
+          "gs-07-cross-app-feature-work-e020",
+          "gs-07-cross-app-feature-work-e021",
+          "gs-07-cross-app-feature-work-e022",
+          "gs-07-cross-app-feature-work-e023",
+          "gs-07-cross-app-feature-work-e024",
+          "gs-07-cross-app-feature-work-e025",
+          "gs-07-cross-app-feature-work-e026",
+          "gs-07-cross-app-feature-work-e027",
+          "gs-07-cross-app-feature-work-e028"
+        ],
+        "importantEventRefs": [
+          "gs-07-cross-app-feature-work-e001",
+          "gs-07-cross-app-feature-work-e003",
+          "gs-07-cross-app-feature-work-e005",
+          "gs-07-cross-app-feature-work-e009",
+          "gs-07-cross-app-feature-work-e011",
+          "gs-07-cross-app-feature-work-e014",
+          "gs-07-cross-app-feature-work-e016",
+          "gs-07-cross-app-feature-work-e019",
+          "gs-07-cross-app-feature-work-e021",
+          "gs-07-cross-app-feature-work-e023",
+          "gs-07-cross-app-feature-work-e024",
+          "gs-07-cross-app-feature-work-e025",
+          "gs-07-cross-app-feature-work-e028"
+        ],
+        "note": "Nine applications, one context. Expected Today entry: \"Home Staging V3 · 1h30 · Slack → Linear → Figma → Cockpit → Claude\"."
+      }
+    ],
+    "noiseEventRefs": []
+  },
+  "events": [
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000001",
+      "ref": "gs-07-cross-app-feature-work-e001",
+      "timestamp": 1776150720000,
+      "endTimestamp": 1776151060000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.tinyspeck.slackmacgap",
+      "appDisplay": "Slack",
+      "title": "danim — #product — Slack",
+      "metadata": {
+        "bundleId": "com.tinyspeck.slackmacgap"
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30,
+      "$note": "The work starts in Slack. No repo, no file, no ticket yet — only a window title."
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000002",
+      "ref": "gs-07-cross-app-feature-work-e002",
+      "timestamp": 1776150860000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.title_changed",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.tinyspeck.slackmacgap",
+      "appDisplay": "Slack",
+      "title": "danim — #product — Home Staging V3 — Slack",
+      "metadata": {
+        "previousTitle": "danim — #product — Slack"
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30,
+      "$note": "The anchor \"Home Staging\" first appears in a window title."
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000003",
+      "ref": "gs-07-cross-app-feature-work-e003",
+      "timestamp": 1776151080000,
+      "endTimestamp": 1776151410000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.linear",
+      "appDisplay": "Linear",
+      "title": "DNM-4218 Home Staging generation flow — Linear",
+      "metadata": {
+        "bundleId": "com.linear"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30,
+      "$note": "DNM-4218 — a structured identifier in a native app window title. The strongest anchor available at Level 1."
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000004",
+      "ref": "gs-07-cross-app-feature-work-e004",
+      "timestamp": 1776151270000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.title_changed",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.linear",
+      "appDisplay": "Linear",
+      "title": "DNM-4218 Home Staging generation flow — In Progress — Linear",
+      "metadata": {
+        "previousTitle": "DNM-4218 Home Staging generation flow — Linear"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000005",
+      "ref": "gs-07-cross-app-feature-work-e005",
+      "timestamp": 1776151440000,
+      "endTimestamp": 1776151820000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.figma.Desktop",
+      "appDisplay": "Figma",
+      "title": "Home Staging V3 — Figma",
+      "metadata": {
+        "bundleId": "com.figma.Desktop"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000006",
+      "ref": "gs-07-cross-app-feature-work-e006",
+      "timestamp": 1776151660000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.title_changed",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.figma.Desktop",
+      "appDisplay": "Figma",
+      "title": "Home Staging V3 / Generation flow — Figma",
+      "metadata": {
+        "previousTitle": "Home Staging V3 — Figma"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000007",
+      "ref": "gs-07-cross-app-feature-work-e007",
+      "timestamp": 1776151860000,
+      "endTimestamp": 1776152290000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.Notes",
+      "appDisplay": "Notes",
+      "title": "Home Staging thoughts — Notes",
+      "metadata": {
+        "bundleId": "com.apple.Notes"
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30,
+      "$note": "Title only. Note content is never read at Level 1 (PRIVACY §11 of the pivot brief)."
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000008",
+      "ref": "gs-07-cross-app-feature-work-e008",
+      "timestamp": 1776152320000,
+      "endTimestamp": 1776152520000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.google.Chrome",
+      "appDisplay": "Google Chrome",
+      "title": "Stable Diffusion inpainting guide — Google Chrome",
+      "metadata": {
+        "bundleId": "com.google.Chrome"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000009",
+      "ref": "gs-07-cross-app-feature-work-e009",
+      "timestamp": 1776152335000,
+      "tzOffsetMinutes": 120,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "com.google.Chrome",
+      "appDisplay": "Google Chrome",
+      "title": "Inpainting — Stable Diffusion documentation",
+      "metadata": {
+        "tabId": 210,
+        "url": "https://platform.stability.ai/docs/features/inpainting",
+        "host": "platform.stability.ai",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-00000000000a",
+      "ref": "gs-07-cross-app-feature-work-e010",
+      "timestamp": 1776152520000,
+      "endTimestamp": 1776152640000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.acme.cockpit",
+      "appDisplay": "Cockpit",
+      "title": "Home Staging — Cockpit",
+      "metadata": {
+        "bundleId": "com.acme.cockpit"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-00000000000b",
+      "ref": "gs-07-cross-app-feature-work-e011",
+      "timestamp": 1776152550000,
+      "tzOffsetMinutes": 120,
+      "source": "external",
+      "type": "external.mission.started",
+      "producer": {
+        "name": "rewind-external",
+        "version": "0.1.0"
+      },
+      "app": "com.acme.cockpit",
+      "appDisplay": "Cockpit",
+      "metadata": {
+        "source": "cockpit",
+        "mission": "Home Staging generation flow",
+        "missionId": "msn_8841",
+        "project": "home-staging",
+        "anchors": [
+          {
+            "type": "issue",
+            "value": "DNM-4218"
+          },
+          {
+            "type": "project",
+            "value": "home-staging"
+          }
+        ]
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 75,
+      "$note": "Rich Level 2 event over the generic external protocol. Carries anchors explicitly rather than hiding them in a title."
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-00000000000c",
+      "ref": "gs-07-cross-app-feature-work-e012",
+      "timestamp": 1776152590000,
+      "tzOffsetMinutes": 120,
+      "source": "external",
+      "type": "external.agent.started",
+      "producer": {
+        "name": "rewind-external",
+        "version": "0.1.0"
+      },
+      "app": "com.acme.cockpit",
+      "appDisplay": "Cockpit",
+      "metadata": {
+        "source": "cockpit",
+        "missionId": "msn_8841",
+        "agent": "claude-code",
+        "worktree": "/Users/jordan/dev/danim-wt/DNM-4218"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 75
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-00000000000d",
+      "ref": "gs-07-cross-app-feature-work-e013",
+      "timestamp": 1776152640000,
+      "endTimestamp": 1776154560000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.Terminal",
+      "appDisplay": "Terminal",
+      "title": "claude — danim-wt/DNM-4218 — Terminal",
+      "repositoryId": "danim",
+      "metadata": {
+        "bundleId": "com.apple.Terminal"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-00000000000e",
+      "ref": "gs-07-cross-app-feature-work-e014",
+      "timestamp": 1776152660000,
+      "tzOffsetMinutes": 120,
+      "source": "agent",
+      "type": "agent.session.started",
+      "producer": {
+        "name": "rewind-agent",
+        "version": "0.1.0"
+      },
+      "repositoryId": "danim",
+      "metadata": {
+        "agent": "claude-code",
+        "model": "claude-opus-5",
+        "projectPath": "/Users/jordan/dev/danim-wt/DNM-4218"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-00000000000f",
+      "ref": "gs-07-cross-app-feature-work-e015",
+      "timestamp": 1776153160000,
+      "tzOffsetMinutes": 120,
+      "source": "agent",
+      "type": "agent.activity",
+      "producer": {
+        "name": "rewind-agent",
+        "version": "0.1.0"
+      },
+      "repositoryId": "danim",
+      "metadata": {
+        "agent": "claude-code",
+        "toolCallCount": 14,
+        "filesTouched": ["src/staging/generate.ts", "src/staging/prompt.ts"],
+        "outcome": "in_progress"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000010",
+      "ref": "gs-07-cross-app-feature-work-e016",
+      "timestamp": 1776153850000,
+      "tzOffsetMinutes": 120,
+      "source": "agent",
+      "type": "agent.activity",
+      "producer": {
+        "name": "rewind-agent",
+        "version": "0.1.0"
+      },
+      "repositoryId": "danim",
+      "metadata": {
+        "agent": "claude-code",
+        "toolCallCount": 31,
+        "filesTouched": [
+          "src/staging/generate.ts",
+          "src/staging/prompt.ts",
+          "test/staging.test.ts"
+        ],
+        "outcome": "in_progress"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000011",
+      "ref": "gs-07-cross-app-feature-work-e017",
+      "timestamp": 1776154280000,
+      "tzOffsetMinutes": 120,
+      "source": "git",
+      "type": "git.branch.checkout",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "danim",
+      "metadata": {
+        "from": "main",
+        "to": "fix/DNM-4218-generation",
+        "isNewBranch": true,
+        "worktree": "/Users/jordan/dev/danim-wt/DNM-4218"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 80,
+      "$note": "The only repository signal in the whole session, and it arrives an hour in."
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000012",
+      "ref": "gs-07-cross-app-feature-work-e018",
+      "timestamp": 1776154620000,
+      "endTimestamp": 1776154920000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.Terminal",
+      "appDisplay": "Terminal",
+      "title": "pnpm test staging — danim-wt/DNM-4218 — Terminal",
+      "repositoryId": "danim",
+      "metadata": {
+        "bundleId": "com.apple.Terminal"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000013",
+      "ref": "gs-07-cross-app-feature-work-e019",
+      "timestamp": 1776154650000,
+      "tzOffsetMinutes": 120,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "danim",
+      "metadata": {
+        "commandRedacted": "pnpm test staging",
+        "cwd": "/Users/jordan/dev/danim-wt/DNM-4218",
+        "exitCode": 1,
+        "durationMs": 14200,
+        "shell": "zsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 95
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000014",
+      "ref": "gs-07-cross-app-feature-work-e020",
+      "timestamp": 1776154665000,
+      "tzOffsetMinutes": 120,
+      "source": "terminal",
+      "type": "terminal.error_tail",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "danim",
+      "metadata": {
+        "lines": ["expected mask to cover 4 regions, got 3", "  at test/staging.test.ts:66:14"],
+        "lineCount": 2,
+        "truncated": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 85
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000015",
+      "ref": "gs-07-cross-app-feature-work-e021",
+      "timestamp": 1776154870000,
+      "tzOffsetMinutes": 120,
+      "source": "agent",
+      "type": "agent.activity",
+      "producer": {
+        "name": "rewind-agent",
+        "version": "0.1.0"
+      },
+      "repositoryId": "danim",
+      "metadata": {
+        "agent": "claude-code",
+        "toolCallCount": 9,
+        "filesTouched": ["src/staging/mask.ts"],
+        "outcome": "in_progress"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000016",
+      "ref": "gs-07-cross-app-feature-work-e022",
+      "timestamp": 1776154920000,
+      "endTimestamp": 1776155160000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.acme.cockpit",
+      "appDisplay": "Cockpit",
+      "title": "Home Staging — run 3 — Cockpit",
+      "metadata": {
+        "bundleId": "com.acme.cockpit"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000017",
+      "ref": "gs-07-cross-app-feature-work-e023",
+      "timestamp": 1776154960000,
+      "tzOffsetMinutes": 120,
+      "source": "external",
+      "type": "external.run.finished",
+      "producer": {
+        "name": "rewind-external",
+        "version": "0.1.0"
+      },
+      "app": "com.acme.cockpit",
+      "appDisplay": "Cockpit",
+      "metadata": {
+        "source": "cockpit",
+        "missionId": "msn_8841",
+        "runId": "run_3",
+        "status": "succeeded",
+        "filesChanged": [
+          "src/staging/generate.ts",
+          "src/staging/prompt.ts",
+          "src/staging/mask.ts",
+          "test/staging.test.ts"
+        ]
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 75
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000018",
+      "ref": "gs-07-cross-app-feature-work-e024",
+      "timestamp": 1776155180000,
+      "endTimestamp": 1776155460000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.mail",
+      "appDisplay": "Mail",
+      "title": "Re: Home Staging V3 — retours client — Mail",
+      "metadata": {
+        "bundleId": "com.apple.mail"
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30,
+      "$note": "Mail. Subject line only — never the body (PRIVACY §12 of the pivot brief)."
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-000000000019",
+      "ref": "gs-07-cross-app-feature-work-e025",
+      "timestamp": 1776155460000,
+      "endTimestamp": 1776155760000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.linear",
+      "appDisplay": "Linear",
+      "title": "DNM-4218 Home Staging generation flow — In Review — Linear",
+      "metadata": {
+        "bundleId": "com.linear"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-00000000001a",
+      "ref": "gs-07-cross-app-feature-work-e026",
+      "timestamp": 1776155660000,
+      "endTimestamp": 1776155940000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.figma.Desktop",
+      "appDisplay": "Figma",
+      "title": "Home Staging V3 / Generation flow — Figma",
+      "metadata": {
+        "bundleId": "com.figma.Desktop"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-00000000001b",
+      "ref": "gs-07-cross-app-feature-work-e027",
+      "timestamp": 1776155940000,
+      "endTimestamp": 1776156150000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.Notes",
+      "appDisplay": "Notes",
+      "title": "Home Staging thoughts — Notes",
+      "metadata": {
+        "bundleId": "com.apple.Notes"
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "30d7deb7-deb7-7000-8000-00000000001c",
+      "ref": "gs-07-cross-app-feature-work-e028",
+      "timestamp": 1776156060000,
+      "tzOffsetMinutes": 120,
+      "source": "manual",
+      "type": "manual.note",
+      "producer": {
+        "name": "rewind-manual",
+        "version": "0.1.0"
+      },
+      "metadata": {
+        "text": "Claude a fini la première implémentation de la génération. Reste à relire le masque avant de merger DNM-4218."
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 90
+    }
+  ]
+}

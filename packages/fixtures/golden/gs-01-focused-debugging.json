@@ -1,0 +1,1142 @@
+{
+  "$schema": "../schemas/golden-session.json",
+  "id": "gs-01-focused-debugging",
+  "name": "Focused debugging",
+  "description": "Forty-five uninterrupted minutes on a single Stripe subscription-renewal bug: ticket, branch, docs, edits, three test runs, commit, PR.",
+  "tests": "The baseline case. Everything belongs together, so any engine that produces more than one context here is over-splitting on window switches — the most common failure mode of a naive time-gap heuristic.",
+  "day": "2026-03-12",
+  "tzOffsetMinutes": 60,
+  "expected": {
+    "contextCount": 1,
+    "contexts": [
+      {
+        "tag": "stripe",
+        "label": "Stripe renewal bug (DNM-3921)",
+        "labelMatches": "(?i)stripe|renewal|DNM-3921",
+        "outcome": "pr_opened",
+        "expectedNextStep": "Wait for review on PR #2182",
+        "startTimestamp": 1773302400000,
+        "endTimestamp": 1773305250000,
+        "eventRefs": [
+          "gs-01-focused-debugging-e001",
+          "gs-01-focused-debugging-e002",
+          "gs-01-focused-debugging-e003",
+          "gs-01-focused-debugging-e004",
+          "gs-01-focused-debugging-e005",
+          "gs-01-focused-debugging-e006",
+          "gs-01-focused-debugging-e007",
+          "gs-01-focused-debugging-e008",
+          "gs-01-focused-debugging-e009",
+          "gs-01-focused-debugging-e010",
+          "gs-01-focused-debugging-e011",
+          "gs-01-focused-debugging-e012",
+          "gs-01-focused-debugging-e013",
+          "gs-01-focused-debugging-e014",
+          "gs-01-focused-debugging-e015",
+          "gs-01-focused-debugging-e016",
+          "gs-01-focused-debugging-e017",
+          "gs-01-focused-debugging-e018",
+          "gs-01-focused-debugging-e019",
+          "gs-01-focused-debugging-e020",
+          "gs-01-focused-debugging-e021",
+          "gs-01-focused-debugging-e022",
+          "gs-01-focused-debugging-e023",
+          "gs-01-focused-debugging-e024",
+          "gs-01-focused-debugging-e025",
+          "gs-01-focused-debugging-e026",
+          "gs-01-focused-debugging-e027",
+          "gs-01-focused-debugging-e028",
+          "gs-01-focused-debugging-e029",
+          "gs-01-focused-debugging-e030",
+          "gs-01-focused-debugging-e031",
+          "gs-01-focused-debugging-e032",
+          "gs-01-focused-debugging-e033",
+          "gs-01-focused-debugging-e034",
+          "gs-01-focused-debugging-e035",
+          "gs-01-focused-debugging-e036",
+          "gs-01-focused-debugging-e037",
+          "gs-01-focused-debugging-e038",
+          "gs-01-focused-debugging-e039",
+          "gs-01-focused-debugging-e040"
+        ],
+        "importantEventRefs": [
+          "gs-01-focused-debugging-e006",
+          "gs-01-focused-debugging-e009",
+          "gs-01-focused-debugging-e010",
+          "gs-01-focused-debugging-e013",
+          "gs-01-focused-debugging-e014",
+          "gs-01-focused-debugging-e016",
+          "gs-01-focused-debugging-e017",
+          "gs-01-focused-debugging-e032",
+          "gs-01-focused-debugging-e034",
+          "gs-01-focused-debugging-e037"
+        ],
+        "note": "Twelve application switches across 45 minutes, and all of it is one piece of work."
+      }
+    ],
+    "noiseEventRefs": []
+  },
+  "events": [
+    {
+      "id": "96180570-0570-7000-8000-000000000001",
+      "ref": "gs-01-focused-debugging-e001",
+      "timestamp": 1773302400000,
+      "endTimestamp": 1773302440000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 15
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000002",
+      "ref": "gs-01-focused-debugging-e002",
+      "timestamp": 1773302402000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.workspace.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "workspacePath": "C:/dev/myapp",
+        "ideName": "vscode",
+        "ideVersion": "1.96.0"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000003",
+      "ref": "gs-01-focused-debugging-e003",
+      "timestamp": 1773302405000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.repo.detected",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp",
+        "remoteUrl": "https://github.com/acme/myapp.git",
+        "defaultBranch": "main"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000004",
+      "ref": "gs-01-focused-debugging-e004",
+      "timestamp": 1773302412000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.status.summary",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "branch": "main",
+        "dirtyFiles": 0,
+        "ahead": 0,
+        "behind": 3
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000005",
+      "ref": "gs-01-focused-debugging-e005",
+      "timestamp": 1773302440000,
+      "endTimestamp": 1773302590000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "DNM-3921 Subscription renewal charges twice — Linear",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000006",
+      "ref": "gs-01-focused-debugging-e006",
+      "timestamp": 1773302445000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.tab.activated",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "DNM-3921 Subscription renewal charges twice — Linear",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 41,
+        "url": "https://linear.app/acme/issue/DNM-3921",
+        "host": "linear.app",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60,
+      "$note": "The ticket. Highest-precision context signal in the whole fixture."
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000007",
+      "ref": "gs-01-focused-debugging-e007",
+      "timestamp": 1773302540000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "DNM-3921 — comments — Linear",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 41,
+        "url": "https://linear.app/acme/issue/DNM-3921",
+        "host": "linear.app",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000008",
+      "ref": "gs-01-focused-debugging-e008",
+      "timestamp": 1773302590000,
+      "endTimestamp": 1773302760000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "stripe.webhook.ts — myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000009",
+      "ref": "gs-01-focused-debugging-e009",
+      "timestamp": 1773302600000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.branch.checkout",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "from": "main",
+        "to": "fix/DNM-3921-stripe-renewal",
+        "isNewBranch": true
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 80
+    },
+    {
+      "id": "96180570-0570-7000-8000-00000000000a",
+      "ref": "gs-01-focused-debugging-e010",
+      "timestamp": 1773302620000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/billing/stripe.webhook.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/billing/stripe.webhook.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "96180570-0570-7000-8000-00000000000b",
+      "ref": "gs-01-focused-debugging-e011",
+      "timestamp": 1773302670000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/billing/billing.service.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/billing/billing.service.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "96180570-0570-7000-8000-00000000000c",
+      "ref": "gs-01-focused-debugging-e012",
+      "timestamp": 1773302760000,
+      "endTimestamp": 1773302800000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "WindowsTerminal.exe",
+      "appDisplay": "Windows Terminal",
+      "title": "pwsh — myapp",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 15
+    },
+    {
+      "id": "96180570-0570-7000-8000-00000000000d",
+      "ref": "gs-01-focused-debugging-e013",
+      "timestamp": 1773302770000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "pnpm test stripe",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 1,
+        "durationMs": 12400,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 95
+    },
+    {
+      "id": "96180570-0570-7000-8000-00000000000e",
+      "ref": "gs-01-focused-debugging-e014",
+      "timestamp": 1773302784000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.error_tail",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "lines": [
+          "AssertionError: expected 'active' to be 'trialing'",
+          "  at test/stripe.webhook.test.ts:88:19"
+        ],
+        "lineCount": 2,
+        "truncated": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 85
+    },
+    {
+      "id": "96180570-0570-7000-8000-00000000000f",
+      "ref": "gs-01-focused-debugging-e015",
+      "timestamp": 1773302800000,
+      "endTimestamp": 1773303120000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Invoices — Stripe API Reference",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000010",
+      "ref": "gs-01-focused-debugging-e016",
+      "timestamp": 1773302810000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Invoices — Stripe API Reference",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 42,
+        "url": "https://stripe.com/docs/api/invoices",
+        "host": "stripe.com",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000011",
+      "ref": "gs-01-focused-debugging-e017",
+      "timestamp": 1773302910000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Webhook event ordering — Stripe Docs",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 42,
+        "url": "https://stripe.com/docs/webhooks/ordering",
+        "host": "stripe.com",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60,
+      "$note": "The page that actually explains the bug. A good Resume card surfaces this one."
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000012",
+      "ref": "gs-01-focused-debugging-e018",
+      "timestamp": 1773303070000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Subscription lifecycle — Stripe Docs",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 42,
+        "url": "https://stripe.com/docs/billing/subscriptions/webhooks",
+        "host": "stripe.com",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000013",
+      "ref": "gs-01-focused-debugging-e019",
+      "timestamp": 1773303120000,
+      "endTimestamp": 1773303600000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "stripe.webhook.ts — myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000014",
+      "ref": "gs-01-focused-debugging-e020",
+      "timestamp": 1773303200000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/billing/stripe.webhook.ts",
+        "languageId": "typescript",
+        "changedLines": 14
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000015",
+      "ref": "gs-01-focused-debugging-e021",
+      "timestamp": 1773303340000,
+      "tzOffsetMinutes": 60,
+      "source": "filesystem",
+      "type": "fs.file.modified",
+      "producer": {
+        "name": "rewind-filesystem",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/billing/stripe.webhook.ts",
+        "extension": ".ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 40
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000016",
+      "ref": "gs-01-focused-debugging-e022",
+      "timestamp": 1773303430000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.diagnostic.error",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/billing/stripe.webhook.ts",
+        "line": 61,
+        "severity": "error",
+        "code": "TS2532",
+        "messageRedacted": "Object is possibly 'undefined'."
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 85
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000017",
+      "ref": "gs-01-focused-debugging-e023",
+      "timestamp": 1773303530000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/billing/stripe.webhook.ts",
+        "languageId": "typescript",
+        "changedLines": 6
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000018",
+      "ref": "gs-01-focused-debugging-e024",
+      "timestamp": 1773303600000,
+      "endTimestamp": 1773303630000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "WindowsTerminal.exe",
+      "appDisplay": "Windows Terminal",
+      "title": "pwsh — myapp",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 15
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000019",
+      "ref": "gs-01-focused-debugging-e025",
+      "timestamp": 1773303610000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "pnpm test stripe",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 1,
+        "durationMs": 11900,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 95
+    },
+    {
+      "id": "96180570-0570-7000-8000-00000000001a",
+      "ref": "gs-01-focused-debugging-e026",
+      "timestamp": 1773303622000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.error_tail",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "lines": [
+          "AssertionError: expected 2 calls, got 1",
+          "  at test/stripe.webhook.test.ts:94:11"
+        ],
+        "lineCount": 2,
+        "truncated": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 85
+    },
+    {
+      "id": "96180570-0570-7000-8000-00000000001b",
+      "ref": "gs-01-focused-debugging-e027",
+      "timestamp": 1773303630000,
+      "endTimestamp": 1773304260000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "stripe.webhook.test.ts — myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "96180570-0570-7000-8000-00000000001c",
+      "ref": "gs-01-focused-debugging-e028",
+      "timestamp": 1773303720000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/test/stripe.webhook.test.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "test/stripe.webhook.test.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "96180570-0570-7000-8000-00000000001d",
+      "ref": "gs-01-focused-debugging-e029",
+      "timestamp": 1773303990000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/billing/billing.service.ts",
+        "languageId": "typescript",
+        "changedLines": 9
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "96180570-0570-7000-8000-00000000001e",
+      "ref": "gs-01-focused-debugging-e030",
+      "timestamp": 1773304180000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/test/stripe.webhook.test.ts",
+        "languageId": "typescript",
+        "changedLines": 12
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "96180570-0570-7000-8000-00000000001f",
+      "ref": "gs-01-focused-debugging-e031",
+      "timestamp": 1773304260000,
+      "endTimestamp": 1773304460000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "WindowsTerminal.exe",
+      "appDisplay": "Windows Terminal",
+      "title": "pwsh — myapp",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000020",
+      "ref": "gs-01-focused-debugging-e032",
+      "timestamp": 1773304275000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "pnpm test stripe",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 0,
+        "durationMs": 11600,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000021",
+      "ref": "gs-01-focused-debugging-e033",
+      "timestamp": 1773304380000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "git add -A",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 0,
+        "durationMs": 210,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000022",
+      "ref": "gs-01-focused-debugging-e034",
+      "timestamp": 1773304400000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.commit",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "sha": "a72c91f4e8b3d2a1c5e9f7b6d4a8c2e1f9b3d7a5",
+        "messageRedacted": "fix(billing): handle invoice.created arriving before subscription.updated (DNM-3921)",
+        "filesChanged": [
+          "src/billing/stripe.webhook.ts",
+          "src/billing/billing.service.ts",
+          "test/stripe.webhook.test.ts"
+        ],
+        "insertions": 29,
+        "deletions": 8,
+        "authorIsUser": true
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 90
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000023",
+      "ref": "gs-01-focused-debugging-e035",
+      "timestamp": 1773304450000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "git push -u origin fix/DNM-3921-stripe-renewal",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 0,
+        "durationMs": 2400,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000024",
+      "ref": "gs-01-focused-debugging-e036",
+      "timestamp": 1773304460000,
+      "endTimestamp": 1773305100000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Pull Request #2182 · acme/myapp",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000025",
+      "ref": "gs-01-focused-debugging-e037",
+      "timestamp": 1773304510000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Pull Request #2182 · acme/myapp",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 43,
+        "url": "https://github.com/acme/myapp/pull/2182",
+        "host": "github.com",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000026",
+      "ref": "gs-01-focused-debugging-e038",
+      "timestamp": 1773304860000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Files changed · Pull Request #2182 · acme/myapp",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 43,
+        "url": "https://github.com/acme/myapp/pull/2182/files",
+        "host": "github.com",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000027",
+      "ref": "gs-01-focused-debugging-e039",
+      "timestamp": 1773305100000,
+      "endTimestamp": 1773305250000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "stripe.webhook.ts — myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "96180570-0570-7000-8000-000000000028",
+      "ref": "gs-01-focused-debugging-e040",
+      "timestamp": 1773305130000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/billing/stripe.webhook.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/billing/stripe.webhook.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    }
+  ]
+}
