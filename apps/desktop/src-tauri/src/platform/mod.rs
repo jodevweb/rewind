@@ -8,7 +8,39 @@
 //! ships with an implementation on both, or an explicit `unimplemented!` and a ticket. Silence is
 //! how a second platform quietly rots.
 
+use std::path::PathBuf;
 use std::time::Duration;
+
+/// Where REWIND keeps its data (STORAGE.md §6). Never a synced or build directory: roaming profiles
+/// and cloud folders corrupt WAL files.
+pub fn data_dir() -> PathBuf {
+    #[cfg(target_os = "windows")]
+    {
+        // LOCALAPPDATA, not APPDATA — the latter roams.
+        let base = std::env::var_os("LOCALAPPDATA")
+            .map(PathBuf::from)
+            .unwrap_or_else(|| home().join("AppData").join("Local"));
+        return base.join("REWIND");
+    }
+    #[cfg(target_os = "macos")]
+    {
+        return home().join("Library").join("Application Support").join("REWIND");
+    }
+    #[cfg(not(any(target_os = "windows", target_os = "macos")))]
+    {
+        return std::env::var_os("XDG_DATA_HOME")
+            .map(PathBuf::from)
+            .unwrap_or_else(|| home().join(".local").join("share"))
+            .join("rewind");
+    }
+}
+
+fn home() -> PathBuf {
+    std::env::var_os("HOME")
+        .or_else(|| std::env::var_os("USERPROFILE"))
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from("."))
+}
 
 /// The foreground window, as the collectors see it.
 ///

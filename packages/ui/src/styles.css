@@ -908,3 +908,7 @@ button.ghost:hover {
   font-size: 13.5px;
   line-height: 1.7;
 }
+
+.stat .total {
+  color: var(--faint);
+}

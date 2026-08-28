@@ -39,6 +39,7 @@ const fr = {
   'header.contexts_one': 'contexte',
   'header.contexts_other': 'contextes',
   'header.deterministic': 'déterministe, sans LLM',
+  'header.kept': 'conservés',
 
   'today.title': "Aujourd'hui",
   'today.hint':
@@ -121,6 +122,7 @@ const en: Record<Key, string> = {
   'header.contexts_one': 'context',
   'header.contexts_other': 'contexts',
   'header.deterministic': 'deterministic, no LLM',
+  'header.kept': 'kept',
 
   'today.title': 'Today',
   'today.hint':
