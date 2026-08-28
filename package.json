@@ -8,8 +8,11 @@
     "node": ">=22"
   },
   "scripts": {
+    "app": "pnpm --filter @rewind/desktop dev",
+    "app:build": "pnpm --filter @rewind/desktop build",
     "dev": "pnpm --filter @rewind/studio dev",
     "capture": "pnpm --filter @rewind/capture-probe capture",
+    "capture:where": "pnpm --filter @rewind/capture-probe capture:where",
     "capture:clear": "pnpm --filter @rewind/capture-probe capture:clear",
     "eval": "pnpm --filter @rewind/eval eval",
     "build": "turbo run build",
@@ -20,8 +23,7 @@
     "codegen": "turbo run codegen",
     "build:fixtures": "pnpm --filter @rewind/fixtures build",
     "check:forbidden-apis": "node scripts/check-forbidden-apis.mjs",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm check:forbidden-apis",
-    "capture:where": "pnpm --filter @rewind/capture-probe capture:where"
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm check:forbidden-apis"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

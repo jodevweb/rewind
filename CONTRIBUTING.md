@@ -12,29 +12,38 @@ pnpm install
 pnpm check
 ```
 
-### Rust side (ticket P1-000 — required before Phase 1)
+### Rust side — required for the desktop app
 
-Not yet installed on the primary development machine. Needed for the Tauri daemon:
+Both macOS and Windows are shipped targets (ADR 0004 D-29).
+
+**macOS**
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+xcode-select --install     # Command Line Tools, if not already present
+pnpm app                   # builds and launches REWIND
+```
 
 **Windows**
 
-1. **Rust (MSVC toolchain)** — https://rustup.rs
-   ```
-   rustup default stable-x86_64-pc-windows-msvc
-   ```
-2. **Visual Studio C++ Build Tools** — the "Desktop development with C++" workload. Multi-gigabyte
-   download; budget the time.
-3. **WebView2** — already present on Windows 11. Verify before assuming.
-
-Verify:
-
-```bash
-cargo --version
-rustc --version
+```powershell
+winget install Rustlang.Rustup
+winget install Microsoft.VisualStudio.2022.BuildTools --override "--quiet --wait --add Microsoft.VisualStudio.Workload.VCTools"
+# WebView2 ships with Windows 11.
+pnpm app
 ```
 
-**macOS** (Phase 13, when the OS traits get a second implementation): Rust stable + Xcode Command
-Line Tools.
+**Known blocker — Windows Smart App Control.** If `rustc` fails with
+`os error 4551` ("a policy has blocked this file"), Smart App Control is enforcing and refuses the
+unsigned `rustc.exe`. Turning it off is **irreversible** — Windows will not let you re-enable it
+without reinstalling. Options, in order of preference:
+
+1. Build on macOS and let CI produce the Windows binary (CI compiles both on every push).
+2. Sign the toolchain, or use a machine without Smart App Control.
+3. Turn it off, knowing it cannot be turned back on.
+
+This affects the _toolchain_, not the product: the shipped installer is signed, so Smart App Control
+accepts REWIND itself.
 
 ---
 

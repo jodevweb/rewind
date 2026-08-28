@@ -18,3 +18,7 @@ packages/protocol/src/generated.ts
 
 # Captured real activity from this machine. Never committed.
 apps/studio/public/captured/
+
+# Rust / Tauri
+apps/desktop/src-tauri/target/
+apps/desktop/dist/
