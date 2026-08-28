@@ -1,16 +1,21 @@
 /**
- * The product's interface: Today, Resume, Timeline.
+ * The product's interface: Today, Resume, Timeline. Shared by the desktop application and the studio.
  *
- * Shared by the desktop application and the studio. It lived only in the studio for a while, which
- * is how the application ended up with a window that looked nothing like the thing being designed —
- * there were two interfaces and only one of them was the product.
+ * Rewritten for volume. The first version was designed against fixtures of forty events; with a real
+ * day of capture it needed scrolling for everything, buried new activity at the bottom, and listed a
+ * minute-by-minute tree that no one can read.
  *
- * Input is a session: events plus optional ground truth. The desktop app builds one from the events
- * the daemon captured; the studio passes a golden fixture. Neither knows anything the other does not.
+ * The rules that came out of that:
  *
- * The engine here is `@rewind/engine-v0`, the TypeScript reference implementation. ADR 0001 D-4 puts
- * the production engine in Rust; running it in the view is the interim that lets the real interface
- * exist on real data now, and it is a known port, not a hidden one.
+ *   - **Newest first.** New activity appears where you are already looking, never below the fold.
+ *   - **Each column scrolls on its own, under a heading that stays put.** The page itself never
+ *     scrolls, so nothing is ever lost off the top.
+ *   - **Repetition collapses.** Returning to the same window eleven times is one line saying eleven,
+ *     not eleven lines.
+ *   - **Today means today.** A context nobody has touched for hours is history, and history belongs
+ *     under its own heading.
+ *   - **Anything shown can be opened.** Seeing that you edited a file matters far less than being
+ *     able to open it.
  */
 
 import { useMemo, useState, type ReactNode } from 'react';
@@ -28,12 +33,11 @@ import {
 import { formatDuration, t, tPlural } from './i18n.js';
 
 const clock = (ts: number, tz: number) => new Date(ts + tz * 60_000).toISOString().slice(11, 16);
+const hourKey = (ts: number, tz: number) => new Date(ts + tz * 60_000).toISOString().slice(11, 13);
 
-/**
- * Source identity as restrained colour. §143 preferred monochrome glyphs, but over a dense timeline
- * a single accent proved hard to scan. One muted hue per source — muted being the operative word,
- * since this must not become a rainbow dashboard (§142).
- */
+/** A context untouched for longer than this is history, not today. */
+const RECENT_MS = 3 * 60 * 60 * 1000;
+
 export const SOURCES: Record<string, { glyph: string; label: string }> = {
   system: { glyph: '▢', label: 'Système' },
   browser: { glyph: '◍', label: 'Navigateur' },
@@ -84,8 +88,9 @@ export function headline(e: GoldenEvent): string {
       return leaf(str(e, 'path'));
     case 'fs.file.renamed':
       return `${leaf(str(e, 'fromPath'))} → ${leaf(str(e, 'toPath'))}`;
+    case 'agent.session':
     case 'agent.session.started':
-      return 'session Claude Code démarrée';
+      return (str(e, 'title') ?? e.title) || 'session Claude Code';
     case 'agent.activity':
       return `Claude Code — ${m['toolCallCount'] ?? 0} appels d’outils`;
     case 'external.mission.started':
@@ -94,12 +99,9 @@ export function headline(e: GoldenEvent): string {
       return `run ${str(e, 'runId') ?? ''} — ${str(e, 'status') ?? ''}`;
     case 'external.agent.started':
       return `agent ${str(e, 'agent') ?? ''} démarré`;
-    case 'system.window.title_changed':
-      return e.title || e.appDisplay || e.type;
     default:
-      // `||` rather than `??`: an empty title is not a title. Without Accessibility on macOS every
-      // title is empty, and `??` rendered a row with a timestamp and nothing else — which reads as
-      // a bug rather than as a degraded mode.
+      // `||` rather than `??`: an empty title is not a title, and without Accessibility every title
+      // is empty — a row with a timestamp and nothing else reads as a bug, not a degraded mode.
       return e.title || e.appDisplay || e.app || e.type;
   }
 }
@@ -114,25 +116,73 @@ const isWin = (e: GoldenEvent) =>
   (e.type === 'terminal.command' && meta(e)['exitCode'] === 0) ||
   (e.type === 'external.run.finished' && str(e, 'status') === 'succeeded');
 
+/** Everything openable an event points at. This is what turns a record into something actionable. */
+export function targetsOf(e: GoldenEvent): { label: string; target: string; kind: string }[] {
+  const m = meta(e);
+  const out: { label: string; target: string; kind: string }[] = [];
+  const push = (label: string, target: unknown, kind: string) => {
+    if (typeof target === 'string' && target.trim() !== '') out.push({ label, target, kind });
+  };
+
+  push('url', m['url'], 'url');
+  push('fichier', m['path'] ?? m['toPath'], 'file');
+  push('dossier', m['directory'] ?? m['cwd'] ?? m['projectPath'] ?? m['workspacePath'], 'folder');
+  push('worktree', m['worktree'], 'folder');
+
+  const files = m['filesTouched'];
+  if (Array.isArray(files)) {
+    const base = typeof m['projectPath'] === 'string' ? (m['projectPath'] as string) : '';
+    for (const f of files.slice(0, 12)) {
+      if (typeof f !== 'string') continue;
+      const abs = f.startsWith('/') || /^[A-Za-z]:/.test(f) ? f : base ? `${base}/${f}` : f;
+      out.push({ label: leaf(f), target: abs, kind: 'file' });
+    }
+  }
+  return out;
+}
+
+export interface WorkspaceActions {
+  open?: (target: string) => void;
+  reveal?: (target: string) => void;
+}
+
 export function Workspace({
   session,
   aside,
   emptyMessage,
+  actions,
 }: {
   session: GoldenSession;
-  /** Studio-only extras, such as the ground-truth panel. */
   aside?: ReactNode;
   emptyMessage?: ReactNode;
+  actions?: WorkspaceActions;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
-  const [citation, setCitation] = useState<string | null>(null);
+  const [inspected, setInspected] = useState<string | null>(null);
+  const [showEarlier, setShowEarlier] = useState(false);
 
   const result = useMemo(() => runEngine(session), [session]);
   const byRef = useMemo(() => new Map(session.events.map((e) => [e.ref, e])), [session]);
-
-  const active = result.contexts.find((c) => c.id === selected) ?? result.contexts[0];
-  const resume = useMemo(() => (active ? buildResume(session, active) : null), [session, active]);
   const tz = session.tzOffsetMinutes;
+
+  // "Recent" is measured against the newest event, not the wall clock, so a replayed fixture and a
+  // live capture behave the same way.
+  const latest = useMemo(
+    () => session.events.reduce((max, e) => Math.max(max, e.endTimestamp ?? e.timestamp), 0),
+    [session],
+  );
+  const [recent, earlier] = useMemo(() => {
+    const r: EngineContext[] = [];
+    const e: EngineContext[] = [];
+    for (const c of result.contexts) {
+      (latest - c.endTimestamp <= RECENT_MS ? r : e).push(c);
+    }
+    return [r, e];
+  }, [result.contexts, latest]);
+
+  const active = result.contexts.find((c) => c.id === selected) ?? recent[0] ?? result.contexts[0];
+  const resume = useMemo(() => (active ? buildResume(session, active) : null), [session, active]);
+  const inspectedEvent = inspected ? (byRef.get(inspected) ?? null) : null;
 
   if (session.events.length === 0 && emptyMessage) {
     return <div className="empty-state">{emptyMessage}</div>;
@@ -141,164 +191,204 @@ export function Workspace({
   return (
     <main>
       <section className="col">
-        <h2>{t('today.title')}</h2>
-        <p className="hint">{t('today.hint')}</p>
-        {result.contexts.map((c, i) => (
-          <ContextCard
-            key={c.id}
-            context={c}
-            hue={i}
-            isActive={active?.id === c.id}
-            onSelect={() => setSelected(c.id)}
-          />
-        ))}
-        {result.contexts.length === 0 && <p className="noise">{t('today.none')}</p>}
-        {result.unassigned.length > 0 && (
-          <LoosePanel refs={result.unassigned} byRef={byRef} tz={tz} />
-        )}
-        {aside}
-      </section>
-
-      <section className="col">
-        <h2>{t('resume.title')}</h2>
-        {resume && active ? (
-          <div className="card resume">
-            <div className="eyebrow">{t('resume.wasWorkingOn')}</div>
-            <h3>{resume.contextLabel}</h3>
-            <div className="submeta">
-              {t('resume.lastActivity')} {clock(resume.lastActiveAt, tz)} ·{' '}
-              <b>{formatDuration(resume.activeMs)}</b> {t('resume.active')}
-            </div>
-            <AppChain apps={resume.appChain} />
-
-            <Rows label={t('resume.files')} lines={resume.working} tz={tz} onCite={setCitation} />
-            <Rows label={t('resume.reading')} lines={resume.reading} tz={tz} onCite={setCitation} />
-            <Rows label={t('resume.ran')} lines={resume.ran} tz={tz} onCite={setCitation} />
-            <Rows label={t('resume.failed')} lines={resume.failures} tz={tz} onCite={setCitation} />
-            <Rows
-              label={t('resume.produced')}
-              lines={resume.produced}
-              tz={tz}
-              onCite={setCitation}
+        <h2 className="col-head">{t('today.title')}</h2>
+        <div className="col-body">
+          <p className="hint">{t('today.hint')}</p>
+          {recent.map((c, i) => (
+            <ContextCard
+              key={c.id}
+              context={c}
+              hue={i}
+              isActive={active?.id === c.id}
+              onSelect={() => setSelected(c.id)}
             />
+          ))}
+          {recent.length === 0 && <p className="noise">{t('today.none')}</p>}
 
-            {resume.nextStep && (
-              <div className="next">
-                <div className="eyebrow">{t('resume.nextStep')}</div>
-                <p>{renderNextStep(resume.nextStep)}</p>
-                <button className="cite" onClick={() => setCitation(resume.nextStep!.evidenceRef)}>
-                  {t('resume.evidence')}
-                </button>
-              </div>
-            )}
+          {earlier.length > 0 && (
+            <>
+              <button className="disclosure" onClick={() => setShowEarlier((v) => !v)}>
+                {showEarlier ? '▾' : '▸'} {t('today.earlier')} · {earlier.length}
+              </button>
+              {showEarlier &&
+                earlier.map((c, i) => (
+                  <ContextCard
+                    key={c.id}
+                    context={c}
+                    hue={recent.length + i}
+                    isActive={active?.id === c.id}
+                    onSelect={() => setSelected(c.id)}
+                  />
+                ))}
+            </>
+          )}
 
-            <div className="actions">
-              {resume.openResources.slice(0, 4).map((r, i) => (
-                <button key={i} className="ghost" title={r.target}>
-                  {t('resume.open')} {t(`openKind.${r.kind}` as 'openKind.url')}
-                </button>
-              ))}
-            </div>
-            <p className="footnote">{t('resume.footnote')}</p>
-          </div>
-        ) : (
-          <div className="card empty">{t('resume.none')}</div>
-        )}
-
-        {active && <Anchors context={active} />}
+          {result.unassigned.length > 0 && (
+            <LoosePanel refs={result.unassigned} byRef={byRef} tz={tz} onInspect={setInspected} />
+          )}
+          {aside}
+        </div>
       </section>
 
       <section className="col">
-        <h2>{t('timeline.title')}</h2>
-        {active && (
-          <Timeline
-            context={active}
-            activities={result.activities}
-            byRef={byRef}
-            tz={tz}
-            citation={citation}
-          />
-        )}
+        <h2 className="col-head">{inspectedEvent ? t('detail.title') : t('resume.title')}</h2>
+        <div className="col-body">
+          {inspectedEvent ? (
+            <EventDetail
+              event={inspectedEvent}
+              tz={tz}
+              actions={actions}
+              onClose={() => setInspected(null)}
+            />
+          ) : resume && active ? (
+            <div className="card resume">
+              <div className="eyebrow">{t('resume.wasWorkingOn')}</div>
+              <h3>{resume.contextLabel}</h3>
+              <div className="submeta">
+                {t('resume.lastActivity')} {clock(resume.lastActiveAt, tz)} ·{' '}
+                <b>{formatDuration(resume.activeMs)}</b> {t('resume.active')}
+              </div>
+              <AppChain apps={resume.appChain} />
+
+              <Rows label={t('resume.files')} lines={resume.working} tz={tz} />
+              <Rows label={t('resume.reading')} lines={resume.reading} tz={tz} />
+              <Rows label={t('resume.ran')} lines={resume.ran} tz={tz} />
+              <Rows label={t('resume.failed')} lines={resume.failures} tz={tz} />
+              <Rows label={t('resume.produced')} lines={resume.produced} tz={tz} />
+
+              {resume.nextStep && (
+                <div className="next">
+                  <div className="eyebrow">{t('resume.nextStep')}</div>
+                  <p>{renderNextStep(resume.nextStep)}</p>
+                </div>
+              )}
+              <p className="footnote">{t('resume.footnote')}</p>
+            </div>
+          ) : (
+            <div className="card empty">{t('resume.none')}</div>
+          )}
+
+          {!inspectedEvent && active && <Anchors context={active} />}
+        </div>
+      </section>
+
+      <section className="col">
+        <h2 className="col-head">
+          {t('timeline.title')} <span className="col-note">{t('timeline.newestFirst')}</span>
+        </h2>
+        <div className="col-body">
+          {active && (
+            <Timeline
+              context={active}
+              activities={result.activities}
+              byRef={byRef}
+              tz={tz}
+              inspected={inspected}
+              onInspect={setInspected}
+            />
+          )}
+        </div>
       </section>
     </main>
   );
 }
 
 /**
- * Events are grouped into the activities the engine produced, on a continuous rail — the structure
- * §50 specifies. An earlier version rendered raw events, so a session read as a log rather than work.
+ * Newest first, grouped by hour, with repetition collapsed.
+ *
+ * Chronological order buries the thing you opened the window to see. And a real day returns to the
+ * same window dozens of times, so consecutive events that say the same thing become one line with a
+ * count — otherwise the list is a minute-by-minute tree nobody reads.
  */
 function Timeline({
   context,
   activities,
   byRef,
   tz,
-  citation,
+  inspected,
+  onInspect,
 }: {
   context: EngineContext;
   activities: Activity[];
   byRef: Map<string, GoldenEvent>;
   tz: number;
-  citation: string | null;
+  inspected: string | null;
+  onInspect: (ref: string) => void;
 }) {
   const inContext = new Set(context.eventRefs);
-  const blocks = activities
-    .map((a) => ({
-      activity: a,
-      events: a.eventRefs
-        .filter((r) => inContext.has(r))
-        .map((r) => byRef.get(r))
-        .filter((e): e is GoldenEvent => Boolean(e))
-        .sort((x, y) => x.timestamp - y.timestamp),
-    }))
-    .filter((b) => b.events.length > 0)
-    .sort((x, y) => x.events[0]!.timestamp - y.events[0]!.timestamp);
+
+  const blocks = useMemo(() => {
+    const out = activities
+      .map((a) => ({
+        activity: a,
+        events: a.eventRefs
+          .filter((r) => inContext.has(r))
+          .map((r) => byRef.get(r))
+          .filter((e): e is GoldenEvent => Boolean(e))
+          .sort((x, y) => y.timestamp - x.timestamp),
+      }))
+      .filter((b) => b.events.length > 0);
+    out.sort((x, y) => y.events[0]!.timestamp - x.events[0]!.timestamp);
+    return out;
+  }, [activities, byRef, context.eventRefs.join(',')]);
+
+  let lastHour = '';
 
   return (
     <div className="timeline">
       {blocks.map((b) => {
-        const first = b.events[0]!;
-        const last = b.events[b.events.length - 1]!;
+        const first = b.events[b.events.length - 1]!;
+        const last = b.events[0]!;
         const span = (last.endTimestamp ?? last.timestamp) - first.timestamp;
+        const hour = hourKey(last.timestamp, tz);
+        const showHour = hour !== lastHour;
+        lastHour = hour;
+
         return (
-          <div className="tl-block" key={b.activity.id}>
-            <div className="tl-gutter">
-              <span className="tl-time">{clock(first.timestamp, tz)}</span>
-              <span className="tl-rail" aria-hidden />
-            </div>
-            <div className="tl-body">
-              <div className="tl-head">
-                {b.activity.apps.map((app) => (
-                  <span className="chip" key={app}>
-                    {app}
-                  </span>
-                ))}
-                {span >= 60_000 && <span className="tl-span">{formatDuration(span)}</span>}
+          <div key={b.activity.id}>
+            {showHour && <div className="tl-hour">{hour}h</div>}
+            <div className="tl-block">
+              <div className="tl-gutter">
+                <span className="tl-time">{clock(first.timestamp, tz)}</span>
+                <span className="tl-rail" aria-hidden />
               </div>
-              <ul className="tl-events">
-                {b.events.map((e) => {
-                  const src = SOURCES[e.source] ?? { glyph: '·', label: e.source };
-                  return (
-                    <li
-                      key={e.ref}
-                      className={[
-                        `src-${e.source}`,
-                        isFailure(e) ? 'fail' : '',
-                        isWin(e) ? 'win' : '',
-                        citation === e.ref ? 'cited' : '',
-                      ]
-                        .filter(Boolean)
-                        .join(' ')}
-                    >
-                      <span className="tl-dot" title={src.label}>
-                        {src.glyph}
-                      </span>
-                      <span className="tl-at">{clock(e.timestamp, tz)}</span>
-                      <span className="tl-text">{headline(e)}</span>
-                    </li>
-                  );
-                })}
-              </ul>
+              <div className="tl-body">
+                <div className="tl-head">
+                  {b.activity.apps.slice(0, 4).map((app) => (
+                    <span className="chip" key={app}>
+                      {app}
+                    </span>
+                  ))}
+                  {span >= 60_000 && <span className="tl-span">{formatDuration(span)}</span>}
+                </div>
+                <ul className="tl-events">
+                  {collapse(b.events).map(({ event, count }) => {
+                    const src = SOURCES[event.source] ?? { glyph: '·', label: event.source };
+                    return (
+                      <li
+                        key={event.ref}
+                        className={[
+                          `src-${event.source}`,
+                          isFailure(event) ? 'fail' : '',
+                          isWin(event) ? 'win' : '',
+                          inspected === event.ref ? 'cited' : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                      >
+                        <button className="tl-row" onClick={() => onInspect(event.ref)}>
+                          <span className="tl-dot" title={src.label}>
+                            {src.glyph}
+                          </span>
+                          <span className="tl-at">{clock(event.timestamp, tz)}</span>
+                          <span className="tl-text">{headline(event)}</span>
+                          {count > 1 && <span className="tl-count">×{count}</span>}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
             </div>
           </div>
         );
@@ -307,15 +397,135 @@ function Timeline({
   );
 }
 
+/** Consecutive events saying the same thing become one row with a count. */
+function collapse(events: GoldenEvent[]): { event: GoldenEvent; count: number }[] {
+  const out: { event: GoldenEvent; count: number }[] = [];
+  for (const event of events) {
+    const previous = out[out.length - 1];
+    if (
+      previous &&
+      previous.event.app === event.app &&
+      headline(previous.event) === headline(event)
+    ) {
+      previous.count += 1;
+      continue;
+    }
+    out.push({ event, count: 1 });
+  }
+  return out;
+}
+
+/** Everything known about one event, and everything it can open. */
+function EventDetail({
+  event,
+  tz,
+  actions,
+  onClose,
+}: {
+  event: GoldenEvent;
+  tz: number;
+  actions?: WorkspaceActions;
+  onClose: () => void;
+}) {
+  const m = meta(event);
+  const targets = targetsOf(event);
+  const src = SOURCES[event.source] ?? { glyph: '·', label: event.source };
+  const duration = event.endTimestamp ? event.endTimestamp - event.timestamp : 0;
+
+  const rows: [string, string][] = [
+    [t('detail.when'), clock(event.timestamp, tz)],
+    ...(duration >= 1000
+      ? ([[t('detail.duration'), formatDuration(duration)]] as [string, string][])
+      : []),
+    [t('detail.app'), event.appDisplay ?? event.app ?? '—'],
+    [t('detail.source'), src.label],
+    [t('detail.kind'), event.type],
+  ];
+
+  // Only scalars, and never a payload we would not show: the detail panel must not become a way to
+  // surface something the capture rules kept out.
+  const extra = Object.entries(m)
+    .filter(([, v]) => ['string', 'number', 'boolean'].includes(typeof v))
+    .filter(([k]) => !['bundleId', 'pid'].includes(k))
+    .slice(0, 14);
+
+  return (
+    <div className="card detail">
+      <button className="close" onClick={onClose} aria-label="Fermer">
+        ×
+      </button>
+      <div className="eyebrow">{src.label}</div>
+      <h3>{headline(event)}</h3>
+      {event.title && event.title !== headline(event) && (
+        <p className="detail-title">{event.title}</p>
+      )}
+
+      <dl className="kv">
+        {rows.map(([k, v]) => (
+          <div key={k}>
+            <dt>{k}</dt>
+            <dd>{v}</dd>
+          </div>
+        ))}
+        {extra.map(([k, v]) => (
+          <div key={k}>
+            <dt>{k}</dt>
+            <dd className="mono">{String(v)}</dd>
+          </div>
+        ))}
+      </dl>
+
+      {Array.isArray(m['tools']) && (m['tools'] as unknown[]).length > 0 && (
+        <div className="rows">
+          <div className="eyebrow">{t('detail.tools')}</div>
+          <div className="tags">
+            {(m['tools'] as string[]).map((tool) => (
+              <span className="tag" key={tool}>
+                {tool}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {targets.length > 0 && actions?.open && (
+        <div className="rows">
+          <div className="eyebrow">{t('detail.open')}</div>
+          {targets.map((target, i) => (
+            <div className="line" key={`${target.target}-${i}`}>
+              <button className="link" onClick={() => actions.open?.(target.target)}>
+                {target.label}
+              </button>
+              {target.kind !== 'url' && actions.reveal && (
+                <button className="cite" onClick={() => actions.reveal?.(target.target)}>
+                  {t('detail.reveal')}
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {event.redaction && event.redaction.count > 0 && (
+        <p className="footnote">
+          {t('detail.redacted')} {event.redaction.count} — {event.redaction.applied.join(', ')}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export function AppChain({ apps }: { apps: string[] }) {
+  const shown = apps.slice(0, 6);
   return (
     <div className="chain">
-      {apps.map((a, i) => (
+      {shown.map((a, i) => (
         <span className="chain-item" key={a}>
           <span className="chip solid">{a}</span>
-          {i < apps.length - 1 && <span className="sep">→</span>}
+          {i < shown.length - 1 && <span className="sep">→</span>}
         </span>
       ))}
+      {apps.length > shown.length && <span className="sep">+{apps.length - shown.length}</span>}
     </div>
   );
 }
@@ -353,18 +563,10 @@ function Rows({
   label,
   lines,
   tz,
-  onCite,
 }: {
   label: string;
-  lines: {
-    label: string;
-    detail?: string;
-    evidenceRef: string;
-    timestamp: number;
-    tone?: string;
-  }[];
+  lines: { label: string; detail?: string; timestamp: number; tone?: string }[];
   tz: number;
-  onCite: (ref: string) => void;
 }) {
   if (lines.length === 0) return null;
   return (
@@ -374,9 +576,7 @@ function Rows({
         <div key={i} className={`line ${l.tone ?? ''}`}>
           <span className="mono">{l.label}</span>
           {l.detail && <span className="detail">{l.detail}</span>}
-          <button className="cite" onClick={() => onCite(l.evidenceRef)}>
-            {clock(l.timestamp, tz)}
-          </button>
+          <span className="at">{clock(l.timestamp, tz)}</span>
         </div>
       ))}
     </div>
@@ -384,7 +584,7 @@ function Rows({
 }
 
 function Anchors({ context }: { context: EngineContext }) {
-  const sorted = [...context.anchors].sort((a, b) => b.confidence - a.confidence).slice(0, 14);
+  const sorted = [...context.anchors].sort((a, b) => b.confidence - a.confidence).slice(0, 12);
   if (sorted.length === 0) return null;
   return (
     <div className="card anchors">
@@ -401,45 +601,52 @@ function Anchors({ context }: { context: EngineContext }) {
   );
 }
 
-/**
- * Events the engine attached to nothing.
- *
- * These were once a single-line count, which made a captured event look deleted: it was in the file,
- * it just was not on screen anywhere. Nothing captured may be invisible.
- */
 function LoosePanel({
   refs,
   byRef,
   tz,
+  onInspect,
 }: {
   refs: string[];
   byRef: Map<string, GoldenEvent>;
   tz: number;
+  onInspect: (ref: string) => void;
 }) {
+  const [open, setOpen] = useState(false);
   const events = refs
     .map((r) => byRef.get(r))
     .filter((e): e is GoldenEvent => Boolean(e))
-    .sort((a, b) => a.timestamp - b.timestamp);
+    .sort((a, b) => b.timestamp - a.timestamp);
   if (events.length === 0) return null;
 
+  // Collapsed by default now that a real day produces hundreds. Still reachable in one click —
+  // nothing captured may be invisible, but "visible" does not have to mean "always expanded".
   return (
     <div className="card loose">
-      <div className="eyebrow">
-        {t('today.loose')} · {events.length}
-      </div>
-      <ul className="loose-list">
-        {events.map((e) => {
-          const src = SOURCES[e.source] ?? { glyph: '·', label: e.source };
-          return (
-            <li key={e.ref} className={`src-${e.source}`}>
-              <span className="tl-dot">{src.glyph}</span>
-              <span className="tl-at">{clock(e.timestamp, tz)}</span>
-              <span className="tl-text">{headline(e)}</span>
-            </li>
-          );
-        })}
-      </ul>
-      <p className="footnote">{t('today.looseHint')}</p>
+      <button className="disclosure flush" onClick={() => setOpen((v) => !v)}>
+        {open ? '▾' : '▸'} {t('today.loose')} · {events.length}
+      </button>
+      {open && (
+        <>
+          <ul className="loose-list">
+            {collapse(events)
+              .slice(0, 60)
+              .map(({ event, count }) => (
+                <li key={event.ref} className={`src-${event.source}`}>
+                  <button className="tl-row" onClick={() => onInspect(event.ref)}>
+                    <span className="tl-dot">
+                      {(SOURCES[event.source] ?? { glyph: '·' }).glyph}
+                    </span>
+                    <span className="tl-at">{clock(event.timestamp, tz)}</span>
+                    <span className="tl-text">{headline(event)}</span>
+                    {count > 1 && <span className="tl-count">×{count}</span>}
+                  </button>
+                </li>
+              ))}
+          </ul>
+          <p className="footnote">{t('today.looseHint')}</p>
+        </>
+      )}
     </div>
   );
 }
