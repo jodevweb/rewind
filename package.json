@@ -1,0 +1,35 @@
+{
+  "name": "rewind",
+  "version": "0.0.0",
+  "private": true,
+  "description": "REWIND — a context memory for your computer. Local-first, event-first.",
+  "packageManager": "pnpm@10.29.2",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "lint": "prettier --check .",
+    "format": "prettier --write .",
+    "codegen": "turbo run codegen",
+    "check:forbidden-apis": "node scripts/check-forbidden-apis.mjs",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm check:forbidden-apis",
+    "eval": "pnpm --filter @rewind/eval eval",
+    "build:fixtures": "pnpm --filter @rewind/fixtures build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8",
+    "tsx": "^4.19.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

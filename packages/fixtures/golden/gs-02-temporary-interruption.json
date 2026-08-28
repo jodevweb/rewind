@@ -1,0 +1,771 @@
+{
+  "$schema": "../schemas/golden-session.json",
+  "id": "gs-02-temporary-interruption",
+  "name": "Temporary interruption",
+  "description": "A developer chases a flaky CI test, is pulled into Slack and an unrelated document for four minutes, then returns to exactly the same files.",
+  "tests": "A short excursion must not split the context. This is the false-split case: an engine that opens a new context on every application change, or on any gap, fails here. The Slack and Docs events are ground-truth noise — isolating or dropping them is fine, but the surrounding work must remain one context.",
+  "day": "2026-03-16",
+  "tzOffsetMinutes": 60,
+  "expected": {
+    "contextCount": 1,
+    "contexts": [
+      {
+        "tag": "flaky",
+        "label": "Flaky queue worker test",
+        "labelMatches": "(?i)queue|worker|flaky|test",
+        "outcome": "fix_implemented",
+        "expectedNextStep": "Confirm CI passes on the pushed branch",
+        "startTimestamp": 1773666000000,
+        "endTimestamp": 1773667440000,
+        "eventRefs": [
+          "gs-02-temporary-interruption-e001",
+          "gs-02-temporary-interruption-e002",
+          "gs-02-temporary-interruption-e003",
+          "gs-02-temporary-interruption-e004",
+          "gs-02-temporary-interruption-e005",
+          "gs-02-temporary-interruption-e006",
+          "gs-02-temporary-interruption-e007",
+          "gs-02-temporary-interruption-e008",
+          "gs-02-temporary-interruption-e009",
+          "gs-02-temporary-interruption-e010",
+          "gs-02-temporary-interruption-e011",
+          "gs-02-temporary-interruption-e012",
+          "gs-02-temporary-interruption-e013",
+          "gs-02-temporary-interruption-e018",
+          "gs-02-temporary-interruption-e019",
+          "gs-02-temporary-interruption-e020",
+          "gs-02-temporary-interruption-e021",
+          "gs-02-temporary-interruption-e022",
+          "gs-02-temporary-interruption-e023",
+          "gs-02-temporary-interruption-e024",
+          "gs-02-temporary-interruption-e025",
+          "gs-02-temporary-interruption-e026",
+          "gs-02-temporary-interruption-e027"
+        ],
+        "importantEventRefs": [
+          "gs-02-temporary-interruption-e005",
+          "gs-02-temporary-interruption-e008",
+          "gs-02-temporary-interruption-e012",
+          "gs-02-temporary-interruption-e013",
+          "gs-02-temporary-interruption-e019",
+          "gs-02-temporary-interruption-e024",
+          "gs-02-temporary-interruption-e026"
+        ],
+        "note": "Spans the interruption. Before and after must land in the same context."
+      }
+    ],
+    "noiseEventRefs": [
+      "gs-02-temporary-interruption-e014",
+      "gs-02-temporary-interruption-e015",
+      "gs-02-temporary-interruption-e016",
+      "gs-02-temporary-interruption-e017"
+    ]
+  },
+  "events": [
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000001",
+      "ref": "gs-02-temporary-interruption-e001",
+      "timestamp": 1773666000000,
+      "endTimestamp": 1773666070000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000002",
+      "ref": "gs-02-temporary-interruption-e002",
+      "timestamp": 1773666004000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.workspace.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "workspacePath": "C:/dev/myapp",
+        "ideName": "vscode",
+        "ideVersion": "1.96.0"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000003",
+      "ref": "gs-02-temporary-interruption-e003",
+      "timestamp": 1773666020000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.status.summary",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "branch": "main",
+        "dirtyFiles": 0,
+        "ahead": 0,
+        "behind": 0
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000004",
+      "ref": "gs-02-temporary-interruption-e004",
+      "timestamp": 1773666070000,
+      "endTimestamp": 1773666270000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Run failed: CI · acme/myapp",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000005",
+      "ref": "gs-02-temporary-interruption-e005",
+      "timestamp": 1773666080000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Run failed: CI · acme/myapp",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 61,
+        "url": "https://github.com/acme/myapp/actions/runs/8812441",
+        "host": "github.com",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000006",
+      "ref": "gs-02-temporary-interruption-e006",
+      "timestamp": 1773666185000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "test (windows-latest) · CI · acme/myapp",
+      "repositoryId": "myapp",
+      "metadata": {
+        "tabId": 61,
+        "url": "https://github.com/acme/myapp/actions/runs/8812441/job/24118",
+        "host": "github.com",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000007",
+      "ref": "gs-02-temporary-interruption-e007",
+      "timestamp": 1773666270000,
+      "endTimestamp": 1773666540000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "queue.worker.test.ts — myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000008",
+      "ref": "gs-02-temporary-interruption-e008",
+      "timestamp": 1773666285000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/test/queue.worker.test.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "test/queue.worker.test.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000009",
+      "ref": "gs-02-temporary-interruption-e009",
+      "timestamp": 1773666370000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.opened",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/queue/worker.ts",
+        "languageId": "typescript",
+        "repoRelativePath": "src/queue/worker.ts"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 45
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-00000000000a",
+      "ref": "gs-02-temporary-interruption-e010",
+      "timestamp": 1773666500000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/test/queue.worker.test.ts",
+        "languageId": "typescript",
+        "changedLines": 5
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-00000000000b",
+      "ref": "gs-02-temporary-interruption-e011",
+      "timestamp": 1773666540000,
+      "endTimestamp": 1773666590000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "WindowsTerminal.exe",
+      "appDisplay": "Windows Terminal",
+      "title": "pwsh — myapp",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 15
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-00000000000c",
+      "ref": "gs-02-temporary-interruption-e012",
+      "timestamp": 1773666550000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "pnpm vitest run queue --repeat 20",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 1,
+        "durationMs": 38200,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 95
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-00000000000d",
+      "ref": "gs-02-temporary-interruption-e013",
+      "timestamp": 1773666588000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.error_tail",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "lines": ["3 of 20 runs failed", "Timeout: worker did not drain within 500ms"],
+        "lineCount": 2,
+        "truncated": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 85
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-00000000000e",
+      "ref": "gs-02-temporary-interruption-e014",
+      "timestamp": 1773666590000,
+      "endTimestamp": 1773666760000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "slack.exe",
+      "appDisplay": "Slack",
+      "title": "acme — #general — Slack",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30,
+      "$note": "Interruption begins. Different app, no repository, no file overlap."
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-00000000000f",
+      "ref": "gs-02-temporary-interruption-e015",
+      "timestamp": 1773666690000,
+      "endTimestamp": 1773666830000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Team offsite — venue options — Google Docs",
+      "metadata": {},
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000010",
+      "ref": "gs-02-temporary-interruption-e016",
+      "timestamp": 1773666700000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "title": "Team offsite — venue options — Google Docs",
+      "metadata": {
+        "tabId": 70,
+        "url": "https://docs.google.com/document/d/1a2b3c",
+        "host": "docs.google.com",
+        "transition": "link",
+        "incognito": false
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000011",
+      "ref": "gs-02-temporary-interruption-e017",
+      "timestamp": 1773666800000,
+      "tzOffsetMinutes": 60,
+      "source": "browser",
+      "type": "browser.tab.closed",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "chrome.exe",
+      "appDisplay": "Google Chrome",
+      "metadata": {
+        "tabId": 70,
+        "dwellMs": 100000
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30,
+      "$note": "Interruption ends after 4 minutes. Total excursion is under EXCURSION_MAX (5 min)."
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000012",
+      "ref": "gs-02-temporary-interruption-e018",
+      "timestamp": 1773666830000,
+      "endTimestamp": 1773667320000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "Code.exe",
+      "appDisplay": "Visual Studio Code",
+      "title": "worker.ts — myapp — Visual Studio Code",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000013",
+      "ref": "gs-02-temporary-interruption-e019",
+      "timestamp": 1773666860000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/queue/worker.ts",
+        "languageId": "typescript",
+        "changedLines": 11
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70,
+      "$note": "Same file set as before the interruption. Strong evidence this is the same context."
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000014",
+      "ref": "gs-02-temporary-interruption-e020",
+      "timestamp": 1773667060000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/test/queue.worker.test.ts",
+        "languageId": "typescript",
+        "changedLines": 7
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000015",
+      "ref": "gs-02-temporary-interruption-e021",
+      "timestamp": 1773667210000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.diagnostic.error",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/queue/worker.ts",
+        "line": 47,
+        "severity": "error",
+        "code": "TS2345",
+        "messageRedacted": "Argument of type 'number' is not assignable to parameter of type 'AbortSignal'."
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 85
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000016",
+      "ref": "gs-02-temporary-interruption-e022",
+      "timestamp": 1773667290000,
+      "tzOffsetMinutes": 60,
+      "source": "ide",
+      "type": "ide.file.saved",
+      "producer": {
+        "name": "rewind-ide",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "path": "C:/dev/myapp/src/queue/worker.ts",
+        "languageId": "typescript",
+        "changedLines": 3
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 70
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000017",
+      "ref": "gs-02-temporary-interruption-e023",
+      "timestamp": 1773667320000,
+      "endTimestamp": 1773667390000,
+      "tzOffsetMinutes": 60,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "WindowsTerminal.exe",
+      "appDisplay": "Windows Terminal",
+      "title": "pwsh — myapp",
+      "repositoryId": "myapp",
+      "metadata": {},
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000018",
+      "ref": "gs-02-temporary-interruption-e024",
+      "timestamp": 1773667330000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "pnpm vitest run queue --repeat 20",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 0,
+        "durationMs": 41100,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-000000000019",
+      "ref": "gs-02-temporary-interruption-e025",
+      "timestamp": 1773667380000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "git add -A",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 0,
+        "durationMs": 180,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-00000000001a",
+      "ref": "gs-02-temporary-interruption-e026",
+      "timestamp": 1773667390000,
+      "tzOffsetMinutes": 60,
+      "source": "git",
+      "type": "git.commit",
+      "producer": {
+        "name": "rewind-git",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "sha": "c41d7e9a2b6f8c3d5e1a9f7b4c2d8e6a3f1b5c9d",
+        "messageRedacted": "fix(queue): await worker drain with an abort signal instead of a fixed timeout",
+        "filesChanged": ["src/queue/worker.ts", "test/queue.worker.test.ts"],
+        "insertions": 18,
+        "deletions": 11,
+        "authorIsUser": true
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 90
+    },
+    {
+      "id": "d53ae23a-e23a-7000-8000-00000000001b",
+      "ref": "gs-02-temporary-interruption-e027",
+      "timestamp": 1773667440000,
+      "tzOffsetMinutes": 60,
+      "source": "terminal",
+      "type": "terminal.command",
+      "producer": {
+        "name": "rewind-terminal",
+        "version": "0.1.0"
+      },
+      "repositoryId": "myapp",
+      "metadata": {
+        "commandRedacted": "git push",
+        "cwd": "C:/dev/myapp",
+        "exitCode": 0,
+        "durationMs": 1900,
+        "shell": "pwsh"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 65
+    }
+  ]
+}

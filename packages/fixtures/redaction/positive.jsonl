@@ -1,0 +1,24 @@
+{"id":"stripe-live-key-in-env","text":"export STRIPE_SECRET_KEY=sk_live_51H8xVdKj2mNpQrStUvWxYz","mustNotContain":"sk_live_51H8xVdKj2mNpQrStUvWxYz","expectDetector":"stripe_secret_key"}
+{"id":"stripe-test-key-inline","text":"curl https://api.stripe.com/v1/invoices -u sk_test_4eC39HqLyjWDarjtT1zdp7dc:","mustNotContain":"sk_test_4eC39HqLyjWDarjtT1zdp7dc","expectDetector":"stripe_secret_key"}
+{"id":"stripe-webhook-secret","text":"STRIPE_WEBHOOK_SECRET=whsec_5tKk9mQpRxWzAbCdEfGhIjKlMnOp","mustNotContain":"whsec_5tKk9mQpRxWzAbCdEfGhIjKlMnOp","expectDetector":"stripe_webhook_secret"}
+{"id":"github-classic-pat","text":"git remote set-url origin https://ghp_16C7e42F292c6912E7710c838347Ae178B4a01@github.com/acme/app.git","mustNotContain":"ghp_16C7e42F292c6912E7710c838347Ae178B4a01","expectDetector":"github_token"}
+{"id":"github-fine-grained-pat","text":"GH_TOKEN=github_pat_11ABCDEFG0abcdefghijklmnopqrstuvwxyz012345","mustNotContain":"github_pat_11ABCDEFG0abcdefghijklmnopqrstuvwxyz012345","expectDetector":"github_pat_fine_grained"}
+{"id":"gitlab-pat","text":"glab auth login --token glpat-AbCdEfGhIjKlMnOpQrSt","mustNotContain":"glpat-AbCdEfGhIjKlMnOpQrSt","expectDetector":"gitlab_pat"}
+{"id":"aws-access-key-id","text":"aws configure set aws_access_key_id AKIAIOSFODNN7EXAMPLE","mustNotContain":"AKIAIOSFODNN7EXAMPLE","expectDetector":"aws_access_key_id"}
+{"id":"aws-session-key-id","text":"AWS_ACCESS_KEY_ID=ASIAY34FZKBOKMUTVV7A","mustNotContain":"ASIAY34FZKBOKMUTVV7A","expectDetector":"aws_access_key_id"}
+{"id":"bearer-header-in-curl","text":"curl -H \"Authorization: Bearer abc123DEF456ghi789JKL\" https://api.example.com/v1/me","mustNotContain":"abc123DEF456ghi789JKL","expectDetector":"authorization_header"}
+{"id":"jwt-in-window-title","text":"Debug — token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dQw4w9WgXcQabcdefgh — Visual Studio Code","mustNotContain":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9","expectDetector":"jwt"}
+{"id":"pem-private-key","text":"cat key.pem\n-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEA3Tz2mr7SZiAMfQyuvBjM9OiJjRazXBZ1BjP5CE/Wm/Rr500P\n-----END RSA PRIVATE KEY-----","mustNotContain":"MIIEowIBAAKCAQEA3Tz2mr7SZiAMfQyuvBjM9OiJjRazXBZ1BjP5CE","expectDetector":"private_key"}
+{"id":"postgres-url-with-password","text":"psql postgres://admin:hunter2@prod-db.internal:5432/main","mustNotContain":"hunter2","expectDetector":"url_credentials"}
+{"id":"mongodb-srv-with-password","text":"MONGODB_URI=mongodb+srv://svc_user:S3cr3tP4ss@cluster0.mongodb.net/app","mustNotContain":"S3cr3tP4ss","expectDetector":"url_credentials"}
+{"id":"window-title-with-db-url","text":"psql — postgres://user:hunter2@prod-db:5432 — Windows Terminal","mustNotContain":"hunter2","expectDetector":"url_credentials"}
+{"id":"slack-bot-token","text":"SLACK_BOT_TOKEN=xoxb-123456789012-1234567890123-AbCdEfGhIjKlMnOpQrStUvWx","mustNotContain":"xoxb-123456789012-1234567890123-AbCdEfGhIjKlMnOpQrStUvWx","expectDetector":"slack_token"}
+{"id":"sendgrid-key","text":"SENDGRID_API_KEY=SG.aBcDeFgHiJkLmNoPqRsTuV.wXyZ0123456789abcdefghijklmnop","mustNotContain":"SG.aBcDeFgHiJkLmNoPqRsTuV.wXyZ0123456789abcdefghijklmnop","expectDetector":"sendgrid_key"}
+{"id":"google-api-key","text":"firebase deploy --key AIzaSyD3vK9pQrStUvWxYz0123456789abcdefg","mustNotContain":"AIzaSyD3vK9pQrStUvWxYz0123456789abcdefg","expectDetector":"google_api_key"}
+{"id":"npm-token","text":"//registry.npmjs.org/:_authToken=npm_aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789","mustNotContain":"npm_aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789","expectDetector":"npm_token"}
+{"id":"anthropic-key","text":"ANTHROPIC_API_KEY=sk-ant-api03-AbCdEfGhIjKlMnOpQrStUvWxYz","mustNotContain":"sk-ant-api03-AbCdEfGhIjKlMnOpQrStUvWxYz","expectDetector":"anthropic_api_key"}
+{"id":"openai-key","text":"OPENAI_API_KEY=sk-proj-AbCdEfGhIjKlMnOpQrStUvWxYz0123","mustNotContain":"sk-proj-AbCdEfGhIjKlMnOpQrStUvWxYz0123","expectDetector":"openai_api_key"}
+{"id":"generic-password-env","text":"DATABASE_PASSWORD=correct-horse-battery-staple","mustNotContain":"correct-horse-battery-staple","expectDetector":"env_assignment"}
+{"id":"generic-token-flag","text":"vercel deploy --token AbCdEfGhIjKlMnOpQrSt","mustNotContain":"AbCdEfGhIjKlMnOpQrSt","expectDetector":"cli_flag_secret"}
+{"id":"secret-in-commit-message","text":"fix: rotate key, old one was sk_live_51H8xVdKj2mNpQrStUvWxYz","mustNotContain":"sk_live_51H8xVdKj2mNpQrStUvWxYz","expectDetector":"stripe_secret_key"}
+{"id":"secret-in-url-query","text":"https://internal.example.com/callback?api_key=AbCdEfGhIjKlMnOpQrSt","mustNotContain":"AbCdEfGhIjKlMnOpQrSt","expectDetector":"env_assignment"}

@@ -1,0 +1,421 @@
+{
+  "$schema": "../schemas/golden-session.json",
+  "id": "gs-09-administrative-work",
+  "name": "Administrative work",
+  "description": "Thirty-five minutes of billing admin: an invoice email, a PDF in Finder, a banking portal, the URSSAF site and a note. No development events at all.",
+  "tests": "The fixture that proves REWIND is no longer developer-first. There is no repository, branch, commit, terminal, IDE or agent event — only application titles, one document name, two URLs and a note. Everything the engine has to work with is Level 1 observation plus the recurring anchors \"facture\", \"août\" and \"Comptabilité\". If this fixture scores badly while the developer fixtures score well, the engine is still implicitly built around code.",
+  "day": "2026-04-16",
+  "tzOffsetMinutes": 120,
+  "expected": {
+    "contextCount": 1,
+    "contexts": [
+      {
+        "tag": "billing",
+        "label": "August billing and administration",
+        "labelMatches": "(?i)factur|billing|comptab|august|ao[uû]t|admin",
+        "outcome": "unresolved",
+        "expectedNextStep": "Declare URSSAF before the 15th",
+        "startTimestamp": 1776351900000,
+        "endTimestamp": 1776354080000,
+        "eventRefs": [
+          "gs-09-administrative-work-e001",
+          "gs-09-administrative-work-e002",
+          "gs-09-administrative-work-e003",
+          "gs-09-administrative-work-e004",
+          "gs-09-administrative-work-e005",
+          "gs-09-administrative-work-e006",
+          "gs-09-administrative-work-e007",
+          "gs-09-administrative-work-e008",
+          "gs-09-administrative-work-e009",
+          "gs-09-administrative-work-e010",
+          "gs-09-administrative-work-e011",
+          "gs-09-administrative-work-e012",
+          "gs-09-administrative-work-e013",
+          "gs-09-administrative-work-e014"
+        ],
+        "importantEventRefs": [
+          "gs-09-administrative-work-e001",
+          "gs-09-administrative-work-e003",
+          "gs-09-administrative-work-e005",
+          "gs-09-administrative-work-e006",
+          "gs-09-administrative-work-e008",
+          "gs-09-administrative-work-e010",
+          "gs-09-administrative-work-e011",
+          "gs-09-administrative-work-e012"
+        ],
+        "note": "Expected Today entry: \"Administration · 36m · Mail → Finder → Browser → Notes\"."
+      }
+    ],
+    "noiseEventRefs": []
+  },
+  "events": [
+    {
+      "id": "b013d2e8-d2e8-7000-8000-000000000001",
+      "ref": "gs-09-administrative-work-e001",
+      "timestamp": 1776351900000,
+      "endTimestamp": 1776352180000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.mail",
+      "appDisplay": "Mail",
+      "title": "Facture août — Acme — Mail",
+      "metadata": {
+        "bundleId": "com.apple.mail"
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30,
+      "$note": "Subject line only. The message body is never read at Level 1."
+    },
+    {
+      "id": "b013d2e8-d2e8-7000-8000-000000000002",
+      "ref": "gs-09-administrative-work-e002",
+      "timestamp": 1776352040000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.title_changed",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.mail",
+      "appDisplay": "Mail",
+      "title": "Facture août — Acme — pièce jointe — Mail",
+      "metadata": {
+        "previousTitle": "Facture août — Acme — Mail"
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "b013d2e8-d2e8-7000-8000-000000000003",
+      "ref": "gs-09-administrative-work-e003",
+      "timestamp": 1776352190000,
+      "endTimestamp": 1776352340000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.finder",
+      "appDisplay": "Finder",
+      "title": "Téléchargements — Finder",
+      "metadata": {
+        "bundleId": "com.apple.finder",
+        "directory": "/Users/dev/Downloads"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "b013d2e8-d2e8-7000-8000-000000000004",
+      "ref": "gs-09-administrative-work-e004",
+      "timestamp": 1776352240000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.title_changed",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.finder",
+      "appDisplay": "Finder",
+      "title": "Comptabilité — Finder",
+      "metadata": {
+        "previousTitle": "Téléchargements — Finder",
+        "directory": "/Users/dev/Documents/Comptabilité"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30,
+      "$note": "Finder directory, not a filesystem scan. Metadata the window already exposes."
+    },
+    {
+      "id": "b013d2e8-d2e8-7000-8000-000000000005",
+      "ref": "gs-09-administrative-work-e005",
+      "timestamp": 1776352290000,
+      "tzOffsetMinutes": 120,
+      "source": "filesystem",
+      "type": "fs.file.created",
+      "producer": {
+        "name": "rewind-filesystem",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.finder",
+      "appDisplay": "Finder",
+      "metadata": {
+        "path": "/Users/dev/Documents/Comptabilité/facture-aout.pdf",
+        "extension": ".pdf"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 40,
+      "$note": "An authorised, user-chosen folder — never an arbitrary scan."
+    },
+    {
+      "id": "b013d2e8-d2e8-7000-8000-000000000006",
+      "ref": "gs-09-administrative-work-e006",
+      "timestamp": 1776352350000,
+      "endTimestamp": 1776352690000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.Preview",
+      "appDisplay": "Preview",
+      "title": "facture-aout.pdf — Aperçu",
+      "metadata": {
+        "bundleId": "com.apple.Preview"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30,
+      "$note": "The document name is the anchor. The PDF contents are never read."
+    },
+    {
+      "id": "b013d2e8-d2e8-7000-8000-000000000007",
+      "ref": "gs-09-administrative-work-e007",
+      "timestamp": 1776352700000,
+      "endTimestamp": 1776353160000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.google.Chrome",
+      "appDisplay": "Google Chrome",
+      "title": "Espace client — Qonto",
+      "metadata": {
+        "bundleId": "com.google.Chrome"
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "b013d2e8-d2e8-7000-8000-000000000008",
+      "ref": "gs-09-administrative-work-e008",
+      "timestamp": 1776352720000,
+      "tzOffsetMinutes": 120,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "com.google.Chrome",
+      "appDisplay": "Google Chrome",
+      "metadata": {
+        "tabId": 401,
+        "url": "https://qonto.com/",
+        "host": "qonto.com",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60,
+      "$note": "A banking domain. In the shipped defaults this host is excluded outright — the fixture keeps it to exercise the sensitive path, and an engine must still form the context without it."
+    },
+    {
+      "id": "b013d2e8-d2e8-7000-8000-000000000009",
+      "ref": "gs-09-administrative-work-e009",
+      "timestamp": 1776352990000,
+      "tzOffsetMinutes": 120,
+      "source": "browser",
+      "type": "browser.navigation",
+      "producer": {
+        "name": "rewind-browser",
+        "version": "0.1.0"
+      },
+      "app": "com.google.Chrome",
+      "appDisplay": "Google Chrome",
+      "metadata": {
+        "tabId": 402,
+        "url": "https://www.urssaf.fr/portail/home/espace-connecte.html",
+        "host": "urssaf.fr",
+        "transition": "typed",
+        "incognito": false
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 60
+    },
+    {
+      "id": "b013d2e8-d2e8-7000-8000-00000000000a",
+      "ref": "gs-09-administrative-work-e010",
+      "timestamp": 1776353170000,
+      "endTimestamp": 1776353620000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.Notes",
+      "appDisplay": "Notes",
+      "title": "Facturation août — Notes",
+      "metadata": {
+        "bundleId": "com.apple.Notes"
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "b013d2e8-d2e8-7000-8000-00000000000b",
+      "ref": "gs-09-administrative-work-e011",
+      "timestamp": 1776353480000,
+      "tzOffsetMinutes": 120,
+      "source": "manual",
+      "type": "manual.note",
+      "producer": {
+        "name": "rewind-manual",
+        "version": "0.1.0"
+      },
+      "metadata": {
+        "text": "Facture août envoyée. Reste à déclarer l'URSSAF avant le 15."
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 90
+    },
+    {
+      "id": "b013d2e8-d2e8-7000-8000-00000000000c",
+      "ref": "gs-09-administrative-work-e012",
+      "timestamp": 1776353630000,
+      "endTimestamp": 1776353880000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.mail",
+      "appDisplay": "Mail",
+      "title": "Facture août — Acme — envoyé — Mail",
+      "metadata": {
+        "bundleId": "com.apple.mail"
+      },
+      "privacyLevel": "sensitive",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "b013d2e8-d2e8-7000-8000-00000000000d",
+      "ref": "gs-09-administrative-work-e013",
+      "timestamp": 1776353890000,
+      "endTimestamp": 1776354080000,
+      "tzOffsetMinutes": 120,
+      "source": "system",
+      "type": "system.window.focus",
+      "producer": {
+        "name": "rewind-system",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.finder",
+      "appDisplay": "Finder",
+      "title": "Comptabilité — Finder",
+      "metadata": {
+        "bundleId": "com.apple.finder",
+        "directory": "/Users/dev/Documents/Comptabilité"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 30
+    },
+    {
+      "id": "b013d2e8-d2e8-7000-8000-00000000000e",
+      "ref": "gs-09-administrative-work-e014",
+      "timestamp": 1776354010000,
+      "tzOffsetMinutes": 120,
+      "source": "filesystem",
+      "type": "fs.file.renamed",
+      "producer": {
+        "name": "rewind-filesystem",
+        "version": "0.1.0"
+      },
+      "app": "com.apple.finder",
+      "appDisplay": "Finder",
+      "metadata": {
+        "fromPath": "/Users/dev/Documents/Comptabilité/facture-aout.pdf",
+        "toPath": "/Users/dev/Documents/Comptabilité/2026-08-facture-acme.pdf"
+      },
+      "privacyLevel": "normal",
+      "redaction": {
+        "patternsVersion": "1.0.1",
+        "applied": [],
+        "count": 0
+      },
+      "importance": 40
+    }
+  ]
+}

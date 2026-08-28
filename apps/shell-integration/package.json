@@ -1,0 +1,7 @@
+{
+  "name": "@rewind/shell-integration",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Opt-in PowerShell / bash / zsh hooks for terminal events (Phase 6)."
+}

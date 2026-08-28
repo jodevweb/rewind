@@ -1,0 +1,24 @@
+{
+  "name": "@rewind/eval",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Context engine evaluation harness: pairwise grouping, false merge/split, purity, coverage. Engine-agnostic — it scores a prediction file.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "bin": {
+    "rewind-eval": "./src/cli.ts"
+  },
+  "scripts": {
+    "eval": "tsx src/cli.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@rewind/fixtures": "workspace:*"
+  },
+  "devDependencies": {
+    "@rewind/config": "workspace:*",
+    "tsx": "^4.19.2"
+  }
+}

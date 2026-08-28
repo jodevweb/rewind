@@ -1,0 +1,348 @@
+import { buildSession, type Step } from '../authoring.js';
+
+const s: Step[] = [
+  {
+    t: '15:40:00',
+    ctx: 'sessionbug',
+    type: 'system.window.focus',
+    app: 'chrome.exe',
+    title: 'Sentry — SessionNotFoundError spike',
+    endT: '15:44:00',
+  },
+  {
+    t: '15:40:10',
+    ctx: 'sessionbug',
+    type: 'browser.navigation',
+    app: 'chrome.exe',
+    title: 'Sentry — SessionNotFoundError spike',
+    important: true,
+    meta: {
+      tabId: 51,
+      url: 'https://acme.sentry.io/issues/5518821/',
+      host: 'sentry.io',
+      transition: 'link',
+      incognito: false,
+    },
+    note: 'Where the investigation starts. Resume should lead with this.',
+  },
+  {
+    t: '15:42:30',
+    ctx: 'sessionbug',
+    type: 'browser.navigation',
+    app: 'chrome.exe',
+    title: 'SessionNotFoundError — events — Sentry',
+    meta: {
+      tabId: 51,
+      url: 'https://acme.sentry.io/issues/5518821/events/',
+      host: 'sentry.io',
+      transition: 'link',
+      incognito: false,
+    },
+  },
+
+  {
+    t: '15:44:00',
+    ctx: 'sessionbug',
+    type: 'system.window.focus',
+    app: 'Code.exe',
+    title: 'myapp — Visual Studio Code',
+    endT: '15:52:00',
+  },
+  {
+    t: '15:44:06',
+    ctx: 'sessionbug',
+    type: 'ide.workspace.opened',
+    meta: { workspacePath: 'C:/dev/myapp', ideName: 'vscode', ideVersion: '1.96.0' },
+  },
+  {
+    t: '15:44:30',
+    ctx: 'sessionbug',
+    type: 'git.branch.checkout',
+    meta: { from: 'main', to: 'investigate/session-not-found', isNewBranch: true },
+  },
+  {
+    t: '15:45:10',
+    ctx: 'sessionbug',
+    type: 'ide.file.opened',
+    important: true,
+    meta: {
+      path: 'C:/dev/myapp/src/auth/auth.ts',
+      languageId: 'typescript',
+      repoRelativePath: 'src/auth/auth.ts',
+    },
+  },
+  {
+    t: '15:46:40',
+    ctx: 'sessionbug',
+    type: 'ide.file.opened',
+    important: true,
+    meta: {
+      path: 'C:/dev/myapp/src/auth/session.ts',
+      languageId: 'typescript',
+      repoRelativePath: 'src/auth/session.ts',
+    },
+  },
+  {
+    t: '15:49:20',
+    ctx: 'sessionbug',
+    type: 'ide.file.opened',
+    meta: {
+      path: 'C:/dev/myapp/test/auth.test.ts',
+      languageId: 'typescript',
+      repoRelativePath: 'test/auth.test.ts',
+    },
+  },
+
+  {
+    t: '15:52:00',
+    ctx: 'sessionbug',
+    type: 'system.window.focus',
+    app: 'chrome.exe',
+    title: 'Session management — BetterAuth',
+    endT: '16:03:00',
+  },
+  {
+    t: '15:52:20',
+    ctx: 'sessionbug',
+    type: 'browser.navigation',
+    app: 'chrome.exe',
+    title: 'Session management — BetterAuth',
+    important: true,
+    meta: {
+      tabId: 52,
+      url: 'https://better-auth.com/docs/concepts/session',
+      host: 'better-auth.com',
+      transition: 'typed',
+      incognito: false,
+    },
+    note: 'The research trail. "Where was that documentation?" must find this.',
+  },
+  {
+    t: '15:56:40',
+    ctx: 'sessionbug',
+    type: 'browser.navigation',
+    app: 'chrome.exe',
+    title: 'Cookie options — BetterAuth',
+    meta: {
+      tabId: 52,
+      url: 'https://better-auth.com/docs/concepts/cookies',
+      host: 'better-auth.com',
+      transition: 'link',
+      incognito: false,
+    },
+  },
+  {
+    t: '16:00:10',
+    ctx: 'sessionbug',
+    type: 'browser.navigation',
+    app: 'chrome.exe',
+    title: 'better-auth session lost after redirect · Issue #1204',
+    meta: {
+      tabId: 53,
+      url: 'https://github.com/better-auth/better-auth/issues/1204',
+      host: 'github.com',
+      transition: 'typed',
+      incognito: false,
+    },
+  },
+
+  // ── Attempt 1 ─────────────────────────────────────────────────────────────────────────────
+  {
+    t: '16:03:00',
+    ctx: 'sessionbug',
+    type: 'system.window.focus',
+    app: 'Code.exe',
+    title: 'session.ts — myapp — Visual Studio Code',
+    endT: '16:11:00',
+  },
+  {
+    t: '16:05:30',
+    ctx: 'sessionbug',
+    type: 'ide.file.saved',
+    meta: { path: 'C:/dev/myapp/src/auth/session.ts', languageId: 'typescript', changedLines: 17 },
+  },
+  {
+    t: '16:09:40',
+    ctx: 'sessionbug',
+    type: 'ide.file.saved',
+    meta: { path: 'C:/dev/myapp/src/auth/auth.ts', languageId: 'typescript', changedLines: 8 },
+  },
+  {
+    t: '16:11:00',
+    ctx: 'sessionbug',
+    type: 'system.window.focus',
+    app: 'WindowsTerminal.exe',
+    title: 'pwsh — myapp',
+    endT: '16:12:10',
+  },
+  {
+    t: '16:11:10',
+    ctx: 'sessionbug',
+    type: 'terminal.command',
+    important: true,
+    meta: {
+      commandRedacted: 'pnpm test auth',
+      cwd: 'C:/dev/myapp',
+      exitCode: 1,
+      durationMs: 9200,
+      shell: 'pwsh',
+    },
+    note: 'Failed attempt 1.',
+  },
+  {
+    t: '16:11:20',
+    ctx: 'sessionbug',
+    type: 'terminal.error_tail',
+    meta: {
+      lines: [
+        'SessionNotFoundError: no session for token',
+        '  at src/auth/session.ts:74:11',
+        '  at test/auth.test.ts:52:9',
+      ],
+      lineCount: 3,
+      truncated: false,
+    },
+  },
+
+  // ── Attempt 2 ─────────────────────────────────────────────────────────────────────────────
+  {
+    t: '16:12:10',
+    ctx: 'sessionbug',
+    type: 'system.window.focus',
+    app: 'Code.exe',
+    title: 'session.ts — myapp — Visual Studio Code',
+    endT: '16:24:00',
+  },
+  {
+    t: '16:14:20',
+    ctx: 'sessionbug',
+    type: 'ide.file.saved',
+    meta: { path: 'C:/dev/myapp/src/auth/session.ts', languageId: 'typescript', changedLines: 22 },
+  },
+  {
+    t: '16:18:50',
+    ctx: 'sessionbug',
+    type: 'ide.diagnostic.error',
+    meta: {
+      path: 'C:/dev/myapp/src/auth/session.ts',
+      line: 74,
+      severity: 'error',
+      code: 'TS18048',
+      messageRedacted: "'session' is possibly 'undefined'.",
+    },
+  },
+  {
+    t: '16:21:30',
+    ctx: 'sessionbug',
+    type: 'ide.file.saved',
+    meta: { path: 'C:/dev/myapp/src/auth/session.ts', languageId: 'typescript', changedLines: 6 },
+  },
+  {
+    t: '16:23:10',
+    ctx: 'sessionbug',
+    type: 'ide.file.saved',
+    meta: { path: 'C:/dev/myapp/test/auth.test.ts', languageId: 'typescript', changedLines: 4 },
+  },
+  {
+    t: '16:24:00',
+    ctx: 'sessionbug',
+    type: 'system.window.focus',
+    app: 'WindowsTerminal.exe',
+    title: 'pwsh — myapp',
+    endT: '16:26:00',
+  },
+  {
+    t: '16:24:10',
+    ctx: 'sessionbug',
+    type: 'terminal.command',
+    important: true,
+    meta: {
+      commandRedacted: 'pnpm test auth',
+      cwd: 'C:/dev/myapp',
+      exitCode: 1,
+      durationMs: 9400,
+      shell: 'pwsh',
+    },
+    note: 'Failed attempt 2. This is the LAST failing command — the single most important fact for Resume.',
+  },
+  {
+    t: '16:24:20',
+    ctx: 'sessionbug',
+    type: 'terminal.error_tail',
+    important: true,
+    meta: {
+      lines: [
+        'AssertionError: expected session to be defined, got undefined',
+        '  at test/auth.test.ts:52:9',
+        '  the session mock never returns a value for expired tokens',
+      ],
+      lineCount: 3,
+      truncated: false,
+    },
+  },
+  {
+    t: '16:25:20',
+    ctx: 'sessionbug',
+    type: 'terminal.command',
+    meta: {
+      commandRedacted: 'pnpm test auth -t "expired token"',
+      cwd: 'C:/dev/myapp',
+      exitCode: 1,
+      durationMs: 4100,
+      shell: 'pwsh',
+    },
+  },
+
+  // ── Gives up for the day. Nothing committed, nothing pushed, work left dirty. ──────────────
+  {
+    t: '16:26:00',
+    ctx: 'sessionbug',
+    type: 'system.window.focus',
+    app: 'Code.exe',
+    title: 'auth.test.ts — myapp — Visual Studio Code',
+    endT: '16:31:00',
+  },
+  {
+    t: '16:28:40',
+    ctx: 'sessionbug',
+    type: 'manual.note',
+    important: true,
+    meta: {
+      text: 'Session mock in test/auth.test.ts never returns a value for expired tokens — that is probably the real problem, not the expiry maths. Check the mock first tomorrow.',
+    },
+    note: 'The developer wrote down their own hypothesis. Resume should quote this verbatim rather than paraphrase it.',
+  },
+  {
+    t: '16:30:10',
+    ctx: 'sessionbug',
+    type: 'git.status.summary',
+    important: true,
+    meta: { branch: 'investigate/session-not-found', dirtyFiles: 3, ahead: 0, behind: 0 },
+    note: 'Three uncommitted files. Resume must say so.',
+  },
+  { t: '16:31:00', ctx: 'sessionbug', type: 'system.idle.start', meta: { idleSeconds: 0 } },
+  { t: '17:04:00', ctx: 'sessionbug', type: 'system.session.lock', meta: {} },
+];
+
+export const gs05 = buildSession({
+  id: 'gs-05-failed-investigation',
+  name: 'Failed investigation',
+  description:
+    'A developer investigates a session bug for fifty minutes, reads three documentation sources, tries two fixes, fails both, writes a note and stops for the day.',
+  tests:
+    'Resume must work for work that was NOT finished. There is no commit, no PR, no success — the valuable facts are the last failing command, the two failed attempts, the three dirty files and the developer\u0027s own note. An engine that only summarises completed work produces nothing useful here, and this is the single most common real-world shape.',
+  day: '2026-03-19',
+  tzOffsetMinutes: 60,
+  defaultRepo: 'myapp',
+  contexts: {
+    sessionbug: {
+      label: 'Authentication session bug',
+      labelMatches: '(?i)auth|session|SessionNotFound',
+      outcome: 'unresolved',
+      expectedNextStep:
+        'Investigate the session mock in test/auth.test.ts — it never returns a value for expired tokens',
+      note: 'Expected Resume card: 2 failed attempts, last failure "pnpm test auth" exit 1, 3 uncommitted files, next step taken from the manual note.',
+    },
+  },
+  steps: s,
+});
