@@ -156,6 +156,13 @@ pub fn discover() -> Vec<PathBuf> {
 
 /// The checked-out branch, or `None` on a detached head — which is a state, not a branch, and
 /// naming it after a commit sha would put a meaningless anchor on a day's work.
+///
+/// One rule, three places, two languages: this refuses a sha, `claude.rs` refuses the string
+/// `HEAD` that Claude Code writes mid-checkout, and `packages/engine-v0/src/anchors.ts` refuses it
+/// again when the stored events are replayed. It had drifted — only this one had it — and the cost
+/// was two unrelated repositories merged into one context, because every repository reports the
+/// same `HEAD`. Whoever ports the engine to Rust inherits the third copy; keep them pointing at
+/// each other until they can be one.
 fn head_branch(git_dir: &Path) -> Option<String> {
     let head = std::fs::read_to_string(git_dir.join("HEAD")).ok()?;
     let rest = head.trim().strip_prefix("ref:")?.trim();
