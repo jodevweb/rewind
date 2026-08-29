@@ -1,0 +1,21 @@
+{
+  "name": "@rewind/ask",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Ask — a plain-language question over stored events, answered locally and deterministically, with the evidence attached (SEARCH.md, ADR 0005 D-13).",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@rewind/engine-v0": "workspace:*",
+    "@rewind/fixtures": "workspace:*"
+  },
+  "devDependencies": {
+    "@rewind/config": "workspace:*",
+    "vitest": "^2.1.9"
+  }
+}

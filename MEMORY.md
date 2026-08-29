@@ -242,3 +242,49 @@ pnpm --filter @rewind/fixtures build    # recompile fixtures after editing a ses
 - No notarisation, so every fresh macOS install needs the `xattr` step.
 - Prediction reads whatever events the window has loaded (currently up to 5000). Multi-week history
   would want a dedicated query rather than pulling everything into the webview.
+
+---
+
+## Ask
+
+`packages/ask` — a question in plain language, answered from the stored events, locally and
+deterministically. It is the promise the README is named for, and it did not exist in the interface
+until now: the application reconstructed your day and left you to scroll it.
+
+Four stages, all rules, no model: intent classification (SEARCH §2), temporal resolution (§3),
+lexical recall over **rows** rather than events, and a deterministic answer with citations (§7.1).
+`⌘K` anywhere opens it.
+
+### What differs from SEARCH.md, and why
+
+- **No vector stage and no `ContextLink` graph** — neither exists on this machine yet. The document
+  says weights renormalise; the obvious reading, spreading the missing 0.30 across everything left,
+  is wrong here. Lexical is then the only signal that reads the question at all, so spreading it
+  lets a recent, important, unrelated row outrank an exact match from last week. The semantic weight
+  goes to lexical (0.55) and the graph weight to context affinity (0.20).
+- **Scores stay absolute, never normalised against the best result.** Normalising makes the top row
+  1.0 even when nothing matched, and the refusal threshold — the thing that stops this inventing
+  answers — would never fire.
+
+### The traps
+
+- **A question that names a category has no content to match.** "Quelle commande a échoué" is all
+  question words and one category, so a purely lexical search refuses it — correctly and uselessly,
+  since it is a canonical query in §10. `kinds.ts` lifts category words out of the terms and turns
+  them into a filter over row kinds, abandoned if it empties the result set.
+- **Conjugated verbs are part of the question, not of what is asked about.** Leaving `travaillais`
+  in the terms turned "sur quoi je travaillais ?" into a search for a word that appears nowhere.
+- **Cut phrases by token, never by substring index.** The classifier works on folded text, so
+  searching for its folded "ou etait" inside a raw "où était" silently never matches.
+- **French and English are both first-class in every pattern.** Nobody switches the interface
+  language before typing a question.
+
+### Rows, not events
+
+A documentation page read twenty times is twenty events and one memory. Events fold into rows keyed
+by `(context, kind, target)`, carrying an occurrence count and a span. One event yields several rows
+— a commit is a message _and_ a branch — so "the auth file" and "the commit about auth" are both
+findable without either query guessing which the other meant.
+
+Rows are built from an explicit field allowlist, never an object walk. Search must not become the
+route by which something reaches the screen that the capture rules kept off it.
