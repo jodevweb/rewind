@@ -137,7 +137,9 @@ pub fn discover() -> Vec<PathBuf> {
             continue;
         };
         for entry in entries.flatten() {
-            let Ok(kind) = entry.file_type() else { continue };
+            let Ok(kind) = entry.file_type() else {
+                continue;
+            };
             // Never follow a symlink: one link back up the tree turns the walk into a cycle.
             if !kind.is_dir() {
                 continue;
@@ -315,7 +317,10 @@ fn scan_repo(store: &Store, worktree: &Path, known: &mut Known, tz: i32, recordi
         // time would otherwise pour ten years of commits into today.
         let fresh: Vec<&Entry> = if seen_before.is_none() {
             let cutoff = now_ms().saturating_sub(BACKFILL_MS);
-            let recent: Vec<&Entry> = entries.iter().filter(|e| e.timestamp_ms >= cutoff).collect();
+            let recent: Vec<&Entry> = entries
+                .iter()
+                .filter(|e| e.timestamp_ms >= cutoff)
+                .collect();
             let start = recent.len().saturating_sub(MAX_BACKFILL);
             recent[start..].to_vec()
         } else {
@@ -471,7 +476,10 @@ mod tests {
 
     #[test]
     fn only_commits_are_commits() {
-        assert_eq!(commit_message("commit: ajoute la pagination"), Some("ajoute la pagination"));
+        assert_eq!(
+            commit_message("commit: ajoute la pagination"),
+            Some("ajoute la pagination")
+        );
         assert_eq!(commit_message("commit (amend): oups"), Some("oups"));
         assert_eq!(commit_message("checkout: moving from main to feat/x"), None);
         assert_eq!(commit_message("merge feat/x: Fast-forward"), None);
@@ -490,13 +498,20 @@ mod tests {
     fn a_torn_or_alien_line_is_skipped_rather_than_fatal() {
         assert_eq!(parse_line(""), None);
         assert_eq!(parse_line("not a reflog line at all"), None);
-        assert_eq!(parse_line("aaa bbb name <m@x> notanumber +0200\tcommit: x"), None);
+        assert_eq!(
+            parse_line("aaa bbb name <m@x> notanumber +0200\tcommit: x"),
+            None
+        );
     }
 
     #[test]
     fn a_rewritten_log_jumps_forward_instead_of_replaying() {
         let mut path = std::env::temp_dir();
-        path.push(format!("rewind-reflog-{}-{}.log", std::process::id(), now_ms()));
+        path.push(format!(
+            "rewind-reflog-{}-{}.log",
+            std::process::id(),
+            now_ms()
+        ));
         std::fs::write(&path, format!("{LINE}\n")).expect("write");
         let full = std::fs::metadata(&path).expect("stat").len();
 
