@@ -448,7 +448,7 @@ fn rank(mut repos: Vec<PathBuf>) -> Vec<PathBuf> {
 mod tests {
     use super::*;
 
-    const LINE: &str = "0000000000000000000000000000000000000000 a1b2c3d4e5f6 Jordan Usoulet <jordan@example.com> 1756000000 +0200\tcommit (initial): premier jet";
+    const LINE: &str = "0000000000000000000000000000000000000000 a1b2c3d4e5f6 A Committer <committer@example.com> 1756000000 +0200\tcommit (initial): premier jet";
 
     #[test]
     fn a_reflog_line_gives_up_its_commit_and_nothing_else() {
