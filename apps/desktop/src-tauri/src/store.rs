@@ -330,6 +330,21 @@ impl Store {
         Ok(known == Some(size as i64))
     }
 
+    /// How many bytes of this external file have already been read.
+    ///
+    /// `source_unchanged` answers "is there anything new?"; an append-only log also needs to know
+    /// *where* the new part starts, or every pass re-reads a file that only ever grows and emits
+    /// the same commits again.
+    pub fn source_size(&self, key: &str) -> rusqlite::Result<Option<u64>> {
+        let conn = self.conn.lock().expect("store");
+        let known: Option<i64> = conn
+            .query_row("SELECT size FROM sources WHERE key = ?1", [key], |row| {
+                row.get(0)
+            })
+            .optional()?;
+        Ok(known.map(|v| v as u64))
+    }
+
     pub fn remember_source(&self, key: &str, size: u64) -> rusqlite::Result<()> {
         let conn = self.conn.lock().expect("store");
         conn.execute(

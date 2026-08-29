@@ -304,7 +304,12 @@ fn events_for(session: &Session, tz: i32) -> Vec<Event> {
 }
 
 /// Scan once. Only files whose size changed since the last pass are re-read.
-pub fn scan(store: &Store, tz: i32) -> (usize, u64) {
+///
+/// `recording` false still walks the files and still records how far each one was read — it simply
+/// writes no events. Pause means nothing is captured, not captured-and-hidden (§7), and a
+/// file-derived source breaks that promise by accident if it skips a paused hour: the next pass
+/// finds the file longer and stores everything that happened during it.
+pub fn scan(store: &Store, tz: i32, recording: bool) -> (usize, u64) {
     let Some(root) = projects_dir() else {
         return (0, 0);
     };
@@ -327,6 +332,11 @@ pub fn scan(store: &Store, tz: i32) -> (usize, u64) {
             let key = path.display().to_string();
             let size = file.metadata().map(|m| m.len()).unwrap_or(0);
             if store.source_unchanged(&key, size).unwrap_or(false) {
+                continue;
+            }
+
+            if !recording {
+                let _ = store.remember_source(&key, size);
                 continue;
             }
 
@@ -359,9 +369,13 @@ pub fn scan(store: &Store, tz: i32) -> (usize, u64) {
 
 /// Rescan on a slow cadence. Sessions change while Claude runs, so a finished session is only
 /// finished when the file stops growing — re-reading is cheap because the size check gates it.
-pub fn spawn(store: std::sync::Arc<Store>, tz: i32) {
+pub fn spawn(
+    store: std::sync::Arc<Store>,
+    capture: std::sync::Arc<crate::capture::Capture>,
+    tz: i32,
+) {
     std::thread::spawn(move || loop {
-        let (written, skipped) = scan(&store, tz);
+        let (written, skipped) = scan(&store, tz, capture.is_recording());
         if written > 0 || skipped > 0 {
             println!("REWIND: Claude Code — {written} session(s), {skipped} ligne(s) ignorée(s)");
         }
