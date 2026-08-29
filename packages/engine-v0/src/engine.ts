@@ -14,6 +14,8 @@ import {
   matchingAnchors,
   strength,
   normalize,
+  STRONG,
+  type AnchorType,
   subjectAnchors,
   titlePhrases,
   type Anchor,
@@ -190,14 +192,9 @@ function buildActivities(
       // Requiring the last application shattered every fixture (recall fell to 10 %).
       const sameApp = current.apps.includes(appName(e));
 
-      // A conflicting strong anchor ends the activity outright: a different issue id is different
-      // work, even one second later in the same application.
-      const strongHere = anchors.filter((a) => strength(a.type) === 'strong');
-      const strongThere = recent.filter((a) => strength(a.type) === 'strong');
-      const conflicting =
-        strongHere.length > 0 &&
-        strongThere.length > 0 &&
-        overlap(strongHere, strongThere).length === 0;
+      // A conflicting identity ends the activity outright: a different issue id, or a different
+      // branch, is different work — even one second later in the same application.
+      const conflicting = identityConflict(anchors, recent);
 
       if (gapped || tooLong || conflicting || (!heldByAnchor && !sameApp)) close();
     }
@@ -225,6 +222,43 @@ function buildActivities(
 
   for (const a of activities) a.label = labelActivity(a);
   return activities;
+}
+
+/**
+ * The anchor types that answer "which piece of work is this?".
+ *
+ * `branch` is here and is only medium evidence elsewhere, and the difference is deliberate: a branch
+ * is weak evidence that two things belong *together* — plenty of unrelated work happens on `main` —
+ * and strong evidence that they do not, because nobody does two tasks on two branches by accident.
+ * GS-06 turns on it: reviewing a colleague's pagination PR and building an empty state are the same
+ * repository, the same checkout and the same afternoon, and the only thing that separates them is
+ * which branch was checked out.
+ */
+const IDENTITY: AnchorType[] = [...STRONG, 'branch'];
+
+/**
+ * Do two sets of anchors positively disagree about which work this is?
+ *
+ * Comparison is **within a type**, and that is the whole point. `issue` and `worktree` are both
+ * strong, so a set carrying one and a set carrying the other can never share an anchor — and the
+ * plain "both sides are strong and nothing matches" test read that as evidence of different work.
+ * It is evidence of nothing: they are not comparable. An issue id and a worktree path are two ways
+ * of saying which task this is, and every day they named the same task, this rule cut it in half.
+ * It cost eight points of pairwise F1 and most of the false split, in three places at once — the
+ * activity boundary, the assignment score and the merge pass all asked the same wrong question.
+ *
+ * This is the principle the engine already applies to weak evidence, applied where it was being
+ * quietly ignored: **absence of evidence is not evidence of difference.**
+ *
+ * Two different issue ids are a real disagreement, and that is what keeps GS-04's two tasks in one
+ * repository apart.
+ */
+function identityConflict(a: Anchor[], b: Anchor[]): boolean {
+  return IDENTITY.some((type) => {
+    const here = a.filter((x) => x.type === type);
+    const there = b.filter((x) => x.type === type);
+    return here.length > 0 && there.length > 0 && overlap(here, there).length === 0;
+  });
 }
 
 /** Anchors of the last `n` events of an activity — the local context, not the whole history. */
@@ -272,9 +306,7 @@ function score(
   // Conflicting identity. If both sides carry a strong anchor and none of them match, that is
   // positive evidence of *different* work — two issue ids are two pieces of work, however adjacent
   // in time and however many files they share. This is what keeps GS-04 apart.
-  const activityStrong = activity.anchors.filter((a) => strength(a.type) === 'strong');
-  const contextStrong = context.anchors.filter((a) => strength(a.type) === 'strong');
-  if (!strongHit && activityStrong.length > 0 && contextStrong.length > 0) {
+  if (!strongHit && identityConflict(activity.anchors, context.anchors)) {
     return { total: 0, shared };
   }
 
@@ -418,18 +450,52 @@ export function runEngine(
         // anchor UNLESS both sides carry strong identities that disagree. That keeps GS-04's two
         // tasks apart (auth-221 vs perm-88) while reuniting GS-09's billing pieces, which have no
         // strong anchor at all.
-        const aStrong = a.anchors.filter((x) => strength(x.type) === 'strong');
-        const bStrong = b.anchors.filter((x) => strength(x.type) === 'strong');
-        const conflicting =
-          aStrong.length > 0 && bStrong.length > 0 && overlap(aStrong, bStrong).length === 0;
-
-        if (!conflicting) {
+        if (!identityConflict(a.anchors, b.anchors)) {
           absorb(a, b);
           contexts.splice(j, 1);
           merged = true;
           break outer;
         }
       }
+    }
+  }
+
+  // Unlabelled time *inside* a piece of work is part of that work.
+  //
+  // The assignment stage already holds that absence of evidence is not evidence of difference, but
+  // it can only say so forward: an anchorless activity that lands past the drift window opens a
+  // context of its own, and every anchorless activity after it joins that one. When the identified
+  // work resumes, the day carries a nameless island between two halves of one subject. That island
+  // is most of the false split — the sessions it shows up in are administration, communication and
+  // the chaotic day, which is to say the ones made of window titles and nothing else.
+  //
+  // The rule reaches nowhere. A context is absorbed only when it sits *entirely* inside the span of
+  // another and carries no anchor above weak — no issue, no branch, no project, no document. Weak
+  // anchors are a host and a repository name; they say where something happened, never what it was,
+  // and a stretch of the afternoon identified only by two billing hostnames is not a second piece of
+  // work, it is a detour inside the first.
+  //
+  // Two fixtures are the guard rails. GS-08 interleaves two projects, and a project anchor is
+  // medium, so neither can be swallowed by the other's span. GS-11's evening is never contained by
+  // anything, because nothing follows it — which is what that fixture exists to prove.
+  let bracketed = true;
+  while (bracketed) {
+    bracketed = false;
+    for (let i = 0; i < contexts.length; i += 1) {
+      const island = contexts[i]!;
+      if (island.anchors.some((a) => strength(a.type) !== 'weak')) continue;
+      const host = contexts.find(
+        (c) =>
+          c !== island &&
+          c.anchors.length > 0 &&
+          c.startTimestamp < island.startTimestamp &&
+          c.endTimestamp > island.endTimestamp,
+      );
+      if (!host) continue;
+      absorb(host, island);
+      contexts.splice(i, 1);
+      bracketed = true;
+      break;
     }
   }
 

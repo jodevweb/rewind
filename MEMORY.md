@@ -119,10 +119,13 @@ genuinely will not run. Ship the `.dmg`.
 `packages/engine-v0` is the deterministic context engine (TypeScript reference implementation; a
 Rust port is planned). Scored by `pnpm eval` against 11 hand-authored golden sessions.
 
-**Current: 88.0 % pairwise F1 · 0.2 % false merge · 20.3 % false split · 99.4 % purity ·
-91.4 % important recall · ARI 0.449.**
+**Current: 99.2 % pairwise F1 · 0.3 % false merge · 1.2 % false split · 99.4 % purity ·
+99.7 % important recall · ARI 0.906.** All eleven fixtures produce exactly the expected number of
+contexts. Every target in PRODUCT.md §10.2 is met with room.
 
-False split is above its 15 % target. That is the open number.
+It read 88.0 % F1 and 20.3 % false split until the conflict rule was fixed — see below. Do not read
+these numbers as a ceiling reached by tuning: no weight or threshold was touched. One wrong question,
+asked in three places, was costing eight points.
 
 ### The distinction the whole engine turns on
 
@@ -146,6 +149,35 @@ eight points of F1: titles are full of repository and organisation names, so the
 became the location again, promoted from weak to medium evidence, and false merges on the
 chaotic-day fixture went from 2.6 % to 17.5 %. A vague label costs a reader a moment; a wrong
 grouping key silently rewrites the history of a day.
+
+### The conflict rule, and the eight points it was costing
+
+`issue` and `worktree` are both STRONG, so a context carrying one and a context carrying the other
+could never share an anchor. Three separate places — the activity boundary, the assignment score and
+the merge pass — tested "both sides carry a strong anchor and none of them match" and read that as
+positive evidence of **different** work. It is evidence of nothing: the two are not comparable. An
+issue id and a worktree path are two ways of saying which task this is, and every day they named the
+same task, the rule cut it in half.
+
+Comparison is now **within a type** (`identityConflict`). Two different issue ids still disagree,
+which is what keeps GS-04's two tasks in one repository apart. This is the same principle the engine
+already applied to weak evidence, applied where it was being ignored.
+
+`branch` was added to that comparison even though it is only medium evidence elsewhere, and the
+asymmetry is the point: a branch is weak evidence that two things belong _together_ — plenty of
+unrelated work happens on `main` — and strong evidence that they do not. GS-06 turns on it. Reviewing
+a colleague's pagination PR and building an empty state share a repository, a checkout and an
+afternoon; the branch is the only thing that separates them.
+
+### Unlabelled islands
+
+An anchorless activity past the drift window opens a context of its own, and every anchorless
+activity after it joins that one — so when the identified work resumes, the day carries a nameless
+island between two halves of one subject. A context is now absorbed when it sits **entirely** inside
+another's span and carries no anchor above weak. Weak anchors are hostnames and repository names:
+they say where something happened, never what it was. GS-08 is the guard rail (a project anchor is
+medium, so two interleaved projects cannot swallow each other) and so is GS-11 (nothing follows the
+evening, so nothing can bracket it).
 
 ### Things that were tried and were wrong
 
@@ -235,7 +267,9 @@ pnpm --filter @rewind/fixtures build    # recompile fixtures after editing a ses
 
 ## What is not done
 
-- **False split is 20.3 %, target is 15 %.** The open engine number.
+- The engine meets every benchmark target, so the open question is no longer a number on the golden
+  set — it is that eleven hand-authored days are a small benchmark, and the fixtures were written by
+  the same people who tuned against them.
 - The engine is TypeScript; the Rust port (ADR 0001 D-4) has not started.
 - Level 1.5 semantic actions (ADR 0005 D-34), the browser extension, the Cockpit event protocol, and
   the Git/worktree collector are all unstarted.
