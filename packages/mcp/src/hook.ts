@@ -22,8 +22,18 @@ import { existsSync } from 'node:fs';
 import { Store, storePath } from './db.js';
 import { NOTHING, resumeTextForProject } from './tools.js';
 
-/** The hook receives its payload on stdin. `cwd` is the session's directory when it is there. */
+/**
+ * Which project this session is starting in, from the most reliable source available.
+ *
+ * The argument first, because it is the only one that cannot be wrong: the hook command passes the
+ * shell's own directory. Then stdin, where the host puts `cwd`. `process.cwd()` is last and is
+ * nearly useless here — `pnpm --filter` runs the script from the package directory, so it reads
+ * `packages/mcp` rather than the session's project, and the card comes back empty for a reason
+ * nothing on screen explains. That is how this was found.
+ */
 async function projectPath(): Promise<string> {
+  const fromArgv = process.argv[2];
+  if (typeof fromArgv === 'string' && fromArgv.trim() !== '') return fromArgv.trim();
   try {
     const chunks: Buffer[] = [];
     for await (const chunk of process.stdin) chunks.push(chunk as Buffer);
