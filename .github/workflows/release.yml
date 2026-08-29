@@ -17,7 +17,17 @@ name: Release
 # build that ran in this repository; the application refuses anything that does not verify against
 # the public key in tauri.conf.json.
 #
-# Run it from the Actions tab, or push a v* tag.
+# Run it from the Actions tab, with the version typed in. There is deliberately no tag trigger.
+#
+# There was one — `push: tags: ['v*']` — and it fired on a tag that was moved rather than created.
+# Rewriting history force-pushed v0.5.0 and v0.5.1, both tags landed as pushes, and the workflow ran
+# twice with no version input. Without one it reads the version committed in package.json, which is
+# `0.1.0` and always has been, so it built and published a release called v0.1.0, mirrored it, and
+# that release — being the most recent — became "latest". For about an hour the updater endpoint
+# offered a downgrade to a version that never existed.
+#
+# A tag push is not a decision to release. It happens when a tag is moved, re-pointed or restored,
+# and none of those mean "build this". The version is now always typed by the person releasing.
 
 on:
   workflow_dispatch:
@@ -25,8 +35,6 @@ on:
       version:
         description: 'Version, e.g. 0.2.0'
         required: true
-  push:
-    tags: ['v*']
 
 permissions:
   contents: read
@@ -59,7 +67,6 @@ jobs:
       # `__VERSION__` is filled from tauri.conf.json, so without this the version typed into the
       # Actions tab is ignored and the run rebuilds whatever version is already committed.
       - name: Set version
-        if: inputs.version != ''
         run: node scripts/set-version.mjs "${{ inputs.version }}"
 
       - name: Read version
@@ -115,19 +122,16 @@ jobs:
           pattern: assets-*
           merge-multiple: true
 
-      # The checkout is clean, so package.json carries the committed version rather than the one the
-      # build jobs stamped. A dispatched version wins over it.
+      # The checkout is clean, so package.json still carries the committed version — `0.1.0`, which it
+      # has been since the first commit — rather than the one the build jobs stamped. This used to
+      # fall back to it when no version was given, which is how an accidental run published v0.1.0.
+      # There is no fallback now: the dispatched version is the only version.
       - name: Resolve version
         id: version
-        run: |
-          VERSION="${{ inputs.version }}"
-          if [ -z "$VERSION" ]; then
-            VERSION=$(node -p "require('./apps/desktop/package.json').version")
-          fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+        run: echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
 
-      # One manifest, pointing at this repository's assets. It is uploaded in two places below,
-      # but there is only ever one set of installers and one set of signatures.
+      # One manifest, pointing at this repository's assets, published once. It was uploaded in two
+      # places while the mirror existed; there was only ever one set of installers and signatures.
       - name: Build the update manifest
         run: node scripts/build-latest-json.mjs "${{ steps.version.outputs.version }}" "${{ github.repository }}"
 
