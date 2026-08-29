@@ -43,9 +43,55 @@ pub struct Event {
     pub importance: i64,
 }
 
+/// One work day that has events in it, for the day navigator.
+///
+/// Counted in SQL rather than by loading the events, because the point of the navigator is to let
+/// someone reach a day from six months ago without the interface having read the six months first.
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DaySummary {
+    /// `YYYY-MM-DD`, on the 04:00 cutoff.
+    pub day: String,
+    pub count: u64,
+    pub first: u64,
+    pub last: u64,
+}
+
 pub struct Store {
     conn: Mutex<Connection>,
     path: PathBuf,
+}
+
+/// The projection every event query selects. Written once so two queries cannot drift into
+/// disagreeing about column order, which fails at runtime and nowhere else.
+const EVENT_COLUMNS: &str = "timestamp, end_timestamp, tz_offset_minutes, source, type, app_id, \
+     app_display, title, pid, metadata, \
+     redaction_version, redaction_applied, redaction_count, importance";
+
+fn read_event(row: &rusqlite::Row<'_>) -> rusqlite::Result<Event> {
+    let applied: String = row.get(11)?;
+    Ok(Event {
+        timestamp: row.get::<_, i64>(0)? as u64,
+        end_timestamp: row.get::<_, Option<i64>>(1)?.map(|v| v as u64),
+        tz_offset_minutes: row.get(2)?,
+        source: row.get(3)?,
+        kind: row.get(4)?,
+        app_id: row.get(5)?,
+        app_display: row.get(6)?,
+        title: row.get::<_, Option<String>>(7)?.unwrap_or_default(),
+        pid: row.get(8)?,
+        metadata: row
+            .get::<_, Option<String>>(9)?
+            .unwrap_or_else(|| "{}".into()),
+        redaction_version: row.get(10)?,
+        redaction_applied: if applied.is_empty() {
+            Vec::new()
+        } else {
+            applied.split(',').map(str::to_owned).collect()
+        },
+        redaction_count: row.get::<_, i64>(12)? as usize,
+        importance: row.get(13)?,
+    })
 }
 
 /// The work day an instant belongs to, using the 04:00 local cutoff (INITIAL_ANALYSIS TR-8).
@@ -217,35 +263,41 @@ impl Store {
 
     pub fn recent(&self, limit: usize) -> rusqlite::Result<Vec<Event>> {
         let conn = self.conn.lock().expect("store");
+        let mut stmt = conn.prepare(&format!(
+            "SELECT {EVENT_COLUMNS} FROM events ORDER BY timestamp DESC LIMIT ?1"
+        ))?;
+        let rows = stmt.query_map([limit as i64], read_event)?;
+        rows.collect()
+    }
+
+    /// Every event of one work day, oldest first.
+    ///
+    /// Indexed by `idx_events_day`, so reaching a day from six months ago costs the same as reaching
+    /// yesterday. The limit is a safety rail against a single pathological day, not a page size —
+    /// the interface needs the whole day or the engine reconstructs a partial one.
+    pub fn for_day(&self, day: &str, limit: usize) -> rusqlite::Result<Vec<Event>> {
+        let conn = self.conn.lock().expect("store");
+        let mut stmt = conn.prepare(&format!(
+            "SELECT {EVENT_COLUMNS} FROM events WHERE work_day = ?1
+             ORDER BY timestamp ASC LIMIT ?2"
+        ))?;
+        let rows = stmt.query_map(params![day, limit as i64], read_event)?;
+        rows.collect()
+    }
+
+    /// Every work day that has anything in it, newest first.
+    pub fn days(&self, limit: usize) -> rusqlite::Result<Vec<DaySummary>> {
+        let conn = self.conn.lock().expect("store");
         let mut stmt = conn.prepare(
-            r#"SELECT timestamp, end_timestamp, tz_offset_minutes, source, type, app_id,
-                      app_display, title, pid, metadata,
-                      redaction_version, redaction_applied, redaction_count, importance
-               FROM events ORDER BY timestamp DESC LIMIT ?1"#,
+            "SELECT work_day, COUNT(*), MIN(timestamp), MAX(COALESCE(end_timestamp, timestamp))
+             FROM events GROUP BY work_day ORDER BY work_day DESC LIMIT ?1",
         )?;
         let rows = stmt.query_map([limit as i64], |row| {
-            let applied: String = row.get(11)?;
-            Ok(Event {
-                timestamp: row.get::<_, i64>(0)? as u64,
-                end_timestamp: row.get::<_, Option<i64>>(1)?.map(|v| v as u64),
-                tz_offset_minutes: row.get(2)?,
-                source: row.get(3)?,
-                kind: row.get(4)?,
-                app_id: row.get(5)?,
-                app_display: row.get(6)?,
-                title: row.get::<_, Option<String>>(7)?.unwrap_or_default(),
-                pid: row.get(8)?,
-                metadata: row
-                    .get::<_, Option<String>>(9)?
-                    .unwrap_or_else(|| "{}".into()),
-                redaction_version: row.get(10)?,
-                redaction_applied: if applied.is_empty() {
-                    Vec::new()
-                } else {
-                    applied.split(',').map(str::to_owned).collect()
-                },
-                redaction_count: row.get::<_, i64>(12)? as usize,
-                importance: row.get(13)?,
+            Ok(DaySummary {
+                day: row.get(0)?,
+                count: row.get::<_, i64>(1)? as u64,
+                first: row.get::<_, i64>(2)? as u64,
+                last: row.get::<_, i64>(3)? as u64,
             })
         })?;
         rows.collect()
@@ -297,6 +349,67 @@ mod tests {
     fn civil_from_days_matches_known_dates() {
         assert_eq!(civil_from_days(0), (1970, 1, 1));
         assert_eq!(civil_from_days(19_000), (2022, 1, 8));
+    }
+
+    /// A store of its own, in a temporary directory. A test must never touch the user's database.
+    ///
+    /// The counter is not decoration: cargo runs tests in parallel threads of one process, so a name
+    /// built from the process id and the millisecond clock collides between two tests that start in
+    /// the same millisecond.
+    fn store() -> Store {
+        static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+        let n = NEXT.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        let mut path = std::env::temp_dir();
+        path.push(format!(
+            "rewind-store-test-{}-{}-{}.db",
+            std::process::id(),
+            crate::capture::now_ms(),
+            n
+        ));
+        Store::open_at(path).expect("store")
+    }
+
+    fn event(timestamp: u64, title: &str) -> Event {
+        Event {
+            timestamp,
+            end_timestamp: None,
+            tz_offset_minutes: 60,
+            source: "system".into(),
+            kind: "system.window.focus".into(),
+            app_id: "test".into(),
+            app_display: "Test".into(),
+            title: title.into(),
+            pid: None,
+            metadata: "{}".into(),
+            redaction_version: "1".into(),
+            redaction_applied: Vec::new(),
+            redaction_count: 0,
+            importance: 30,
+        }
+    }
+
+    #[test]
+    fn a_day_can_be_read_back_whole_and_on_its_own() {
+        let store = store();
+        // 09:00 and 03:00 the following morning, which the 04:00 cutoff files under the same day.
+        let morning = 1_773_302_400_000u64;
+        let small_hours = morning + 18 * 3_600_000;
+        let next = morning + 30 * 3_600_000;
+        for (ts, title) in [(morning, "a"), (small_hours, "b"), (next, "c")] {
+            let day = work_day(ts, 60);
+            store.insert(&event(ts, title), &day).expect("insert");
+        }
+
+        let first = work_day(morning, 60);
+        let events = store.for_day(&first, 100).expect("for_day");
+        assert_eq!(events.len(), 2, "the small hours belong to the evening before");
+        assert_eq!(events[0].title, "a", "a day reads oldest first");
+
+        let days = store.days(10).expect("days");
+        assert_eq!(days.len(), 2);
+        assert_eq!(days[0].day, work_day(next, 60), "newest day first");
+        assert_eq!(days[1].count, 2);
+        assert_eq!(days[1].first, morning);
     }
 
     #[test]
