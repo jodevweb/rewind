@@ -93,6 +93,8 @@ struct Session {
     duration_ms: u64,
     first_ts: Option<u64>,
     last_ts: Option<u64>,
+    /// Every record's timestamp, so the session can be cut where it actually stopped.
+    stamps: Vec<u64>,
     sidechain_only: bool,
 }
 
@@ -173,6 +175,7 @@ fn read_session(path: &Path) -> (Session, u64) {
         if let Some(ts) = parsed.timestamp.as_deref().and_then(parse_iso_ms) {
             session.first_ts = Some(session.first_ts.map_or(ts, |f| f.min(ts)));
             session.last_ts = Some(session.last_ts.map_or(ts, |l| l.max(ts)));
+            session.stamps.push(ts);
         }
         if parsed.is_sidechain == Some(false) {
             session.sidechain_only = false;
@@ -236,7 +239,45 @@ fn projects_dir() -> Option<PathBuf> {
     dir.is_dir().then_some(dir)
 }
 
+/// How long a silence has to be before a session is treated as having stopped and restarted.
+///
+/// Thinking, reading a diff and running a long build are all normal gaps inside one stretch of work,
+/// so the threshold has to sit above them. Half an hour of nothing is not a pause in the work; it is
+/// the end of it, and whatever comes back afterwards is a new sitting.
+const BURST_GAP_MS: u64 = 30 * 60_000;
+
+/// Cut a session's records into the stretches where somebody was actually there.
+///
+/// A Claude Code session is a file that stays open. Left running overnight it holds one record at
+/// 17:00 and the next at 00:30, and reading it as `first → last` claims nine and a half hours of
+/// continuous work — a single event long enough to bracket an entire day, which is how one evening
+/// of gaming ended up inside an afternoon of work.
+fn bursts(stamps: &[u64], gap: u64) -> Vec<(u64, u64)> {
+    if stamps.is_empty() {
+        return Vec::new();
+    }
+    let mut sorted = stamps.to_vec();
+    sorted.sort_unstable();
+
+    let mut out: Vec<(u64, u64)> = Vec::new();
+    let mut start = sorted[0];
+    let mut end = sorted[0];
+    for &ts in &sorted[1..] {
+        if ts.saturating_sub(end) > gap {
+            out.push((start, end));
+            start = ts;
+        }
+        end = ts;
+    }
+    out.push((start, end));
+    out
+}
+
 /// Turn a finished session into events. Metadata only — no prompts, no completions, no tool inputs.
+///
+/// One event per burst rather than one per session. The session's totals — files touched, tool
+/// counts, lines — go on the **last** burst only: they are cumulative over the whole session, and
+/// repeating them on every burst would report the same work several times.
 fn events_for(session: &Session, tz: i32) -> Vec<Event> {
     let (Some(first), Some(last)) = (session.first_ts, session.last_ts) else {
         return Vec::new();
@@ -266,41 +307,69 @@ fn events_for(session: &Session, tz: i32) -> Vec<Event> {
         .map(|(name, n)| format!("{name}×{n}"))
         .collect();
 
-    let metadata = serde_json::json!({
-        "agent": "claude-code",
-        "sessionId": session.session_id,
-        "projectPath": session.project_path,
-        "project": project,
-        "gitBranch": session.git_branch,
-        "version": session.version,
-        "agentName": session.agent_name,
-        "models": session.models,
-        "toolCallCount": session.tool_calls,
-        "tools": tools,
-        "filesTouched": session.files_touched.iter().take(25).collect::<Vec<_>>(),
-        "filesTouchedCount": session.files_touched.len(),
-        "linesAdded": session.lines_added,
-        "linesRemoved": session.lines_removed,
-        "isSidechain": session.sidechain_only,
-    });
+    // A record with no timestamp anywhere still deserves an event: fall back to the whole span,
+    // which is what this always did.
+    let spans = match bursts(&session.stamps, BURST_GAP_MS) {
+        v if v.is_empty() => vec![(first, last)],
+        v => v,
+    };
+    let final_burst = spans.len() - 1;
 
-    vec![Event {
-        timestamp: first,
-        end_timestamp: Some(last),
-        tz_offset_minutes: tz,
-        source: "agent".to_owned(),
-        kind: "agent.session".to_owned(),
-        app_id: "claude-code".to_owned(),
-        app_display: "Claude Code".to_owned(),
-        title,
-        pid: None,
-        metadata: metadata.to_string(),
-        // Redaction is applied by the caller, which owns the fail-closed rule.
-        redaction_version: String::new(),
-        redaction_applied: Vec::new(),
-        redaction_count: 0,
-        importance: 70,
-    }]
+    spans
+        .iter()
+        .enumerate()
+        .map(|(i, &(start, end))| {
+            // Identity on every burst, so each one anchors to the same project and branch and the
+            // engine can group them with the work around them. Totals only on the last.
+            let mut metadata = serde_json::json!({
+                "agent": "claude-code",
+                "sessionId": session.session_id,
+                "projectPath": session.project_path,
+                "project": project,
+                "gitBranch": session.git_branch,
+                "version": session.version,
+                "agentName": session.agent_name,
+                "isSidechain": session.sidechain_only,
+            });
+            if i == final_burst {
+                let map = metadata.as_object_mut().expect("object");
+                map.insert("models".into(), serde_json::json!(session.models));
+                map.insert("toolCallCount".into(), serde_json::json!(session.tool_calls));
+                map.insert("tools".into(), serde_json::json!(tools));
+                map.insert(
+                    "filesTouched".into(),
+                    serde_json::json!(session.files_touched.iter().take(25).collect::<Vec<_>>()),
+                );
+                map.insert(
+                    "filesTouchedCount".into(),
+                    serde_json::json!(session.files_touched.len()),
+                );
+                map.insert("linesAdded".into(), serde_json::json!(session.lines_added));
+                map.insert(
+                    "linesRemoved".into(),
+                    serde_json::json!(session.lines_removed),
+                );
+            }
+
+            Event {
+                timestamp: start,
+                end_timestamp: Some(end),
+                tz_offset_minutes: tz,
+                source: "agent".to_owned(),
+                kind: "agent.session".to_owned(),
+                app_id: "claude-code".to_owned(),
+                app_display: "Claude Code".to_owned(),
+                title: title.clone(),
+                pid: None,
+                metadata: metadata.to_string(),
+                // Redaction is applied by the caller, which owns the fail-closed rule.
+                redaction_version: String::new(),
+                redaction_applied: Vec::new(),
+                redaction_count: 0,
+                importance: 70,
+            }
+        })
+        .collect()
 }
 
 /// Scan once. Only files whose size changed since the last pass are re-read.
@@ -343,6 +412,10 @@ pub fn scan(store: &Store, tz: i32, recording: bool) -> (usize, u64) {
             let (session, skipped) = read_session(&path);
             skipped_lines += skipped;
 
+            // Redact first, store second. A session is now several events and they replace the
+            // previous ones together, so a redaction failure part-way through must not leave half a
+            // session stored — the ones that pass are collected before anything is written.
+            let mut redacted = Vec::new();
             for mut event in events_for(&session, tz) {
                 // Fail closed, exactly as for window titles: a redaction failure drops the event.
                 let Some((title, stamp)) = redactor.redact(&event.title) else {
@@ -352,13 +425,15 @@ pub fn scan(store: &Store, tz: i32, recording: bool) -> (usize, u64) {
                 event.redaction_version = stamp.patterns_version;
                 event.redaction_applied = stamp.applied;
                 event.redaction_count = stamp.count;
+                redacted.push(event);
+            }
 
-                if store
-                    .upsert_agent_session(&event, &session.session_id)
+            if !redacted.is_empty()
+                && store
+                    .replace_agent_session(&redacted, &session.session_id)
                     .is_ok()
-                {
-                    written += 1;
-                }
+            {
+                written += redacted.len();
             }
             let _ = store.remember_source(&key, size);
         }
@@ -416,6 +491,58 @@ mod tests {
         assert_eq!(tools.get("Bash"), Some(&2));
         // Nothing but names was collected — no text, no tool input.
         assert_eq!(tools.len(), 1);
+    }
+
+    const MIN: u64 = 60_000;
+
+    #[test]
+    fn an_unbroken_session_stays_one_event() {
+        // The common case must not change shape: nothing here is a pause.
+        let stamps = [0, 5 * MIN, 12 * MIN, 20 * MIN];
+        assert_eq!(bursts(&stamps, BURST_GAP_MS), vec![(0, 20 * MIN)]);
+    }
+
+    #[test]
+    fn a_session_left_open_overnight_is_cut_where_it_stopped() {
+        // 17:00 then 00:30. Read as first-to-last it claims nine and a half hours of work and
+        // brackets the entire evening; read as two bursts it claims what actually happened.
+        let evening = 17 * 60 * MIN;
+        let small_hours = evening + 7 * 60 * MIN + 30 * MIN;
+        let cut = bursts(
+            &[evening, evening + 10 * MIN, small_hours, small_hours + 5 * MIN],
+            BURST_GAP_MS,
+        );
+        assert_eq!(
+            cut,
+            vec![
+                (evening, evening + 10 * MIN),
+                (small_hours, small_hours + 5 * MIN)
+            ]
+        );
+        // And no burst may be longer than the silence that ends it.
+        for (start, end) in cut {
+            assert!(end - start < BURST_GAP_MS * 20);
+        }
+    }
+
+    #[test]
+    fn thinking_and_a_long_build_are_not_pauses() {
+        // Twenty minutes of nothing is normal inside one stretch of work. The threshold sits above
+        // it on purpose — cutting there would shred an ordinary afternoon into confetti.
+        assert_eq!(bursts(&[0, 20 * MIN, 40 * MIN], BURST_GAP_MS).len(), 1);
+    }
+
+    #[test]
+    fn records_out_of_order_do_not_produce_a_backwards_burst() {
+        // The file is append-only but its timestamps are written by several writers.
+        let cut = bursts(&[10 * MIN, 0, 5 * MIN], BURST_GAP_MS);
+        assert_eq!(cut, vec![(0, 10 * MIN)]);
+    }
+
+    #[test]
+    fn a_single_record_is_a_burst_of_no_length_rather_than_nothing() {
+        assert_eq!(bursts(&[42], BURST_GAP_MS), vec![(42, 42)]);
+        assert!(bursts(&[], BURST_GAP_MS).is_empty());
     }
 
     #[test]
