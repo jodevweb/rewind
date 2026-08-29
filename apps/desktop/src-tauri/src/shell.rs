@@ -263,16 +263,24 @@ mod tests {
     /// The reason the format is not JSON: none of this needs escaping, and all of it is normal.
     #[test]
     fn a_command_full_of_quotes_equals_and_newlines_survives_intact() {
-        let raw = "v=1\nts=1756000000000\nexit=0\ncmd=git commit -m \"fix: don't = break\"\nand more\n";
+        let raw =
+            "v=1\nts=1756000000000\nexit=0\ncmd=git commit -m \"fix: don't = break\"\nand more\n";
         let parsed = parse(raw).expect("parses");
-        assert_eq!(parsed.command, "git commit -m \"fix: don't = break\"\nand more");
+        assert_eq!(
+            parsed.command,
+            "git commit -m \"fix: don't = break\"\nand more"
+        );
     }
 
     #[test]
     fn a_long_command_is_truncated_rather_than_stored_whole() {
         let long = "x".repeat(2000);
         let parsed = parse(&format!("v=1\nts=1756000000000\ncmd={long}\n")).expect("parses");
-        assert_eq!(parsed.command.chars().count(), MAX_COMMAND + 1, "truncated, with a marker");
+        assert_eq!(
+            parsed.command.chars().count(),
+            MAX_COMMAND + 1,
+            "truncated, with a marker"
+        );
     }
 
     #[test]
