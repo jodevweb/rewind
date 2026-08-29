@@ -76,14 +76,14 @@ fn parse_offset(text: &str) -> Option<i64> {
     Some(sign * (hours * 3600 + minutes * 60))
 }
 
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
 /// This application, so the capture loop can skip its own window.
 ///
 /// Kept in step with `identifier` in tauri.conf.json by a test below, because a silent mismatch
 /// here would quietly reintroduce the very noise this exists to remove.
 const SELF_BUNDLE_ID: &str = "com.danim.rewind";
 
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CaptureStatus {
     pub recording: bool,
     pub paused_until: Option<u64>,
@@ -312,21 +312,21 @@ fn stable_title(title: &str) -> String {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
     fn the_self_bundle_id_matches_the_manifest() {
         // A hardcoded identifier that drifts from tauri.conf.json fails silently: capture simply
         // starts recording this application again, and the noise looks like a regression in the
         // engine rather than a stale constant.
         let manifest = include_str!("../tauri.conf.json");
-        let needle = format!("\"identifier\": \"{}\"", super::SELF_BUNDLE_ID);
+        let needle = format!("\"identifier\": \"{}\"", SELF_BUNDLE_ID);
         assert!(
             manifest.contains(&needle),
             "SELF_BUNDLE_ID is {} but tauri.conf.json says otherwise",
-            super::SELF_BUNDLE_ID
+            SELF_BUNDLE_ID
         );
     }
-
-    use super::*;
 
     /// A store of its own, in a temporary directory. A test must never touch the user's database.
     fn capture() -> Capture {
