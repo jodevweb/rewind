@@ -184,7 +184,13 @@ fn read_session(path: &Path) -> (Session, u64) {
             session.project_path = parsed.cwd.clone();
         }
         if session.git_branch.is_none() {
-            session.git_branch = parsed.git_branch.clone().filter(|b| !b.is_empty());
+            // `HEAD` is a detached head reported as a string, not a branch. `git.rs` refuses to anchor
+            // a day on one for that reason, and this must refuse it too: a session read while the
+            // repository was mid-checkout would otherwise label its context `… · HEAD` all day.
+            session.git_branch = parsed
+                .git_branch
+                .clone()
+                .filter(|b| !b.is_empty() && b != "HEAD");
         }
         if session.version.is_none() {
             session.version = parsed.version.clone();
@@ -551,6 +557,30 @@ mod tests {
     fn a_single_record_is_a_burst_of_no_length_rather_than_nothing() {
         assert_eq!(bursts(&[42], BURST_GAP_MS), vec![(42, 42)]);
         assert!(bursts(&[], BURST_GAP_MS).is_empty());
+    }
+
+    /// Claude Code writes `"gitBranch":"HEAD"` when it reads the repository while a checkout is
+    /// in flight. That is a detached head, not a branch — `git.rs` already refuses to anchor a
+    /// day on one, and taking it here labelled a whole context `… · HEAD` for the rest of the day.
+    #[test]
+    fn a_detached_head_is_not_taken_as_the_branch() {
+        let mut path = std::env::temp_dir();
+        path.push(format!(
+            "rewind-session-{}-{}.jsonl",
+            std::process::id(),
+            crate::capture::now_ms()
+        ));
+        let head = r#"{"type":"user","sessionId":"s","gitBranch":"HEAD","timestamp":"2026-08-29T09:00:00.000Z"}"#;
+        let main = r#"{"type":"user","sessionId":"s","gitBranch":"main","timestamp":"2026-08-29T09:05:00.000Z"}"#;
+        std::fs::write(&path, format!("{head}\n{main}\n")).expect("write");
+
+        let (session, _) = read_session(&path);
+        assert_eq!(
+            session.git_branch.as_deref(),
+            Some("main"),
+            "the real branch must win over a detached head seen first"
+        );
+        let _ = std::fs::remove_file(&path);
     }
 
     #[test]
