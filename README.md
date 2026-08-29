@@ -39,7 +39,9 @@ answers questions. Decisions are settled in
 
 What works today:
 
-- **Capture** — window focus and local Claude Code sessions, redacted before storage, into SQLite.
+- **Capture** — window focus, local Claude Code sessions, Git (branches, commits, uncommitted work)
+  and, opt-in, the commands you run in your shell with their exit codes. Redacted before storage,
+  into SQLite.
 - **Contexts** — the engine reconstructs a day into pieces of work. Scored against eleven
   hand-authored golden sessions: **99.2 % pairwise F1 · 0.3 % false merge · 1.2 % false split ·
   99.7 % important-event recall**, every target in [PRODUCT.md](docs/PRODUCT.md) §10.2 met.
@@ -50,9 +52,14 @@ What works today:
 - **History** — any work day the machine holds, not only the hours in memory.
 - **Prediction** — rhythm, what an interruption costs you, what you usually pick up, and drift.
   Counted, never trained, and silent when it has too little to say.
+- **Handoff** — one click reopens everything a context left open; one more copies it as a brief for
+  an agent, a standup line, or a worklog. Nothing is retyped and nothing is generated.
+- **A morning brief** — on a day that has barely started, where you left off, with the same two
+  buttons. Silent when it has nothing to say.
+- **MCP** — REWIND as a tool your agent can call, so Claude Code can ask your history what you were
+  doing on Thursday instead of asking you. Read-only, stdio, no port ([`packages/mcp`](packages/mcp)).
 
-Not started: the browser and editor extensions, the shell integration, the Git collector, and the
-Rust port of the engine (ADR 0001 D-4).
+Not started: the browser and editor extensions, and the Rust port of the engine (ADR 0001 D-4).
 
 ```
 pnpm eval        # score the context engine benchmark
@@ -87,7 +94,7 @@ apps/
   browser-extension/    Chrome MV3                                        (Phase 3)
   vscode-extension/     VS Code / Cursor / Windsurf                       (Phase 4)
   native-host/          Chrome native messaging bridge                    (Phase 3)
-  shell-integration/    Opt-in pwsh / bash / zsh hooks                    (Phase 6)
+  shell-integration/    Opt-in pwsh / bash / zsh hooks                    ← implemented
 packages/
   protocol/             Event schemas, redaction registry, prompts        ← implemented
   fixtures/             Golden sessions, redaction corpus, search eval    ← implemented
@@ -95,6 +102,7 @@ packages/
   engine-v0/            The context engine, TypeScript reference          ← implemented
   predict/              Rhythm, interruption cost, resume, drift          ← implemented
   ask/                  Plain-language questions, answered with evidence  ← implemented
+  mcp/                  REWIND as an MCP server, read-only over stdio      ← implemented
   ui/                   Today, Resume, Timeline, Ask, design tokens, i18n  ← implemented
   shared/               Utilities shared by UI and extensions
   config/               Shared tsconfig and tooling presets
