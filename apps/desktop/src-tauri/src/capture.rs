@@ -82,6 +82,27 @@ fn parse_offset(text: &str) -> Option<i64> {
 /// here would quietly reintroduce the very noise this exists to remove.
 const SELF_BUNDLE_ID: &str = "com.danim.rewind";
 
+/// How long without input before the machine counts as unattended.
+///
+/// Long enough that reading a page, watching a build or thinking does not end your span; short
+/// enough that a coffee break is not filed as work. Five minutes is the figure §69 assumes.
+const IDLE_MS: u64 = 5 * 60_000;
+
+/// How much a span of this length is worth remembering.
+///
+/// Short spans are kept and scored low rather than dropped: noise reduction is a display concern,
+/// and statistics need a complete log. Extracted because idle now closes spans too, and the two
+/// paths must not drift into scoring the same duration differently.
+fn importance_for(ms: u64) -> i64 {
+    if ms < 5_000 {
+        5
+    } else if ms < 60_000 {
+        15
+    } else {
+        30
+    }
+}
+
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CaptureStatus {
@@ -218,6 +239,29 @@ pub fn spawn(capture: Arc<Capture>) {
                 continue;
             }
 
+            // Nobody is here.
+            //
+            // A focus span is closed when focus moves. Nothing moves while the machine sleeps, so a
+            // window left in front at 01:56 held its span until 09:40 — seven hours and forty
+            // minutes of "activity" on a game nobody was playing. That span then bracketed the
+            // whole night and pulled it into the day's work.
+            //
+            // §69 always said durations exclude idle time, and the idle reading was taken and
+            // thrown away. It is used now: past the threshold the open span is closed *at the
+            // moment input stopped*, not at the moment we noticed, and nothing new opens until
+            // somebody comes back.
+            let idle_ms = idle.idle().as_millis() as u64;
+            if idle_ms >= IDLE_MS {
+                if let Some((row_id, started)) = open.take() {
+                    let stopped = now_ms().saturating_sub(idle_ms).max(started);
+                    let ms = stopped.saturating_sub(started);
+                    let _ = capture.store.close_span(row_id, stopped, importance_for(ms));
+                }
+                // Coming back is a new event, not a continuation of the one you walked away from.
+                last_key.clear();
+                continue;
+            }
+
             let Some(snapshot) = window.current() else {
                 continue;
             };
@@ -252,19 +296,8 @@ pub fn spawn(capture: Arc<Capture>) {
             // complete log.
             if let Some((row_id, started)) = open.take() {
                 let ms = ts.saturating_sub(started);
-                let importance = if ms < 5_000 {
-                    5
-                } else if ms < 60_000 {
-                    15
-                } else {
-                    30
-                };
-                let _ = capture.store.close_span(row_id, ts, importance);
+                let _ = capture.store.close_span(row_id, ts, importance_for(ms));
             }
-
-            // Idle is recorded, never used to discard: idle time is subtracted where durations are
-            // computed (§69), not by dropping events.
-            let _ = idle.idle();
 
             // A titleless event is still an event: without Accessibility the application name is
             // all there is, and showing that beats showing nothing (ADR 0003 D-22).
@@ -378,6 +411,36 @@ mod tests {
         // Backdate the expiry rather than sleeping: the rule under test is the comparison.
         capture.paused_until.store(now_ms() - 1, Ordering::Relaxed);
         assert!(capture.is_recording(), "an elapsed pause resumes by itself");
+    }
+
+    #[test]
+    fn a_span_is_scored_the_same_however_it_was_closed() {
+        // A span closed by idle and a span closed by a focus change describe the same thing, and
+        // scoring them differently would make "how long was this open" depend on how you left.
+        assert_eq!(importance_for(1_000), 5);
+        assert_eq!(importance_for(30_000), 15);
+        assert_eq!(importance_for(10 * 60_000), 30);
+    }
+
+    #[test]
+    fn an_idle_span_ends_when_input_stopped_not_when_it_was_noticed() {
+        // The arithmetic the idle branch does: a span opened at 01:56 and noticed idle at 09:40
+        // after seven hours and forty minutes of no input ends at 01:56, not at 09:40.
+        let started = 1_756_000_000_000u64;
+        let noticed = started + 7 * 3_600_000 + 40 * 60_000;
+        let idle_ms = noticed - started;
+        let stopped = noticed.saturating_sub(idle_ms).max(started);
+        assert_eq!(stopped, started, "the night belongs to nobody");
+    }
+
+    #[test]
+    fn coming_back_after_a_break_does_not_backdate_the_span() {
+        // Idle shorter than the span: the span ends where input stopped, part way through.
+        let started = 1_756_000_000_000u64;
+        let now = started + 3_600_000;
+        let idle_ms = 10 * 60_000;
+        let stopped = now.saturating_sub(idle_ms).max(started);
+        assert_eq!(stopped, started + 50 * 60_000);
     }
 
     #[test]

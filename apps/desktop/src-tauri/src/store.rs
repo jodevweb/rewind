@@ -187,10 +187,18 @@ impl Store {
             }
         }
 
-        // One agent session is one row, however many times its file is rescanned.
+        // One agent session is one row *per burst of work*, however many times its file is rescanned.
+        //
+        // It used to be one row per session, full stop, and that index is what made it impossible to
+        // fix the real defect: a session left open across an evening was stored as a single event
+        // spanning nine hours, which then bracketed every other piece of work in the day. The key
+        // gains the burst's start, so a session that stopped at 17:00 and resumed at 00:30 is two
+        // events. Rescanning still replaces them rather than accumulating.
+        conn.execute_batch("DROP INDEX IF EXISTS idx_events_agent_session")
+            .ok();
         conn.execute_batch(
-            "CREATE UNIQUE INDEX IF NOT EXISTS idx_events_agent_session
-             ON events(app_id, json_extract(metadata, '$.sessionId'))
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_events_agent_burst
+             ON events(app_id, json_extract(metadata, '$.sessionId'), timestamp)
              WHERE source = 'agent'",
         )
         .ok();
@@ -234,19 +242,28 @@ impl Store {
         Ok(conn.last_insert_rowid())
     }
 
-    /// An agent session is rewritten as it grows, so it replaces its previous row rather than
+    /// An agent session is rewritten as it grows, so it replaces its previous rows rather than
     /// accumulating one per scan.
-    pub fn upsert_agent_session(&self, event: &Event, session_id: &str) -> rusqlite::Result<()> {
+    ///
+    /// Takes every burst of the session at once and swaps the lot. Deleting first and inserting one
+    /// burst at a time would leave the session briefly half-stored, and a rescan lands on a session
+    /// that is still being written to — so the window matters.
+    pub fn replace_agent_session(&self, events: &[Event], session_id: &str) -> rusqlite::Result<()> {
+        let Some(first) = events.first() else {
+            return Ok(());
+        };
         {
             let conn = self.conn.lock().expect("store");
             conn.execute(
                 "DELETE FROM events WHERE source = 'agent'
                    AND app_id = ?1 AND json_extract(metadata, '$.sessionId') = ?2",
-                params![event.app_id, session_id],
+                params![first.app_id, session_id],
             )?;
         }
-        let day = work_day(event.timestamp, event.tz_offset_minutes);
-        self.insert(event, &day)?;
+        for event in events {
+            let day = work_day(event.timestamp, event.tz_offset_minutes);
+            self.insert(event, &day)?;
+        }
         Ok(())
     }
 
