@@ -244,7 +244,12 @@ export function extractAnchors(event: GoldenEvent): Anchor[] {
 
   // 3. Git and worktree identity. `gitBranch` comes from Claude Code sessions, where it is present
   // on every record — a branch name carries the ticket id, so this is an anchor for free.
-  const branch = str('to') ?? str('branch') ?? str('gitBranch');
+  // `HEAD` is a detached head, not a branch, and every repository reports the same one — so it is
+  // an anchor shared by unrelated work, which is the one thing an anchor must never be. Claude Code
+  // writes it while a checkout is in flight; the collector now drops it, and this drops it again so
+  // the events already stored keep their contexts apart rather than collapsing into one.
+  const rawBranch = str('to') ?? str('branch') ?? str('gitBranch');
+  const branch = rawBranch === 'HEAD' ? undefined : rawBranch;
   if (branch) {
     pushAnchor(out, {
       type: 'branch',
