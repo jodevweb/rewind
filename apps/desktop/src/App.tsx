@@ -382,7 +382,6 @@ export function App() {
         now={viewClock}
         heading={isLiveDay ? undefined : formatDay(activeDay)}
         onDay={(day) => setPickedDay(day === today ? null : day)}
-        emptyMessage={t('app.empty')}
         actions={actions}
       />
 

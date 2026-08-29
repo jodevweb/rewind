@@ -172,6 +172,20 @@ const fr = {
   'ask.example4': 'quelle commande a échoué ?',
 
   'days.today': "Aujourd'hui",
+
+  'empty.title': 'REWIND apprend ta journée.',
+  'empty.body':
+    'La capture tourne depuis le lancement. Continue à travailler normalement — les premiers contextes apparaissent au bout de quelques minutes, et cette page se remplit toute seule.',
+  'empty.coming': 'Ce que tu trouveras ici',
+  'empty.contextsTitle': 'Des contextes, pas des applications.',
+  'empty.contextsBody':
+    'Une matinée traverse Slack, Linear, Figma et un terminal. Pour le système, ce sont quatre programmes ; pour toi, c’est un seul sujet. REWIND les relie.',
+  'empty.askTitle': 'Une question, une réponse.',
+  'empty.askBody':
+    '⌘K, puis « où était cette doc ? » ou « hier après-midi ». La réponse arrive avec les preuves — et quand il n’y en a pas assez, REWIND le dit au lieu d’inventer.',
+  'empty.localTitle': 'Rien ne quitte cette machine.',
+  'empty.localBody':
+    'Pas de compte, pas de serveur, pas de capture d’écran, aucune frappe clavier enregistrée. Ce n’est pas une promesse : c’est vérifié à chaque build.',
 } as const;
 
 export type Key = keyof typeof fr;
@@ -330,6 +344,20 @@ const en: Record<Key, string> = {
   'ask.example4': 'what command failed?',
 
   'days.today': 'Today',
+
+  'empty.title': 'REWIND is learning your day.',
+  'empty.body':
+    'Capture has been running since launch. Carry on working normally — the first contexts appear after a few minutes, and this page fills itself in.',
+  'empty.coming': 'What you will find here',
+  'empty.contextsTitle': 'Contexts, not applications.',
+  'empty.contextsBody':
+    'A morning crosses Slack, Linear, Figma and a terminal. To the system that is four programs; to you it is one subject. REWIND connects them.',
+  'empty.askTitle': 'A question, an answer.',
+  'empty.askBody':
+    '⌘K, then “where was that doc?” or “yesterday afternoon”. The answer comes with its evidence — and when there is not enough, REWIND says so instead of inventing some.',
+  'empty.localTitle': 'Nothing leaves this machine.',
+  'empty.localBody':
+    'No account, no server, no screenshots, and not one keystroke recorded. That is not a promise: it is checked on every build.',
 };
 
 const DICTS: Record<Locale, Record<Key, string>> = { fr, en };

@@ -33,6 +33,7 @@ import {
 import { predict, type Predictions } from '@rewind/predict';
 
 import { Ask, type AskHandlers } from './ask.js';
+import { EmptyState } from './empty.js';
 import { Forecast } from './forecast.js';
 import { formatDuration, t, tPlural } from './i18n.js';
 
@@ -213,8 +214,10 @@ export function Workspace({
   const resume = useMemo(() => (active ? buildResume(session, active) : null), [session, active]);
   const inspectedEvent = inspected ? (byRef.get(inspected) ?? null) : null;
 
-  if (session.events.length === 0 && emptyMessage) {
-    return <div className="empty-state">{emptyMessage}</div>;
+  // Nothing captured yet is the first launch, and the first launch is the first impression. The
+  // caller may override it, but it is never a blank page by default.
+  if (session.events.length === 0) {
+    return emptyMessage ? <div className="empty-state">{emptyMessage}</div> : <EmptyState />;
   }
 
   // Answering a question is not a separate screen: it selects a context and a moment in the one
