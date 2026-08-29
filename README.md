@@ -77,6 +77,9 @@ packages/
   protocol/             Event schemas, redaction registry, prompts        ← implemented
   fixtures/             Golden sessions, redaction corpus, search eval    ← implemented
   eval/                 Context engine benchmark harness                  ← implemented
+  engine-v0/            The context engine, TypeScript reference          ← implemented
+  predict/              Rhythm, interruption cost, resume, drift          ← implemented
+  ask/                  Plain-language questions, answered with evidence  ← implemented
   ui/                   Design system                                     (Phase 1)
   shared/               Utilities shared by UI and extensions
   config/               Shared tsconfig and tooling presets
