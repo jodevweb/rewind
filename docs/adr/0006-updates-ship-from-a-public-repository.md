@@ -1,6 +1,9 @@
 # ADR 0006 — Updates ship from a separate public repository
 
-- **Status:** accepted
+- **Status:** superseded by [ADR 0007](0007-the-repository-is-public.md)
+- **Why:** the repository is public now, so the second repository this created has no reason to
+  exist. The failure it describes — an updater that goes quiet and looks healthy — is still the
+  thing to be afraid of, and is why 0007 keeps a mirror for one release.
 - **Date:** 2026-08-28
 - **Amends:** ADR 0003 **B-3** (the source repository is private and shared)
 - **Leaves intact:** ADR 0005 **D-13** (no API connections, nothing to configure)
