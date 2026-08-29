@@ -39,7 +39,7 @@ function handoffsFor(store: Store, day: string): { handoffs: Handoff[]; tz: numb
   };
 }
 
-const NOTHING = 'REWIND: rien d’enregistré pour cette période.';
+export const NOTHING = 'REWIND: rien d’enregistré pour cette période.';
 
 /**
  * Where you left off — the last context of a day, in full.
@@ -57,6 +57,55 @@ export function resumeText(store: Store, day: string | undefined, now: number): 
   return `${target}\n\n${agentBrief(last, tz)}`;
 }
 
+/** Same path, either separator, either case: this runs on Windows and on macOS. */
+function samePlace(a: string, b: string): boolean {
+  const norm = (s: string) =>
+    s
+      .replace(/[/\\]+/g, '/')
+      .replace(/\/$/, '')
+      .toLowerCase();
+  return norm(a) === norm(b) || norm(a).startsWith(norm(b) + '/');
+}
+
+function leaf(path: string): string {
+  return (
+    path
+      .replace(/[/\\]+$/, '')
+      .split(/[/\\]/)
+      .pop() ?? path
+  );
+}
+
+/**
+ * Where you left off **in this project**.
+ *
+ * `resumeText` answers for the machine: the last context of the day, whichever project it was in.
+ * That is the right answer for a person asking, and the wrong one to hand an agent starting in a
+ * repository — two agents running side by side in two projects is an ordinary day here, and a card
+ * confidently describing the other one is worse than no card at all.
+ *
+ * A context belongs to the project when its repository is this directory, or when something it
+ * offers to reopen lives inside it.
+ */
+export function resumeTextForProject(store: Store, now: number, projectPath: string): string {
+  const target = defaultDay(store, now);
+  if (!target) return NOTHING;
+  const { handoffs, tz } = handoffsFor(store, target);
+
+  const here = handoffs.filter((h) => {
+    const repository = h.place?.repository;
+    return (
+      (repository !== undefined && repository.toLowerCase() === leaf(projectPath).toLowerCase()) ||
+      h.card.openResources.some((r) => samePlace(r.target, projectPath))
+    );
+  });
+  if (here.length === 0) return NOTHING;
+
+  const last = here.reduce((a, b) => (b.card.lastActiveAt > a.card.lastActiveAt ? b : a));
+  return `${target}
+
+${agentBrief(last, tz)}`;
+}
 /** Every context of a day, with what came out of it. The long form, for a report or a timesheet. */
 export function dayText(store: Store, day: string | undefined, now: number): string {
   const target = day ?? defaultDay(store, now);
