@@ -3,11 +3,16 @@ name: Release
 # Publishes a signed release that the application updates itself from — so a new version reaches
 # both machines without a git pull and a local build on each.
 #
-# Distribution goes to a SEPARATE PUBLIC repository. This one is private, and GitHub serves a
-# private repository's release assets only to an authenticated client. The application has no token
-# and must not have one (ADR 0005 D-13: no API connections, nothing to configure), so it could never
-# read a manifest published here — the updater would stay silent forever while looking healthy.
-# `rewind-dist` therefore holds the built installers and nothing else; the source stays private.
+# The release goes HERE, in this repository. That is only possible because it is public: GitHub
+# serves a private repository's release assets solely to an authenticated client, and the
+# application has no token and must not have one (ADR 0005 D-13). While this repository was private
+# the manifest had to live in a second public one, and the updater failed silently against it —
+# which is the whole of ADR 0006, now superseded by ADR 0007.
+#
+# One transitional step remains. A copy already installed on a machine only knows the endpoint it
+# was built with, so it polls `rewind-dist` and nothing else. The same manifest is therefore
+# mirrored there for one more version, pointing at the assets published here. Delete the mirror
+# step once every installed copy has updated through it once.
 #
 # Signing happens only here. The private key never leaves CI, so an update can only come from a
 # build that ran in this repository; the application refuses anything that does not verify against
@@ -26,9 +31,6 @@ on:
 
 permissions:
   contents: read
-
-env:
-  DIST_REPO: jodevweb/rewind-dist
 
 jobs:
   build:
@@ -101,6 +103,9 @@ jobs:
     name: Publish
     needs: build
     runs-on: ubuntu-latest
+    # The release lands in this repository, so this job needs to be able to write one.
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -122,33 +127,51 @@ jobs:
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
+      # One manifest, pointing at this repository's assets. It is uploaded in two places below,
+      # but there is only ever one set of installers and one set of signatures.
       - name: Build the update manifest
-        run: node scripts/build-latest-json.mjs "${{ steps.version.outputs.version }}" "$DIST_REPO"
+        run: node scripts/build-latest-json.mjs "${{ steps.version.outputs.version }}" "${{ github.repository }}"
 
       - name: Publish
         uses: softprops/action-gh-release@v2
         with:
-          repository: ${{ env.DIST_REPO }}
-          # A PAT, because GITHUB_TOKEN is scoped to this repository and cannot write to another.
-          token: ${{ secrets.DIST_TOKEN }}
           tag_name: v${{ steps.version.outputs.version }}
           name: REWIND v${{ steps.version.outputs.version }}
           body: |
-            Mise à jour automatique depuis l’application, ou téléchargement ci-dessous.
+            Mise à jour automatique depuis l'application, ou téléchargement ci-dessous.
 
-            **Première installation sur macOS.** L’application est signée ad-hoc mais pas notarisée
+            **Première installation sur macOS.** L'application est signée ad-hoc mais pas notarisée
             par Apple, faute de compte développeur payant. macOS met donc à la corbeille, au
-            lancement, toute application téléchargée qu’il ne peut pas vérifier. Après avoir glissé
-            REWIND dans Applications, et **avant** de l’ouvrir :
+            lancement, toute application téléchargée qu'il ne peut pas vérifier. Après avoir glissé
+            REWIND dans Applications, et **avant** de l'ouvrir :
 
             ```
             xattr -dr com.apple.quarantine /Applications/REWIND.app
             ```
 
-            Une seule fois, par machine. Les mises à jour suivantes passent par l’application et ne
+            Une seule fois, par machine. Les mises à jour suivantes passent par l'application et ne
             repassent pas par la quarantaine.
-
-            Ce dépôt ne contient que les installeurs. Le code source est privé.
           draft: false
           prerelease: false
           files: release-assets/*
+
+      # Transitional, and deletable. A copy installed before this change polls `rewind-dist` and
+      # would never hear about this release otherwise — an updater that goes quiet is exactly the
+      # failure ADR 0006 was written about, and it must not happen on the way out of it.
+      #
+      # The manifest mirrored here points at the assets published above, which are public now.
+      - name: Mirror the manifest for copies installed before ADR 0007
+        continue-on-error: true
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: jodevweb/rewind-dist
+          token: ${{ secrets.DIST_TOKEN }}
+          tag_name: v${{ steps.version.outputs.version }}
+          name: REWIND v${{ steps.version.outputs.version }}
+          body: |
+            Ce dépôt ne sert plus qu'aux copies installées avant que REWIND ne devienne public.
+            Les installeurs et les notes de version sont désormais sur
+            https://github.com/jodevweb/rewind/releases
+          draft: false
+          prerelease: false
+          files: release-assets/latest.json
