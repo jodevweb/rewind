@@ -102,6 +102,41 @@ describe('what a context can be reopened from', () => {
     expect(targets).toContain('/Users/dev/dev/acme-web/src/table.tsx');
   });
 
+  it('joins a relative file with the separator its project already uses', () => {
+    // `C:\Users\j\rewind/docs\PRODUCT.md` is a path Windows accepts and nobody can read. Seen on
+    // real capture, where every project path is a Windows one.
+    const windows = session([
+      event({
+        ref: 'w1',
+        type: 'agent.session',
+        app: 'claude-code',
+        title: 'Docs',
+        metadata: {
+          projectPath: 'C:\\Users\\j\\rewind',
+          gitBranch: 'main',
+          toolCallCount: 4,
+          filesTouched: ['docs\\PRODUCT.md'],
+        },
+      }),
+      event({
+        ref: 'w2',
+        type: 'agent.session',
+        app: 'claude-code',
+        title: 'Docs suite',
+        timestamp: START + 10 * 60_000,
+        metadata: {
+          projectPath: 'C:\\Users\\j\\rewind',
+          gitBranch: 'main',
+          toolCallCount: 2,
+          filesTouched: ['docs\\PRODUCT.md'],
+        },
+      }),
+    ]);
+    const targets = handoffsFor(windows).flatMap((h) => h.card.openResources.map((r) => r.target));
+    expect(targets).toContain('C:\\Users\\j\\rewind\\docs\\PRODUCT.md');
+    expect(targets.some((t) => t.includes('/') && t.includes('\\'))).toBe(false);
+  });
+
   it('lists a file once however many sessions touched it', () => {
     const [first] = handoffsFor(agentDay);
     const table = first!.card.openResources.filter((r) => r.target.endsWith('src/table.tsx'));
