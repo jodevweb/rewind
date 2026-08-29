@@ -296,8 +296,8 @@ pnpm --filter @rewind/fixtures build    # recompile fixtures after editing a ses
   set — it is that eleven hand-authored days are a small benchmark, and the fixtures were written by
   the same people who tuned against them.
 - The engine is TypeScript; the Rust port (ADR 0001 D-4) has not started.
-- Level 1.5 semantic actions (ADR 0005 D-34), the browser extension, the Cockpit event protocol, and
-  the Git/worktree collector are all unstarted.
+- Level 1.5 semantic actions (ADR 0005 D-34), the browser extension and the Cockpit event protocol
+  are unstarted. The Git and terminal collectors now exist — see below.
 - No notarisation, so every fresh macOS install needs the `xattr` step.
 - Prediction reads whatever events the window has loaded (currently up to 5000). Multi-week history
   would want a dedicated query rather than pulling everything into the webview.
@@ -347,3 +347,109 @@ findable without either query guessing which the other meant.
 
 Rows are built from an explicit field allowlist, never an object walk. Search must not become the
 route by which something reaches the screen that the capture rules kept off it.
+
+---
+
+## Handoff, and why the Resume card grew buttons
+
+`buildResume` computed `openResources` and `nextStep` from the start, and the interface rendered
+neither as an action: the only way to open anything was the event detail panel, one target at a time.
+So "resume" meant reading a card and then getting back to work by hand.
+
+Two things were wrong underneath, and both were invisible:
+
+1. **`openResources` was filled by three event types the real collectors do not emit** — a browser
+   navigation, an IDE workspace and a terminal `cwd`. On a real day it was always empty.
+2. **`agent.session` was not handled by `buildResume` at all.** The three synthetic agent types
+   were (`agent.session.started`, `agent.activity`, the Cockpit ones); the type the collector
+   actually writes was not. A day spent in Claude Code produced an empty Resume card.
+
+Both are fixed, and `packages/ui/src/handoff.test.ts` guards the shape. The one to keep is the last
+test: a context built only from window focus must produce **no** open targets. A button that opens
+nothing teaches the reader the feature is decorative, and that is not un-taught.
+
+`packages/ui/src/handoff.ts` assembles the three exports (agent brief, standup, worklog). It lives in
+the UI package and not in the engine because the engine must not emit prose — it returns which rule
+fired and with what values, and the dictionary is here (§147).
+
+**Clipboard:** `navigator.clipboard.writeText` with a `textarea` + `execCommand` fallback, because a
+Tauri webview is not a secure context on every platform. Note the asymmetry: **writing** is fine,
+**reading** is a build-gate violation (`navigator.clipboard.read` is one of the 22 forbidden
+patterns).
+
+## The morning brief
+
+`packages/ui/src/brief.tsx`. A banner, deliberately, not an OS notification — that decision is
+reversible but it was made on purpose: a notification that fires every morning whether or not it has
+something to say gets muted in a week, and a muted channel cannot be un-muted by being right later.
+It also would have meant a new Tauri plugin, which is a Cargo dependency this machine cannot compile.
+
+It withholds like the prediction layer does: nothing when today already has more than
+`BRIEF_MAX_EVENTS_TODAY` (40) events, nothing when there is no previous day, nothing when the
+previous days hold no context. It reaches **past** an empty day, so a Monday still knows about Friday.
+
+## The Git collector
+
+`apps/desktop/src-tauri/src/git.rs`. Reads files, does not run git:
+
+- `.git/HEAD` → branch. `.git/logs/HEAD` → commits and checkouts, parsed from the reflog.
+- The **only** subprocess is `git status --porcelain`, for the uncommitted count, every five minutes
+  per repository and **only emitted when the count changes**. A summary per tick would be three
+  hundred events a day per repository saying the same thing.
+- A reflog line carries the author's name and email. The timestamp is read **from the end of the
+  line** precisely so the parser never indexes into the middle where they sit.
+- Repositories are discovered by walking the home directory (depth 4, 20 000 directories max,
+  dependency trees skipped) and capped at the 24 most recently touched, ranked by reflog mtime.
+- **First sight of a repository backfills at most 7 days and 50 entries.** Without that, meeting a
+  repository for the first time pours ten years of commits into today.
+- A shrinking reflog (`git gc`, rebase, re-clone) jumps the offset to the new end rather than
+  replaying: a few lost entries beat a duplicated history.
+
+## The terminal collector, and the pause rule it forced
+
+`apps/desktop/src-tauri/src/shell.rs` plus `apps/shell-integration/`. One file per command in
+`<data_dir>/spool`, deleted as it is read — not one growing log per session, because reading a log at
+an offset while a shell appends to it tears lines, and a torn line is a command attributed to the
+wrong exit code.
+
+**The format is not JSON on purpose.** `cmd=` comes last and takes the rest of the file, so a command
+containing quotes, newlines or `=` needs no escaping in three different shells.
+
+The hooks write **only while REWIND is running**: the daemon stamps `spool/.alive` every two seconds
+and the hook reads it with a shell builtin — `$(<file)` in zsh and bash, `[IO.File]` in PowerShell —
+so there is no subprocess in your prompt. Close REWIND and collection stops at the source rather than
+piling command lines into a directory nothing reads.
+
+### Pause, for file-derived sources
+
+This is the subtle one. Pause means nothing is captured, **not** captured-and-hidden (§7). A source
+that reads a file breaks that promise by accident: skip a paused hour and the next pass finds the
+file longer and stores everything that happened during it.
+
+So a paused pass **still advances the read offsets and writes nothing** — in `git.rs`, in `shell.rs`
+(the spool file is deleted unread) and in `claude.rs`, which had the bug and now takes a
+`recording` flag for exactly this reason.
+
+## MCP — REWIND inside the agent
+
+`packages/mcp`. stdio JSON-RPC, hand-written (one framing rule, five methods), reading the store
+**read-only** through `node:sqlite`. No port, so ADR 0001 D-5 holds.
+
+Two traps worth knowing:
+
+- **`node:sqlite` is a real builtin that is deliberately absent from `module.builtinModules`**, like
+  `node:test`. Every bundler that decides what to externalise from that list tries to resolve it as a
+  file and fails, so vitest could not load the module at all. It is `createRequire`d, with a
+  type-only `import type` for the types.
+- `serve()` is separated from `respond()`, and `main.ts` is the only module with a side effect at
+  import time. A server that can only be observed by spawning it and reading its stdout gets tested
+  once.
+
+The tools return assembled text, never generated prose, and every answer ends with the line saying
+where it came from. `rewind_ask` passes a refusal through **as a refusal**, and the tool description
+tells the model in as many words not to complete it with a guess.
+
+`toSession` — daemon rows to the event model — moved to `packages/shared/src/session.ts` when the
+MCP server became its second reader. Two copies would not have disagreed loudly: they would have
+disagreed about `repositoryId`, and contexts would have grouped differently depending on which
+program asked.
