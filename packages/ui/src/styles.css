@@ -1573,3 +1573,71 @@ kbd {
   color: var(--faint);
   font-size: 11px;
 }
+
+/* ── The day strip ───────────────────────────────────────────────────────
+   Newest on the left, like everything else here. The bar under each label is
+   the day's event count against the busiest day on screen — a shape, so a
+   fortnight is navigable by recognising it rather than by reading fourteen
+   dates. It is not a score, and nothing is coloured for being high or low. */
+
+.daystrip {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 12px;
+  scrollbar-width: thin;
+}
+
+.daystrip .day {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-width: 74px;
+  padding: 7px 8px 6px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.daystrip .day:hover {
+  background: var(--panel-2);
+  color: var(--text-2);
+}
+
+.daystrip .day.on {
+  background: var(--panel);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+  color: var(--text);
+}
+
+.day-label {
+  white-space: nowrap;
+}
+
+.day-track {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  height: 16px;
+}
+
+.day-bar {
+  width: 100%;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0.4;
+}
+
+.daystrip .day.on .day-bar {
+  opacity: 0.85;
+}

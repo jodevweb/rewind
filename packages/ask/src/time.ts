@@ -405,6 +405,17 @@ function matchAbsolute(text: string, now: number, tz: number): TimeWindow | null
   return daysWindow(index, index, tz, found.text);
 }
 
+/**
+ * The work day a moment belongs to, as `YYYY-MM-DD`.
+ *
+ * The same 04:00 cutoff as `work_day` in the store and `workDay` in the prediction layer. Three
+ * implementations of one rule is two too many, and they will be one when the engine is ported; until
+ * then they are kept identical on purpose and each says so.
+ */
+export function workDayOf(timestamp: number, tzOffsetMinutes: number): string {
+  return new Date(timestamp + tzOffsetMinutes * 60_000 - CUTOFF).toISOString().slice(0, 10);
+}
+
 /** Whether a moment falls inside a window. Half-open, so adjacent windows cannot both claim it. */
 export function within(window: TimeWindow, timestamp: number): boolean {
   return timestamp >= window.from && timestamp < window.to;

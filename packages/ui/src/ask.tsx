@@ -36,6 +36,7 @@ import {
   type Rollup,
   type Scored,
   type TimeWindow,
+  workDayOf,
 } from '@rewind/ask';
 import type { GoldenSession } from '@rewind/fixtures/authoring';
 
@@ -116,6 +117,14 @@ export interface AskHandlers {
   onMoment: (contextId: string | null, eventRef: string) => void;
   /** Hand a path or URL to the system. */
   onOpen?: (target: string) => void;
+  /**
+   * Move the whole workspace to another day.
+   *
+   * Ask searches everything the machine has, not the day on screen — a question about last week that
+   * only looks at today is not a memory. So a result can point at a day nobody is looking at, and
+   * answering it means going there.
+   */
+  onDay?: (day: string) => void;
 }
 
 /**
@@ -238,6 +247,9 @@ function AskPanel({
 
   const choose = (choice: Choice | undefined) => {
     if (!choice) return;
+    const at = choice.kind === 'context' ? choice.rollup.endTimestamp : choice.scored.row.lastAt;
+    const offset = choice.kind === 'context' ? tz : choice.scored.row.tzOffsetMinutes;
+    handlers.onDay?.(workDayOf(at, offset));
     if (choice.kind === 'context') handlers.onContext(choice.rollup.contextId);
     else handlers.onMoment(choice.scored.row.contextId, choice.scored.row.evidence[0]!);
     close();

@@ -19,7 +19,7 @@ use crate::platform::{
     ActiveWindowProvider, IdleProvider, PlatformActiveWindow, PlatformIdle, TitleAccess,
 };
 use crate::redact::Redactor;
-use crate::store::{work_day, Event, Store};
+use crate::store::{work_day, DaySummary, Event, Store};
 
 pub fn now_ms() -> u64 {
     SystemTime::now()
@@ -183,6 +183,14 @@ impl Capture {
 
     pub fn recent(&self, limit: usize) -> Vec<Event> {
         self.store.recent(limit).unwrap_or_default()
+    }
+
+    pub fn for_day(&self, day: &str, limit: usize) -> Vec<Event> {
+        self.store.for_day(day, limit).unwrap_or_default()
+    }
+
+    pub fn days(&self, limit: usize) -> Vec<DaySummary> {
+        self.store.days(limit).unwrap_or_default()
     }
 }
 

@@ -27,7 +27,7 @@ use tauri::tray::{MouseButton, TrayIconBuilder, TrayIconEvent};
 use tauri::{AppHandle, Manager, State, WindowEvent};
 
 use capture::{Capture, CaptureStatus};
-use store::Event;
+use store::{DaySummary, Event};
 
 struct AppState {
     capture: Arc<Capture>,
@@ -38,9 +38,33 @@ fn capture_status(state: State<'_, AppState>) -> CaptureStatus {
     state.capture.status()
 }
 
+/// The most recent events, whatever day they fall on.
+///
+/// The cap was 500 while the window asked for 5000, so the interface silently reconstructed the last
+/// couple of hours and called it the day — and the prediction layer, which counts across days, was
+/// counting across a fraction of one. The rail is still there, an order of magnitude above a heavy
+/// day, because an unbounded query into a webview is a different kind of mistake.
 #[tauri::command]
 fn recent_events(state: State<'_, AppState>, limit: usize) -> Vec<Event> {
-    state.capture.recent(limit.min(500))
+    state.capture.recent(limit.min(20_000))
+}
+
+/// Every work day that has anything in it, newest first.
+///
+/// Counted in SQL: the navigator has to list six months without the interface having loaded six
+/// months of events to count them.
+#[tauri::command]
+fn event_days(state: State<'_, AppState>) -> Vec<DaySummary> {
+    state.capture.days(400)
+}
+
+/// One work day, whole.
+///
+/// Whole rather than paged, because the engine reconstructs a day from the day: hand it the first
+/// half and it produces contexts that end where the page did.
+#[tauri::command]
+fn events_for_day(state: State<'_, AppState>, day: String) -> Vec<Event> {
+    state.capture.for_day(&day, 20_000)
 }
 
 /// Open a file, folder or URL the interface is showing.
@@ -190,6 +214,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             capture_status,
             recent_events,
+            event_days,
+            events_for_day,
             set_paused,
             open_target,
             reveal_target
