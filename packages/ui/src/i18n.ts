@@ -92,6 +92,33 @@ const fr = {
     'Chaque ligne ci-dessus est lue dans les événements stockés. Rien ici n’est généré.',
   'resume.none': 'Aucun contexte détecté dans cette session.',
 
+  'brief.title': 'Quand tu t’es arrêté',
+  'brief.dismiss': 'Masquer',
+  'brief.seeDay': 'Voir la journée',
+
+  'handoff.reopenAll': 'Reprendre',
+  'handoff.reopenAllHint': 'Rouvrir tout ce que ce contexte a laissé ouvert',
+  'handoff.brief': 'Copier pour l’agent',
+  'handoff.briefHint':
+    'Le contexte en texte brut, à coller dans Claude Code — branche, fichiers, commande qui a échoué, prochaine étape.',
+  'handoff.standupCopy': 'Copier le standup',
+  'handoff.worklogCopy': 'Copier le journal',
+  'handoff.copied': 'Copié',
+  'handoff.copyFailed': 'Copie impossible',
+  'handoff.openable': 'À rouvrir',
+  'handoff.nothingToOpen':
+    'Rien à rouvrir dans ce contexte — aucun fichier, dossier ni page n’y a été capturé.',
+  'handoff.context': 'Contexte',
+  'handoff.place': 'Lieu',
+  'handoff.lastActivity': 'Dernière activité',
+  'handoff.apps': 'Applications',
+  'handoff.reopen': 'À rouvrir',
+  'handoff.blocked': 'bloqué',
+  'handoff.standupTitle': 'Standup',
+  'handoff.worklogTitle': 'Journal de travail',
+  'handoff.provenance':
+    'Reconstruit par REWIND à partir d’événements enregistrés sur cette machine. Chaque ligne vient d’un événement stocké ; rien n’est généré.',
+
   'anchors.title':
     'Ancres — pourquoi ces événements ont été regroupés. L’application n’est jamais la raison.',
 
@@ -265,6 +292,33 @@ const en: Record<Key, string> = {
   'resume.open': 'Open',
   'resume.footnote': 'Every line above is read from stored events. Nothing here is generated.',
   'resume.none': 'No context detected in this session.',
+
+  'brief.title': 'Where you left off',
+  'brief.dismiss': 'Dismiss',
+  'brief.seeDay': 'See that day',
+
+  'handoff.reopenAll': 'Resume',
+  'handoff.reopenAllHint': 'Reopen everything this context left open',
+  'handoff.brief': 'Copy for the agent',
+  'handoff.briefHint':
+    'The context as plain text, to paste into Claude Code — branch, files, failing command, next step.',
+  'handoff.standupCopy': 'Copy standup',
+  'handoff.worklogCopy': 'Copy worklog',
+  'handoff.copied': 'Copied',
+  'handoff.copyFailed': 'Could not copy',
+  'handoff.openable': 'Reopen',
+  'handoff.nothingToOpen':
+    'Nothing to reopen in this context — no file, folder or page was captured in it.',
+  'handoff.context': 'Context',
+  'handoff.place': 'Place',
+  'handoff.lastActivity': 'Last activity',
+  'handoff.apps': 'Applications',
+  'handoff.reopen': 'Reopen',
+  'handoff.blocked': 'blocked',
+  'handoff.standupTitle': 'Standup',
+  'handoff.worklogTitle': 'Worklog',
+  'handoff.provenance':
+    'Reconstructed by REWIND from events recorded on this machine. Every line comes from a stored event; nothing is generated.',
 
   'anchors.title': 'Anchors — why these events were grouped. The application is never the reason.',
 
