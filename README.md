@@ -165,6 +165,10 @@ pause it from there.
 **Not signed yet.** macOS will warn on first open — right-click → Open, once. Signing and
 notarisation are deliberately not blocking the prototype (ADR 0003 D-23).
 
+Ready-made installers are on the
+[releases page](https://github.com/jodevweb/rewind/releases), and the application updates itself
+from there (ADR 0007).
+
 ### Installers without a local toolchain
 
 If you cannot build locally — Windows Smart App Control blocks an unsigned `rustc`, and disabling it
