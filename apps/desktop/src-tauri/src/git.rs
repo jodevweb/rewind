@@ -243,7 +243,10 @@ fn without_a_window(command: &mut std::process::Command) -> &mut std::process::C
 /// as nothing at all, never as a clean tree.
 fn dirty_count(worktree: &Path) -> Option<u64> {
     let mut command = std::process::Command::new("git");
-    command.arg("-C").arg(worktree).args(["status", "--porcelain"]);
+    command
+        .arg("-C")
+        .arg(worktree)
+        .args(["status", "--porcelain"]);
     let output = without_a_window(&mut command).output().ok()?;
     if !output.status.success() {
         return None;
