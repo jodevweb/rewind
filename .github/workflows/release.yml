@@ -9,10 +9,9 @@ name: Release
 # the manifest had to live in a second public one, and the updater failed silently against it —
 # which is the whole of ADR 0006, now superseded by ADR 0007.
 #
-# One transitional step remains. A copy already installed on a machine only knows the endpoint it
-# was built with, so it polls `rewind-dist` and nothing else. The same manifest is therefore
-# mirrored there for one more version, pointing at the assets published here. Delete the mirror
-# step once every installed copy has updated through it once.
+# There was a transitional mirror to `rewind-dist`, for copies installed while this repository was
+# private and which knew no other endpoint. Both machines have since updated through it, so it is
+# gone — along with the second endpoint in tauri.conf.json and the DIST_TOKEN secret (ADR 0008).
 #
 # Signing happens only here. The private key never leaves CI, so an update can only come from a
 # build that ran in this repository; the application refuses anything that does not verify against
@@ -154,24 +153,3 @@ jobs:
           draft: false
           prerelease: false
           files: release-assets/*
-
-      # Transitional, and deletable. A copy installed before this change polls `rewind-dist` and
-      # would never hear about this release otherwise — an updater that goes quiet is exactly the
-      # failure ADR 0006 was written about, and it must not happen on the way out of it.
-      #
-      # The manifest mirrored here points at the assets published above, which are public now.
-      - name: Mirror the manifest for copies installed before ADR 0007
-        continue-on-error: true
-        uses: softprops/action-gh-release@v2
-        with:
-          repository: jodevweb/rewind-dist
-          token: ${{ secrets.DIST_TOKEN }}
-          tag_name: v${{ steps.version.outputs.version }}
-          name: REWIND v${{ steps.version.outputs.version }}
-          body: |
-            Ce dépôt ne sert plus qu'aux copies installées avant que REWIND ne devienne public.
-            Les installeurs et les notes de version sont désormais sur
-            https://github.com/jodevweb/rewind/releases
-          draft: false
-          prerelease: false
-          files: release-assets/latest.json
