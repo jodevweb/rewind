@@ -109,9 +109,18 @@ export function buildResume(session: GoldenSession, context: EngineContext): Res
     card.openResources.push({ kind, label, target: trimmed, evidenceRef });
   };
 
-  /** A file a tool reported relative to its project is only openable once it is absolute again. */
-  const absolute = (file: string, base: string | undefined): string =>
-    file.startsWith('/') || /^[A-Za-z]:/.test(file) || !base ? file : `${base}/${file}`;
+  /**
+   * A file a tool reported relative to its project is only openable once it is absolute again.
+   *
+   * Joined with the separator the base already uses. Joining a Windows project path to a Windows
+   * relative path with a forward slash produces `C:\Users\j\rewind/docs\PRODUCT.md`, which is a
+   * path Windows happens to accept and nobody can read.
+   */
+  const absolute = (file: string, base: string | undefined): string => {
+    if (!base || file.startsWith('/') || /^[A-Za-z]:/.test(file)) return file;
+    const separator = base.includes('\\') && !base.includes('/') ? '\\' : '/';
+    return `${base.replace(/[/\\]$/, '')}${separator}${file}`;
+  };
 
   let lastFailure: GoldenEvent | undefined;
   let dirtyFiles: { count: number; branch?: string; ref: string } | undefined;
