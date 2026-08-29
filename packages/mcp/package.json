@@ -1,0 +1,29 @@
+{
+  "name": "@rewind/mcp",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "REWIND as an MCP server: your own history, readable by the agent you work in. stdio, read-only, no port, no network (ADR 0001 D-5).",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "bin": {
+    "rewind-mcp": "./src/main.ts"
+  },
+  "scripts": {
+    "start": "tsx src/main.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@rewind/ask": "workspace:*",
+    "@rewind/engine-v0": "workspace:*",
+    "@rewind/predict": "workspace:*",
+    "@rewind/shared": "workspace:*",
+    "@rewind/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@rewind/config": "workspace:*",
+    "tsx": "^4.19.2",
+    "vitest": "^2.1.9"
+  }
+}

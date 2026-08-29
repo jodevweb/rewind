@@ -53,6 +53,9 @@ importers:
       '@rewind/predict':
         specifier: workspace:*
         version: link:../../packages/predict
+      '@rewind/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@rewind/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -158,6 +161,9 @@ importers:
       '@rewind/config':
         specifier: workspace:*
         version: link:../config
+      vitest:
+        specifier: ^2.1.9
+        version: 2.1.9(@types/node@22.20.1)
 
   packages/eval:
     dependencies:
@@ -183,6 +189,34 @@ importers:
       tsx:
         specifier: ^4.19.2
         version: 4.23.12
+
+  packages/mcp:
+    dependencies:
+      '@rewind/ask':
+        specifier: workspace:*
+        version: link:../ask
+      '@rewind/engine-v0':
+        specifier: workspace:*
+        version: link:../engine-v0
+      '@rewind/predict':
+        specifier: workspace:*
+        version: link:../predict
+      '@rewind/shared':
+        specifier: workspace:*
+        version: link:../shared
+      '@rewind/ui':
+        specifier: workspace:*
+        version: link:../ui
+    devDependencies:
+      '@rewind/config':
+        specifier: workspace:*
+        version: link:../config
+      tsx:
+        specifier: ^4.19.2
+        version: 4.23.12
+      vitest:
+        specifier: ^2.1.9
+        version: 2.1.9(@types/node@22.20.1)
 
   packages/predict:
     dependencies:
@@ -210,6 +244,10 @@ importers:
         version: link:../fixtures
 
   packages/shared:
+    dependencies:
+      '@rewind/fixtures':
+        specifier: workspace:*
+        version: link:../fixtures
     devDependencies:
       '@rewind/config':
         specifier: workspace:*
@@ -239,6 +277,9 @@ importers:
       react:
         specifier: ^19.0.0
         version: 19.2.8
+      vitest:
+        specifier: ^2.1.9
+        version: 2.1.9(@types/node@22.20.1)
 
 packages:
 

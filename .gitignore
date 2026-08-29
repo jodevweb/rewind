@@ -32,3 +32,7 @@ REWIND-UPDATER-PRIVATE-KEY.txt
 
 # Staging for a release build; assembled by CI, never committed.
 release-assets/
+
+# The handover file. It is written for whoever picks this up next and it says things about
+# how the person working on it works — that belongs on the machine, not in a public repository.
+MEMORY.md

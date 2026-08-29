@@ -35,6 +35,7 @@ import { predict, type Predictions } from '@rewind/predict';
 import { Ask, type AskHandlers } from './ask.js';
 import { EmptyState } from './empty.js';
 import { Forecast } from './forecast.js';
+import { agentBrief, copyText, standup, worklog, type Handoff } from './handoff.js';
 import { formatDuration, t, tPlural } from './i18n.js';
 
 const clock = (ts: number, tz: number) => new Date(ts + tz * 60_000).toISOString().slice(11, 16);
@@ -212,6 +213,13 @@ export function Workspace({
 
   const active = result.contexts.find((c) => c.id === selected) ?? recent[0] ?? result.contexts[0];
   const resume = useMemo(() => (active ? buildResume(session, active) : null), [session, active]);
+
+  // Every context of the day, in the shape the standup and worklog exports want. Built here rather
+  // than in the export handler so the cost is paid once per day rather than once per click.
+  const handoffs: Handoff[] = useMemo(
+    () => result.contexts.map((c) => ({ card: buildResume(session, c), place: c.place })),
+    [result.contexts, session],
+  );
   const inspectedEvent = inspected ? (byRef.get(inspected) ?? null) : null;
 
   // Nothing captured yet is the first launch, and the first launch is the first impression. The
@@ -316,6 +324,15 @@ export function Workspace({
                     <p>{renderNextStep(resume.nextStep)}</p>
                   </div>
                 )}
+
+                <ResumeActions
+                  handoff={{ card: resume, place: active.place }}
+                  day={session.day}
+                  handoffs={handoffs}
+                  tz={tz}
+                  actions={actions}
+                />
+
                 <p className="footnote">{t('resume.footnote')}</p>
               </div>
             ) : (
@@ -478,6 +495,90 @@ function collapse(events: GoldenEvent[]): { event: GoldenEvent; count: number }[
     out.push({ event, count: 1 });
   }
   return out;
+}
+
+/**
+ * What you do with a context once you have read it.
+ *
+ * The Resume card told you where you were and then left you to get back there by hand — opening the
+ * project, finding the files, and retyping the whole situation to an agent that was not there. Every
+ * one of those was already known here; only the button was missing.
+ *
+ * Nothing is executed. Reopening goes through the daemon, which only opens paths that exist and
+ * http(s) URLs, and a failing command is copied as text and never run (§62).
+ */
+function ResumeActions({
+  handoff,
+  handoffs,
+  day,
+  tz,
+  actions,
+}: {
+  handoff: Handoff;
+  /** Every context of the day, for the exports that cover the day rather than one piece of it. */
+  handoffs: Handoff[];
+  day: string;
+  tz: number;
+  actions?: WorkspaceActions;
+}) {
+  const [flash, setFlash] = useState<string | null>(null);
+  const resources = handoff.card.openResources;
+
+  const copy = async (text: string) => {
+    const ok = await copyText(text);
+    setFlash(ok ? t('handoff.copied') : t('handoff.copyFailed'));
+    setTimeout(() => setFlash(null), 2000);
+  };
+
+  return (
+    <div className="handoff">
+      <div className="handoff-bar">
+        {actions?.open && (
+          <button
+            className="primary"
+            disabled={resources.length === 0}
+            title={resources.length === 0 ? t('handoff.nothingToOpen') : t('handoff.reopenAllHint')}
+            onClick={() => resources.forEach((r) => actions.open?.(r.target))}
+          >
+            {t('handoff.reopenAll')}
+            {resources.length > 0 && <span className="count">{resources.length}</span>}
+          </button>
+        )}
+        <button
+          className="ghost"
+          title={t('handoff.briefHint')}
+          onClick={() => void copy(agentBrief(handoff, tz))}
+        >
+          {t('handoff.brief')}
+        </button>
+        <button className="ghost" onClick={() => void copy(standup(day, handoffs))}>
+          {t('handoff.standupCopy')}
+        </button>
+        <button className="ghost" onClick={() => void copy(worklog(day, handoffs, tz))}>
+          {t('handoff.worklogCopy')}
+        </button>
+        {flash && <span className="flash">{flash}</span>}
+      </div>
+
+      {resources.length > 0 && actions?.open && (
+        <div className="rows">
+          <div className="eyebrow">{t('handoff.openable')}</div>
+          {resources.map((r) => (
+            <div className="line" key={r.target}>
+              <button className="link" onClick={() => actions.open?.(r.target)} title={r.target}>
+                {r.label}
+              </button>
+              {r.kind !== 'url' && actions.reveal && (
+                <button className="cite" onClick={() => actions.reveal?.(r.target)}>
+                  {t('detail.reveal')}
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 /** Everything known about one event, and everything it can open. */

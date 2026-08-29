@@ -16,8 +16,10 @@
 
 mod capture;
 mod claude;
+mod git;
 mod platform;
 mod redact;
+mod shell;
 mod store;
 
 use std::sync::Arc;
@@ -202,8 +204,19 @@ fn main() {
     let capture = Arc::new(Capture::new(Arc::clone(&store)));
     capture::spawn(Arc::clone(&capture));
 
+    let tz = capture::local_offset_minutes();
+
     // Claude Code sessions: the deepest autonomous source in this workflow (ADR 0003 D-27).
-    claude::spawn(store, capture::local_offset_minutes());
+    claude::spawn(Arc::clone(&store), Arc::clone(&capture), tz);
+
+    // Git: branches, commits and uncommitted work. The cheapest source with the highest return —
+    // window titles carry no branch and no path, so without it every anchor above weak came from
+    // Claude Code and work done without an agent was almost invisible to the engine.
+    git::spawn(Arc::clone(&store), Arc::clone(&capture), tz);
+
+    // Terminal commands and their exit codes, from the opt-in shell hooks (§62). Write-only, over a
+    // spool file: no port, and the daemon never speaks back to the shell.
+    shell::spawn(Arc::clone(&store), Arc::clone(&capture), tz);
 
     tauri::Builder::default()
         .plugin(tauri_plugin_updater::Builder::new().build())
