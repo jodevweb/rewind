@@ -12,6 +12,7 @@ import type { GoldenEvent, GoldenSession } from '@rewind/fixtures/authoring';
 import {
   anchorsForSession,
   matchingAnchors,
+  offersASubject,
   strength,
   normalize,
   STRONG,
@@ -660,8 +661,9 @@ function subjectsIn(
 ): Map<string, number> {
   const counts = new Map<string, number>();
   for (const ref of c.eventRefs) {
-    const title = byRef.get(ref)?.title;
-    if (!title) continue;
+    const event = byRef.get(ref);
+    if (!event || !offersASubject(event)) continue;
+    const title = event.title!;
     const seen = new Set<string>();
     for (const phrase of titlePhrases(title)) {
       const key = normalize(phrase);

@@ -64,6 +64,13 @@ const num = (e: GoldenEvent, k: string): number | undefined => {
   return typeof v === 'number' ? v : undefined;
 };
 
+/**
+ * The system temp directory, on every platform this ships to: `AppData\Local\Temp`, `/tmp`,
+ * `/var/folders`. Matched as a whole path segment, so a project directory called `templates` is
+ * untouched.
+ */
+const THROWAWAY_RE = /[/\\](?:temp|tmp)[/\\]|^\/var\/folders\//i;
+
 export function buildResume(session: GoldenSession, context: EngineContext): ResumeCard {
   const byRef = new Map(session.events.map((e) => [e.ref, e]));
   const events = context.eventRefs
@@ -105,6 +112,11 @@ export function buildResume(session: GoldenSession, context: EngineContext): Res
     if (typeof target !== 'string') return;
     const trimmed = target.trim();
     if (trimmed === '' || resources.has(trimmed)) return;
+    // A scratch file an agent wrote under the system temp directory is not work to come back to.
+    // Every entry here is rendered as a button, and a button that reopens a throwaway teaches the
+    // reader the whole feature is decorative — which is not un-taught. The real file it was editing
+    // is offered beside it, from the same events.
+    if (THROWAWAY_RE.test(trimmed)) return;
     resources.add(trimmed);
     card.openResources.push({ kind, label, target: trimmed, evidenceRef });
   };
