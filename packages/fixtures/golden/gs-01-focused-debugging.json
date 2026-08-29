@@ -11,8 +11,8 @@
     "contexts": [
       {
         "tag": "stripe",
-        "label": "Stripe renewal bug (DNM-3921)",
-        "labelMatches": "(?i)stripe|renewal|DNM-3921",
+        "label": "Stripe renewal bug (ACM-3921)",
+        "labelMatches": "(?i)stripe|renewal|ACM-3921",
         "outcome": "pr_opened",
         "expectedNextStep": "Wait for review on PR #2182",
         "startTimestamp": 1773302400000,
@@ -192,7 +192,7 @@
       },
       "app": "chrome.exe",
       "appDisplay": "Google Chrome",
-      "title": "DNM-3921 Subscription renewal charges twice — Linear",
+      "title": "ACM-3921 Subscription renewal charges twice — Linear",
       "repositoryId": "myapp",
       "metadata": {},
       "privacyLevel": "normal",
@@ -216,11 +216,11 @@
       },
       "app": "chrome.exe",
       "appDisplay": "Google Chrome",
-      "title": "DNM-3921 Subscription renewal charges twice — Linear",
+      "title": "ACM-3921 Subscription renewal charges twice — Linear",
       "repositoryId": "myapp",
       "metadata": {
         "tabId": 41,
-        "url": "https://linear.app/acme/issue/DNM-3921",
+        "url": "https://linear.app/acme/issue/ACM-3921",
         "host": "linear.app",
         "incognito": false
       },
@@ -246,11 +246,11 @@
       },
       "app": "chrome.exe",
       "appDisplay": "Google Chrome",
-      "title": "DNM-3921 — comments — Linear",
+      "title": "ACM-3921 — comments — Linear",
       "repositoryId": "myapp",
       "metadata": {
         "tabId": 41,
-        "url": "https://linear.app/acme/issue/DNM-3921",
+        "url": "https://linear.app/acme/issue/ACM-3921",
         "host": "linear.app",
         "transition": "link",
         "incognito": false
@@ -302,7 +302,7 @@
       "repositoryId": "myapp",
       "metadata": {
         "from": "main",
-        "to": "fix/DNM-3921-stripe-renewal",
+        "to": "fix/ACM-3921-stripe-renewal",
         "isNewBranch": true
       },
       "privacyLevel": "normal",
@@ -958,7 +958,7 @@
       "repositoryId": "myapp",
       "metadata": {
         "sha": "a72c91f4e8b3d2a1c5e9f7b6d4a8c2e1f9b3d7a5",
-        "messageRedacted": "fix(billing): handle invoice.created arriving before subscription.updated (DNM-3921)",
+        "messageRedacted": "fix(billing): handle invoice.created arriving before subscription.updated (ACM-3921)",
         "filesChanged": [
           "src/billing/stripe.webhook.ts",
           "src/billing/billing.service.ts",
@@ -989,7 +989,7 @@
       },
       "repositoryId": "myapp",
       "metadata": {
-        "commandRedacted": "git push -u origin fix/DNM-3921-stripe-renewal",
+        "commandRedacted": "git push -u origin fix/ACM-3921-stripe-renewal",
         "cwd": "C:/dev/myapp",
         "exitCode": 0,
         "durationMs": 2400,

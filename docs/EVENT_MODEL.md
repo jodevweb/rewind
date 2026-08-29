@@ -109,8 +109,8 @@ interface RedactionStamp {
 ```ts
 interface ContextAnchor {
   type: 'issue' | 'project' | 'repository' | 'branch' | 'worktree' | 'document' | 'url' | 'keyword';
-  value: string; // "DNM-4218"
-  normalizedValue: string; // "dnm-4218" — what comparison uses
+  value: string; // "ACM-4218"
+  normalizedValue: string; // "acm-4218" — what comparison uses
   confidence: number; // 0..1
   source: 'window_title' | 'url' | 'branch' | 'agent' | 'external' | 'note' | 'path';
 }

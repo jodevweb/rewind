@@ -244,7 +244,7 @@ Every answer carries its sources, each clickable to the exact timeline moment:
 ```
 14:22  Git commit a72c91          "handle invoice.created before subscription.updated"
 14:04  stripe.com/docs/api/invoices
-13:58  DNM-3921 — Stripe renewal
+13:58  ACM-3921 — Stripe renewal
 14:33  Claude Code session · myapp
 ```
 

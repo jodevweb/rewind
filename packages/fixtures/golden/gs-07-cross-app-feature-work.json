@@ -3,7 +3,7 @@
   "id": "gs-07-cross-app-feature-work",
   "name": "Cross-app feature work",
   "description": "Ninety minutes on one feature, crossing Slack, Linear, Figma, Notes, Chrome, Cockpit, Terminal, Claude Code and Mail. Nine applications, one piece of work.",
-  "tests": "The fixture that proves REWIND is work-context-first rather than developer-first. Almost every event is generic Level 1 window observation; there is no IDE, and the repository appears only after an hour. Grouping must come from anchors — \"Home Staging\", DNM-4218, the project name — and from temporal and semantic proximity. An engine that leans on repositoryId, workspace or file overlap recovers almost nothing here.",
+  "tests": "The fixture that proves REWIND is work-context-first rather than developer-first. Almost every event is generic Level 1 window observation; there is no IDE, and the repository appears only after an hour. Grouping must come from anchors — \"Checkout Redesign\", ACM-4218, the project name — and from temporal and semantic proximity. An engine that leans on repositoryId, workspace or file overlap recovers almost nothing here.",
   "day": "2026-04-14",
   "tzOffsetMinutes": 120,
   "expected": {
@@ -11,10 +11,10 @@
     "contexts": [
       {
         "tag": "homestaging",
-        "label": "Home Staging V3 (DNM-4218)",
-        "labelMatches": "(?i)home ?staging|DNM-4218",
+        "label": "Checkout Redesign V3 (ACM-4218)",
+        "labelMatches": "(?i)home ?staging|ACM-4218",
         "outcome": "unresolved",
-        "expectedNextStep": "Review Claude's implementation of the mask before merging DNM-4218",
+        "expectedNextStep": "Review Claude's implementation of the mask before merging ACM-4218",
         "startTimestamp": 1776150720000,
         "endTimestamp": 1776156150000,
         "eventRefs": [
@@ -62,7 +62,7 @@
           "gs-07-cross-app-feature-work-e025",
           "gs-07-cross-app-feature-work-e028"
         ],
-        "note": "Nine applications, one context. Expected Today entry: \"Home Staging V3 · 1h30 · Slack → Linear → Figma → Cockpit → Claude\"."
+        "note": "Nine applications, one context. Expected Today entry: \"Checkout Redesign V3 · 1h30 · Slack → Linear → Figma → Cockpit → Claude\"."
       }
     ],
     "noiseEventRefs": []
@@ -82,7 +82,7 @@
       },
       "app": "com.tinyspeck.slackmacgap",
       "appDisplay": "Slack",
-      "title": "danim — #product — Slack",
+      "title": "acme — #product — Slack",
       "metadata": {
         "bundleId": "com.tinyspeck.slackmacgap"
       },
@@ -108,9 +108,9 @@
       },
       "app": "com.tinyspeck.slackmacgap",
       "appDisplay": "Slack",
-      "title": "danim — #product — Home Staging V3 — Slack",
+      "title": "acme — #product — Checkout Redesign V3 — Slack",
       "metadata": {
-        "previousTitle": "danim — #product — Slack"
+        "previousTitle": "acme — #product — Slack"
       },
       "privacyLevel": "sensitive",
       "redaction": {
@@ -119,7 +119,7 @@
         "count": 0
       },
       "importance": 30,
-      "$note": "The anchor \"Home Staging\" first appears in a window title."
+      "$note": "The anchor \"Checkout Redesign\" first appears in a window title."
     },
     {
       "id": "30d7deb7-deb7-7000-8000-000000000003",
@@ -135,7 +135,7 @@
       },
       "app": "com.linear",
       "appDisplay": "Linear",
-      "title": "DNM-4218 Home Staging generation flow — Linear",
+      "title": "ACM-4218 Checkout Redesign generation flow — Linear",
       "metadata": {
         "bundleId": "com.linear"
       },
@@ -146,7 +146,7 @@
         "count": 0
       },
       "importance": 30,
-      "$note": "DNM-4218 — a structured identifier in a native app window title. The strongest anchor available at Level 1."
+      "$note": "ACM-4218 — a structured identifier in a native app window title. The strongest anchor available at Level 1."
     },
     {
       "id": "30d7deb7-deb7-7000-8000-000000000004",
@@ -161,9 +161,9 @@
       },
       "app": "com.linear",
       "appDisplay": "Linear",
-      "title": "DNM-4218 Home Staging generation flow — In Progress — Linear",
+      "title": "ACM-4218 Checkout Redesign generation flow — In Progress — Linear",
       "metadata": {
-        "previousTitle": "DNM-4218 Home Staging generation flow — Linear"
+        "previousTitle": "ACM-4218 Checkout Redesign generation flow — Linear"
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -187,7 +187,7 @@
       },
       "app": "com.figma.Desktop",
       "appDisplay": "Figma",
-      "title": "Home Staging V3 — Figma",
+      "title": "Checkout Redesign V3 — Figma",
       "metadata": {
         "bundleId": "com.figma.Desktop"
       },
@@ -212,9 +212,9 @@
       },
       "app": "com.figma.Desktop",
       "appDisplay": "Figma",
-      "title": "Home Staging V3 / Generation flow — Figma",
+      "title": "Checkout Redesign V3 / Generation flow — Figma",
       "metadata": {
-        "previousTitle": "Home Staging V3 — Figma"
+        "previousTitle": "Checkout Redesign V3 — Figma"
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -238,7 +238,7 @@
       },
       "app": "com.apple.Notes",
       "appDisplay": "Notes",
-      "title": "Home Staging thoughts — Notes",
+      "title": "Checkout Redesign thoughts — Notes",
       "metadata": {
         "bundleId": "com.apple.Notes"
       },
@@ -320,7 +320,7 @@
       },
       "app": "com.acme.cockpit",
       "appDisplay": "Cockpit",
-      "title": "Home Staging — Cockpit",
+      "title": "Checkout Redesign — Cockpit",
       "metadata": {
         "bundleId": "com.acme.cockpit"
       },
@@ -347,17 +347,17 @@
       "appDisplay": "Cockpit",
       "metadata": {
         "source": "cockpit",
-        "mission": "Home Staging generation flow",
+        "mission": "Checkout Redesign generation flow",
         "missionId": "msn_8841",
-        "project": "home-staging",
+        "project": "checkout-redesign",
         "anchors": [
           {
             "type": "issue",
-            "value": "DNM-4218"
+            "value": "ACM-4218"
           },
           {
             "type": "project",
-            "value": "home-staging"
+            "value": "checkout-redesign"
           }
         ]
       },
@@ -387,7 +387,7 @@
         "source": "cockpit",
         "missionId": "msn_8841",
         "agent": "claude-code",
-        "worktree": "/Users/jordan/dev/danim-wt/DNM-4218"
+        "worktree": "/Users/dev/dev/acme-wt/ACM-4218"
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -411,8 +411,8 @@
       },
       "app": "com.apple.Terminal",
       "appDisplay": "Terminal",
-      "title": "claude — danim-wt/DNM-4218 — Terminal",
-      "repositoryId": "danim",
+      "title": "claude — acme-wt/ACM-4218 — Terminal",
+      "repositoryId": "acme",
       "metadata": {
         "bundleId": "com.apple.Terminal"
       },
@@ -435,11 +435,11 @@
         "name": "rewind-agent",
         "version": "0.1.0"
       },
-      "repositoryId": "danim",
+      "repositoryId": "acme",
       "metadata": {
         "agent": "claude-code",
         "model": "claude-opus-5",
-        "projectPath": "/Users/jordan/dev/danim-wt/DNM-4218"
+        "projectPath": "/Users/dev/dev/acme-wt/ACM-4218"
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -460,7 +460,7 @@
         "name": "rewind-agent",
         "version": "0.1.0"
       },
-      "repositoryId": "danim",
+      "repositoryId": "acme",
       "metadata": {
         "agent": "claude-code",
         "toolCallCount": 14,
@@ -489,7 +489,7 @@
         "name": "rewind-agent",
         "version": "0.1.0"
       },
-      "repositoryId": "danim",
+      "repositoryId": "acme",
       "metadata": {
         "agent": "claude-code",
         "toolCallCount": 31,
@@ -519,12 +519,12 @@
         "name": "rewind-git",
         "version": "0.1.0"
       },
-      "repositoryId": "danim",
+      "repositoryId": "acme",
       "metadata": {
         "from": "main",
-        "to": "fix/DNM-4218-generation",
+        "to": "fix/ACM-4218-generation",
         "isNewBranch": true,
-        "worktree": "/Users/jordan/dev/danim-wt/DNM-4218"
+        "worktree": "/Users/dev/dev/acme-wt/ACM-4218"
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -549,8 +549,8 @@
       },
       "app": "com.apple.Terminal",
       "appDisplay": "Terminal",
-      "title": "pnpm test staging — danim-wt/DNM-4218 — Terminal",
-      "repositoryId": "danim",
+      "title": "pnpm test staging — acme-wt/ACM-4218 — Terminal",
+      "repositoryId": "acme",
       "metadata": {
         "bundleId": "com.apple.Terminal"
       },
@@ -573,10 +573,10 @@
         "name": "rewind-terminal",
         "version": "0.1.0"
       },
-      "repositoryId": "danim",
+      "repositoryId": "acme",
       "metadata": {
         "commandRedacted": "pnpm test staging",
-        "cwd": "/Users/jordan/dev/danim-wt/DNM-4218",
+        "cwd": "/Users/dev/dev/acme-wt/ACM-4218",
         "exitCode": 1,
         "durationMs": 14200,
         "shell": "zsh"
@@ -600,7 +600,7 @@
         "name": "rewind-terminal",
         "version": "0.1.0"
       },
-      "repositoryId": "danim",
+      "repositoryId": "acme",
       "metadata": {
         "lines": [
           "expected mask to cover 4 regions, got 3",
@@ -628,7 +628,7 @@
         "name": "rewind-agent",
         "version": "0.1.0"
       },
-      "repositoryId": "danim",
+      "repositoryId": "acme",
       "metadata": {
         "agent": "claude-code",
         "toolCallCount": 9,
@@ -659,7 +659,7 @@
       },
       "app": "com.acme.cockpit",
       "appDisplay": "Cockpit",
-      "title": "Home Staging — run 3 — Cockpit",
+      "title": "Checkout Redesign — run 3 — Cockpit",
       "metadata": {
         "bundleId": "com.acme.cockpit"
       },
@@ -718,7 +718,7 @@
       },
       "app": "com.apple.mail",
       "appDisplay": "Mail",
-      "title": "Re: Home Staging V3 — retours client — Mail",
+      "title": "Re: Checkout Redesign V3 — retours client — Mail",
       "metadata": {
         "bundleId": "com.apple.mail"
       },
@@ -745,7 +745,7 @@
       },
       "app": "com.linear",
       "appDisplay": "Linear",
-      "title": "DNM-4218 Home Staging generation flow — In Review — Linear",
+      "title": "ACM-4218 Checkout Redesign generation flow — In Review — Linear",
       "metadata": {
         "bundleId": "com.linear"
       },
@@ -771,7 +771,7 @@
       },
       "app": "com.figma.Desktop",
       "appDisplay": "Figma",
-      "title": "Home Staging V3 / Generation flow — Figma",
+      "title": "Checkout Redesign V3 / Generation flow — Figma",
       "metadata": {
         "bundleId": "com.figma.Desktop"
       },
@@ -797,7 +797,7 @@
       },
       "app": "com.apple.Notes",
       "appDisplay": "Notes",
-      "title": "Home Staging thoughts — Notes",
+      "title": "Checkout Redesign thoughts — Notes",
       "metadata": {
         "bundleId": "com.apple.Notes"
       },
@@ -821,7 +821,7 @@
         "version": "0.1.0"
       },
       "metadata": {
-        "text": "Claude a fini la première implémentation de la génération. Reste à relire le masque avant de merger DNM-4218."
+        "text": "Claude a fini la première implémentation de la génération. Reste à relire le masque avant de merger ACM-4218."
       },
       "privacyLevel": "normal",
       "redaction": {

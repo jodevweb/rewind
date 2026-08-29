@@ -29,27 +29,31 @@ const s: Step[] = [
     ctx: 'importer',
     type: 'system.window.focus',
     app: 'Code',
-    title: 'importer.ts — mimiq',
+    title: 'importer.ts — dataflow',
     endT: '16:12:00',
   },
   {
     t: '16:00:10',
     ctx: 'importer',
     type: 'ide.workspace.opened',
-    meta: { workspacePath: '/Users/j/dev/mimiq', ideName: 'vscode', ideVersion: '1.96.0' },
+    meta: { workspacePath: '/Users/dev/dev/dataflow', ideName: 'vscode', ideVersion: '1.96.0' },
   },
   {
     t: '16:01:30',
     ctx: 'importer',
     type: 'git.branch.checkout',
     important: true,
-    meta: { from: 'main', to: 'feat/csv-importer', repository: 'mimiq' },
+    meta: { from: 'main', to: 'feat/csv-importer', repository: 'dataflow' },
   },
   {
     t: '16:04:00',
     ctx: 'importer',
     type: 'ide.file.saved',
-    meta: { path: '/Users/j/dev/mimiq/src/importer.ts', language: 'typescript', lineCount: 210 },
+    meta: {
+      path: '/Users/dev/dev/dataflow/src/importer.ts',
+      language: 'typescript',
+      lineCount: 210,
+    },
   },
   {
     t: '16:09:00',
@@ -60,7 +64,7 @@ const s: Step[] = [
       commandRedacted: 'pnpm test importer',
       exitCode: 0,
       durationMs: 8400,
-      cwd: '/Users/j/dev/mimiq',
+      cwd: '/Users/dev/dev/dataflow',
     },
   },
   {
@@ -70,7 +74,7 @@ const s: Step[] = [
     important: true,
     meta: {
       messageRedacted: 'feat: csv importer handles quoted separators',
-      repository: 'mimiq',
+      repository: 'dataflow',
       branch: 'feat/csv-importer',
       filesChanged: 3,
       insertions: 88,
@@ -148,11 +152,11 @@ export const gs11 = buildSession({
     'A long run of anchorless activity must not be absorbed by the last context that had anchors. Drift is measured from the last real evidence, not from whatever the context most recently swallowed — so the evening forms its own context instead of inflating the afternoon’s. An engine that merges these reports hours of work that never happened, which is the one thing a tool people trust for their own history cannot do.',
   day: '2026-08-28',
   tzOffsetMinutes: 120,
-  defaultRepo: 'mimiq',
+  defaultRepo: 'dataflow',
   contexts: {
     importer: {
       label: 'CSV importer',
-      labelMatches: '(?i)importer|csv|mimiq',
+      labelMatches: '(?i)importer|csv|dataflow',
       outcome: 'fix_implemented',
       expectedNextStep: 'Push feat/csv-importer',
       note: 'Ends at the commit. Nothing after 16:12 belongs to it.',

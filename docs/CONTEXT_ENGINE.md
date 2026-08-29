@@ -115,15 +115,15 @@ An anchor is a distinctive identifier that recurs across applications:
 ```ts
 interface ContextAnchor {
   type: 'issue' | 'project' | 'repository' | 'branch' | 'worktree' | 'document' | 'url' | 'keyword';
-  value: string; // "DNM-4218"
-  normalizedValue: string; // "dnm-4218"
+  value: string; // "ACM-4218"
+  normalizedValue: string; // "acm-4218"
   confidence: number; // 0..1
   source: 'window_title' | 'url' | 'branch' | 'agent' | 'external' | 'note' | 'path';
 }
 ```
 
 Extracted from window titles, browser titles, URLs, terminal commands, Git branches, worktrees, Claude
-Code sessions and external events. Structured identifiers score highest — `DNM-4218` appearing in a
+Code sessions and external events. Structured identifiers score highest — `ACM-4218` appearing in a
 Linear window, a Git branch, a Cockpit mission and a URL is close to proof of one context. Project and
 document names are next. Repeated distinctive keywords are weakest and need corroboration.
 
@@ -217,7 +217,7 @@ Layer-2 result — it never blocks and never retries in the foreground.
 
 Deterministic first, in priority order:
 
-1. Ticket ID + its title if we ever saw one: `DNM-3921 — Stripe renewal`
+1. Ticket ID + its title if we ever saw one: `ACM-3921 — Stripe renewal`
 2. Branch name, humanised: `feature/stripe-renewal` → `Stripe renewal`
 3. Dominant directory or file cluster: `Auth — session handling`
 4. Dominant external host + repo: `Stripe docs — myapp`
@@ -263,13 +263,13 @@ file Jaccard > 0.4. Also never automatic.
 
 ## 7. Manual control (§29, §30, §31)
 
-| Action                                               | Effect                                                                                                                                            |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Start Context** ("I'm working on Home Staging V2") | Creates a context with `origin: manual`; it receives a +0.15 score bonus for `MANUAL_PRIORITY_WINDOW` (2 h) and absorbs new activities by default |
-| **Merge**                                            | Union of activities, links, sessions; keeps the older `createdAt` and the preferred name; records a feedback rule                                 |
-| **Split**                                            | User picks a boundary activity or selects activities; two contexts result, links redistributed by evidence; records a feedback rule               |
-| **Rename**                                           | Sets `nameLocked`; nothing overwrites it                                                                                                          |
-| **Move activity**                                    | Reassigns one activity; records a feedback rule                                                                                                   |
+| Action                                                    | Effect                                                                                                                                            |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Start Context** ("I'm working on Checkout Redesign V2") | Creates a context with `origin: manual`; it receives a +0.15 score bonus for `MANUAL_PRIORITY_WINDOW` (2 h) and absorbs new activities by default |
+| **Merge**                                                 | Union of activities, links, sessions; keeps the older `createdAt` and the preferred name; records a feedback rule                                 |
+| **Split**                                                 | User picks a boundary activity or selects activities; two contexts result, links redistributed by evidence; records a feedback rule               |
+| **Rename**                                                | Sets `nameLocked`; nothing overwrites it                                                                                                          |
+| **Move activity**                                         | Reassigns one activity; records a feedback rule                                                                                                   |
 
 Manual assignments are **immutable by the engine**. An activity the user moved is never moved back.
 

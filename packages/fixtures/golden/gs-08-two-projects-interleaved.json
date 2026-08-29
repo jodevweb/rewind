@@ -2,8 +2,8 @@
   "$schema": "../schemas/golden-session.json",
   "id": "gs-08-two-projects-interleaved",
   "name": "Two projects interleaved",
-  "description": "Home Staging and Pépithèque worked in short alternating slices across two hours, sharing Slack, Linear, Cockpit, Terminal, Mail, Notes and the browser.",
-  "tests": "The most important benchmark of the pivot. The two projects are temporally interleaved with no gap large enough to segment on, and they use the same applications — Cockpit appears in both, 25 minutes apart. Only the anchors separate them: Home Staging / DNM-4218 versus Pépithèque / PEP-77. A time-based or application-based segmentation scores near zero. This fixture is the reason Context Anchors exist as a first-class concept.",
+  "description": "Checkout Redesign and Sideproject worked in short alternating slices across two hours, sharing Slack, Linear, Cockpit, Terminal, Mail, Notes and the browser.",
+  "tests": "The most important benchmark of the pivot. The two projects are temporally interleaved with no gap large enough to segment on, and they use the same applications — Cockpit appears in both, 25 minutes apart. Only the anchors separate them: Checkout Redesign / ACM-4218 versus Sideproject / PEP-77. A time-based or application-based segmentation scores near zero. This fixture is the reason Context Anchors exist as a first-class concept.",
   "day": "2026-04-15",
   "tzOffsetMinutes": 120,
   "expected": {
@@ -11,10 +11,10 @@
     "contexts": [
       {
         "tag": "homestaging",
-        "label": "Home Staging V3 (DNM-4218)",
-        "labelMatches": "(?i)home ?staging|DNM-4218",
+        "label": "Checkout Redesign V3 (ACM-4218)",
+        "labelMatches": "(?i)home ?staging|ACM-4218",
         "outcome": "pr_opened",
-        "expectedNextStep": "Review the masking run before moving DNM-4218 out of review",
+        "expectedNextStep": "Review the masking run before moving ACM-4218 out of review",
         "startTimestamp": 1776236400000,
         "endTimestamp": 1776243360000,
         "eventRefs": [
@@ -47,8 +47,8 @@
         ]
       },
       {
-        "tag": "pepitheque",
-        "label": "Pépithèque catalog import (PEP-77)",
+        "tag": "sideproject",
+        "label": "Sideproject catalog import (PEP-77)",
         "labelMatches": "(?i)p[ée]pith[èe]que|PEP-77|catalog",
         "outcome": "blocked",
         "expectedNextStep": "Chase the partner for API credentials — the import fails with a 401",
@@ -104,7 +104,7 @@
       },
       "app": "com.tinyspeck.slackmacgap",
       "appDisplay": "Slack",
-      "title": "danim — #product — Home Staging V3 — Slack",
+      "title": "acme — #product — Checkout Redesign V3 — Slack",
       "metadata": {
         "bundleId": "com.tinyspeck.slackmacgap"
       },
@@ -130,7 +130,7 @@
       },
       "app": "com.linear",
       "appDisplay": "Linear",
-      "title": "DNM-4218 Home Staging generation flow — Linear",
+      "title": "ACM-4218 Checkout Redesign generation flow — Linear",
       "metadata": {
         "bundleId": "com.linear"
       },
@@ -156,7 +156,7 @@
       },
       "app": "com.apple.mail",
       "appDisplay": "Mail",
-      "title": "Pépithèque — accès API partenaire — Mail",
+      "title": "Sideproject — accès API partenaire — Mail",
       "metadata": {
         "bundleId": "com.apple.mail"
       },
@@ -183,10 +183,10 @@
       },
       "app": "com.apple.finder",
       "appDisplay": "Finder",
-      "title": "Pépithèque — Finder",
+      "title": "Sideproject — Finder",
       "metadata": {
         "bundleId": "com.apple.finder",
-        "directory": "/Users/jordan/Documents/Pépithèque"
+        "directory": "/Users/dev/Documents/Sideproject"
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -210,7 +210,7 @@
       },
       "app": "com.figma.Desktop",
       "appDisplay": "Figma",
-      "title": "Home Staging V3 / Generation flow — Figma",
+      "title": "Checkout Redesign V3 / Generation flow — Figma",
       "metadata": {
         "bundleId": "com.figma.Desktop"
       },
@@ -236,9 +236,9 @@
       },
       "app": "com.figma.Desktop",
       "appDisplay": "Figma",
-      "title": "Home Staging V3 / Masking — Figma",
+      "title": "Checkout Redesign V3 / Masking — Figma",
       "metadata": {
-        "previousTitle": "Home Staging V3 / Generation flow — Figma"
+        "previousTitle": "Checkout Redesign V3 / Generation flow — Figma"
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -262,7 +262,7 @@
       },
       "app": "com.google.Chrome",
       "appDisplay": "Google Chrome",
-      "title": "Pépithèque — partner API reference — Google Chrome",
+      "title": "Sideproject — partner API reference — Google Chrome",
       "metadata": {
         "bundleId": "com.google.Chrome"
       },
@@ -289,8 +289,8 @@
       "appDisplay": "Google Chrome",
       "metadata": {
         "tabId": 301,
-        "url": "https://partners.pepitheque.fr/docs/api/catalog",
-        "host": "partners.pepitheque.fr",
+        "url": "https://partners.sideproject.fr/docs/api/catalog",
+        "host": "partners.sideproject.fr",
         "transition": "typed",
         "incognito": false
       },
@@ -317,8 +317,8 @@
       "appDisplay": "Google Chrome",
       "metadata": {
         "tabId": 301,
-        "url": "https://partners.pepitheque.fr/docs/api/authentication",
-        "host": "partners.pepitheque.fr",
+        "url": "https://partners.sideproject.fr/docs/api/authentication",
+        "host": "partners.sideproject.fr",
         "transition": "link",
         "incognito": false
       },
@@ -344,7 +344,7 @@
       },
       "app": "com.acme.cockpit",
       "appDisplay": "Cockpit",
-      "title": "Home Staging — Cockpit",
+      "title": "Checkout Redesign — Cockpit",
       "metadata": {
         "bundleId": "com.acme.cockpit"
       },
@@ -372,16 +372,16 @@
       "metadata": {
         "source": "cockpit",
         "missionId": "msn_9012",
-        "mission": "Home Staging masking pass",
-        "project": "home-staging",
+        "mission": "Checkout Redesign masking pass",
+        "project": "checkout-redesign",
         "anchors": [
           {
             "type": "issue",
-            "value": "DNM-4218"
+            "value": "ACM-4218"
           },
           {
             "type": "project",
-            "value": "home-staging"
+            "value": "checkout-redesign"
           }
         ]
       },
@@ -407,7 +407,7 @@
       },
       "app": "com.apple.Notes",
       "appDisplay": "Notes",
-      "title": "Pépithèque — questions partenaire — Notes",
+      "title": "Sideproject — questions partenaire — Notes",
       "metadata": {
         "bundleId": "com.apple.Notes"
       },
@@ -433,8 +433,8 @@
       },
       "app": "com.apple.Terminal",
       "appDisplay": "Terminal",
-      "title": "claude — danim-wt/DNM-4218 — Terminal",
-      "repositoryId": "danim",
+      "title": "claude — acme-wt/ACM-4218 — Terminal",
+      "repositoryId": "acme",
       "metadata": {
         "bundleId": "com.apple.Terminal"
       },
@@ -457,11 +457,11 @@
         "name": "rewind-agent",
         "version": "0.1.0"
       },
-      "repositoryId": "danim",
+      "repositoryId": "acme",
       "metadata": {
         "agent": "claude-code",
         "model": "claude-opus-5",
-        "projectPath": "/Users/jordan/dev/danim-wt/DNM-4218"
+        "projectPath": "/Users/dev/dev/acme-wt/ACM-4218"
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -482,7 +482,7 @@
         "name": "rewind-agent",
         "version": "0.1.0"
       },
-      "repositoryId": "danim",
+      "repositoryId": "acme",
       "metadata": {
         "agent": "claude-code",
         "toolCallCount": 22,
@@ -513,7 +513,7 @@
       },
       "app": "com.acme.cockpit",
       "appDisplay": "Cockpit",
-      "title": "Pépithèque — Cockpit",
+      "title": "Sideproject — Cockpit",
       "metadata": {
         "bundleId": "com.acme.cockpit"
       },
@@ -542,8 +542,8 @@
       "metadata": {
         "source": "cockpit",
         "missionId": "msn_9013",
-        "mission": "Pépithèque catalog import",
-        "project": "pepitheque",
+        "mission": "Sideproject catalog import",
+        "project": "sideproject",
         "anchors": [
           {
             "type": "issue",
@@ -551,7 +551,7 @@
           },
           {
             "type": "project",
-            "value": "pepitheque"
+            "value": "sideproject"
           }
         ]
       },
@@ -577,8 +577,8 @@
       },
       "app": "com.apple.Terminal",
       "appDisplay": "Terminal",
-      "title": "pnpm test staging — danim-wt/DNM-4218 — Terminal",
-      "repositoryId": "danim",
+      "title": "pnpm test staging — acme-wt/ACM-4218 — Terminal",
+      "repositoryId": "acme",
       "metadata": {
         "bundleId": "com.apple.Terminal"
       },
@@ -601,10 +601,10 @@
         "name": "rewind-terminal",
         "version": "0.1.0"
       },
-      "repositoryId": "danim",
+      "repositoryId": "acme",
       "metadata": {
         "commandRedacted": "pnpm test staging",
-        "cwd": "/Users/jordan/dev/danim-wt/DNM-4218",
+        "cwd": "/Users/dev/dev/acme-wt/ACM-4218",
         "exitCode": 0,
         "durationMs": 13800,
         "shell": "zsh"
@@ -642,7 +642,7 @@
         "count": 0
       },
       "importance": 30,
-      "$note": "Project B finally gets its own structured identifier. Before this, only the word \"Pépithèque\" tied its events together."
+      "$note": "Project B finally gets its own structured identifier. Before this, only the word \"Sideproject\" tied its events together."
     },
     {
       "id": "6e9c5b90-5b90-7000-8000-000000000015",
@@ -658,8 +658,8 @@
       },
       "app": "com.apple.Terminal",
       "appDisplay": "Terminal",
-      "title": "claude — pepitheque — Terminal",
-      "repositoryId": "pepitheque",
+      "title": "claude — sideproject — Terminal",
+      "repositoryId": "sideproject",
       "metadata": {
         "bundleId": "com.apple.Terminal"
       },
@@ -682,11 +682,11 @@
         "name": "rewind-agent",
         "version": "0.1.0"
       },
-      "repositoryId": "pepitheque",
+      "repositoryId": "sideproject",
       "metadata": {
         "agent": "claude-code",
         "model": "claude-opus-5",
-        "projectPath": "/Users/jordan/dev/pepitheque"
+        "projectPath": "/Users/dev/dev/sideproject"
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -707,10 +707,10 @@
         "name": "rewind-terminal",
         "version": "0.1.0"
       },
-      "repositoryId": "pepitheque",
+      "repositoryId": "sideproject",
       "metadata": {
         "commandRedacted": "pnpm run import:catalog --dry-run",
-        "cwd": "/Users/jordan/dev/pepitheque",
+        "cwd": "/Users/dev/dev/sideproject",
         "exitCode": 1,
         "durationMs": 6400,
         "shell": "zsh"
@@ -734,10 +734,10 @@
         "name": "rewind-terminal",
         "version": "0.1.0"
       },
-      "repositoryId": "pepitheque",
+      "repositoryId": "sideproject",
       "metadata": {
         "lines": [
-          "401 Unauthorized from partners.pepitheque.fr",
+          "401 Unauthorized from partners.sideproject.fr",
           "partner credentials appear to be missing"
         ],
         "lineCount": 2,
@@ -765,7 +765,7 @@
       },
       "app": "com.tinyspeck.slackmacgap",
       "appDisplay": "Slack",
-      "title": "danim — #product — Home Staging V3 — Slack",
+      "title": "acme — #product — Checkout Redesign V3 — Slack",
       "metadata": {
         "bundleId": "com.tinyspeck.slackmacgap"
       },
@@ -791,7 +791,7 @@
       },
       "app": "com.linear",
       "appDisplay": "Linear",
-      "title": "DNM-4218 Home Staging generation flow — In Review — Linear",
+      "title": "ACM-4218 Checkout Redesign generation flow — In Review — Linear",
       "metadata": {
         "bundleId": "com.linear"
       },
@@ -817,7 +817,7 @@
       },
       "app": "com.apple.mail",
       "appDisplay": "Mail",
-      "title": "Re: Pépithèque — accès API partenaire — Mail",
+      "title": "Re: Sideproject — accès API partenaire — Mail",
       "metadata": {
         "bundleId": "com.apple.mail"
       },
@@ -843,7 +843,7 @@
       },
       "app": "com.apple.Notes",
       "appDisplay": "Notes",
-      "title": "Pépithèque — questions partenaire — Notes",
+      "title": "Sideproject — questions partenaire — Notes",
       "metadata": {
         "bundleId": "com.apple.Notes"
       },
@@ -891,7 +891,7 @@
       },
       "app": "com.acme.cockpit",
       "appDisplay": "Cockpit",
-      "title": "Home Staging — run 2 — Cockpit",
+      "title": "Checkout Redesign — run 2 — Cockpit",
       "metadata": {
         "bundleId": "com.acme.cockpit"
       },
@@ -947,7 +947,7 @@
       },
       "app": "com.figma.Desktop",
       "appDisplay": "Figma",
-      "title": "Home Staging V3 / Masking — Figma",
+      "title": "Checkout Redesign V3 / Masking — Figma",
       "metadata": {
         "bundleId": "com.figma.Desktop"
       },

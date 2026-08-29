@@ -12,7 +12,7 @@
       {
         "tag": "importer",
         "label": "CSV importer",
-        "labelMatches": "(?i)importer|csv|mimiq",
+        "labelMatches": "(?i)importer|csv|dataflow",
         "outcome": "fix_implemented",
         "expectedNextStep": "Push feat/csv-importer",
         "startTimestamp": 1787925600000,
@@ -68,8 +68,8 @@
       },
       "app": "Code",
       "appDisplay": "Code",
-      "title": "importer.ts — mimiq",
-      "repositoryId": "mimiq",
+      "title": "importer.ts — dataflow",
+      "repositoryId": "dataflow",
       "metadata": {},
       "privacyLevel": "normal",
       "redaction": {
@@ -90,9 +90,9 @@
         "name": "rewind-ide",
         "version": "0.1.0"
       },
-      "repositoryId": "mimiq",
+      "repositoryId": "dataflow",
       "metadata": {
-        "workspacePath": "/Users/j/dev/mimiq",
+        "workspacePath": "/Users/dev/dev/dataflow",
         "ideName": "vscode",
         "ideVersion": "1.96.0"
       },
@@ -115,11 +115,11 @@
         "name": "rewind-git",
         "version": "0.1.0"
       },
-      "repositoryId": "mimiq",
+      "repositoryId": "dataflow",
       "metadata": {
         "from": "main",
         "to": "feat/csv-importer",
-        "repository": "mimiq"
+        "repository": "dataflow"
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -140,9 +140,9 @@
         "name": "rewind-ide",
         "version": "0.1.0"
       },
-      "repositoryId": "mimiq",
+      "repositoryId": "dataflow",
       "metadata": {
-        "path": "/Users/j/dev/mimiq/src/importer.ts",
+        "path": "/Users/dev/dev/dataflow/src/importer.ts",
         "language": "typescript",
         "lineCount": 210
       },
@@ -165,12 +165,12 @@
         "name": "rewind-terminal",
         "version": "0.1.0"
       },
-      "repositoryId": "mimiq",
+      "repositoryId": "dataflow",
       "metadata": {
         "commandRedacted": "pnpm test importer",
         "exitCode": 0,
         "durationMs": 8400,
-        "cwd": "/Users/j/dev/mimiq"
+        "cwd": "/Users/dev/dev/dataflow"
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -191,10 +191,10 @@
         "name": "rewind-git",
         "version": "0.1.0"
       },
-      "repositoryId": "mimiq",
+      "repositoryId": "dataflow",
       "metadata": {
         "messageRedacted": "feat: csv importer handles quoted separators",
-        "repository": "mimiq",
+        "repository": "dataflow",
         "branch": "feat/csv-importer",
         "filesChanged": 3,
         "insertions": 88,

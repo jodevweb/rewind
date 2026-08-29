@@ -27,7 +27,7 @@ function twoProjects(branchA: string, branchB: string) {
     defaultRepo: null,
     contexts: {
       A: { label: 'Work in rewind' },
-      B: { label: 'Work in ogamelike' },
+      B: { label: 'Work in beta' },
     },
     steps: [
       {
@@ -37,7 +37,7 @@ function twoProjects(branchA: string, branchB: string) {
         app: 'Claude Code',
         title: 'rewind',
         repo: 'rewind',
-        meta: { gitBranch: branchA, cwd: 'C:/Users/jorda/rewind' },
+        meta: { gitBranch: branchA, cwd: 'C:/Users/dev/rewind' },
         endT: '09:40:00',
       },
       {
@@ -53,9 +53,9 @@ function twoProjects(branchA: string, branchB: string) {
         ctx: 'B',
         type: 'agent.session',
         app: 'Claude Code',
-        title: 'Ashfall post-apocalyptic strategy game',
-        repo: 'ogamelike',
-        meta: { gitBranch: branchB, cwd: 'C:/Users/jorda/ogamelike' },
+        title: 'Moonrise post-apocalyptic strategy game',
+        repo: 'beta',
+        meta: { gitBranch: branchB, cwd: 'C:/Users/dev/beta' },
         endT: '14:40:00',
       },
       {
@@ -63,8 +63,8 @@ function twoProjects(branchA: string, branchB: string) {
         ctx: 'B',
         type: 'system.window.focus',
         app: 'WindowsTerminal',
-        title: 'ogamelike',
-        repo: 'ogamelike',
+        title: 'beta',
+        repo: 'beta',
       },
     ],
   });
@@ -112,7 +112,7 @@ describe('titles REWIND writes itself', () => {
   const summary = {
     ref: 'e1',
     type: 'git.status.summary',
-    title: '16 fichier(s) non commités · ogamelike',
+    title: '16 fichier(s) non commités · beta',
   } as unknown as Parameters<typeof offersASubject>[0];
 
   const commit = {
@@ -123,7 +123,7 @@ describe('titles REWIND writes itself', () => {
 
   it('does not let our own bookkeeping name the work', () => {
     // `git.status.summary` is emitted every time the count changes, so across a day it is the
-    // phrase a context repeats most. A real project came back called "CommitéS Ogamelike".
+    // phrase a context repeats most. A real project came back called "CommitéS Beta".
     expect(offersASubject(summary)).toBe(false);
   });
 

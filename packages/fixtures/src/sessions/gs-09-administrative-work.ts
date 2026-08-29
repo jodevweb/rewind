@@ -13,7 +13,7 @@ const s: Step[] = [
     ctx: 'billing',
     app: 'com.apple.mail',
     type: 'system.window.focus',
-    title: 'Facture août — Danim — Mail',
+    title: 'Facture août — Acme — Mail',
     endT: '17:09:40',
     privacyLevel: 'sensitive',
     important: true,
@@ -25,9 +25,9 @@ const s: Step[] = [
     ctx: 'billing',
     app: 'com.apple.mail',
     type: 'system.window.title_changed',
-    title: 'Facture août — Danim — pièce jointe — Mail',
+    title: 'Facture août — Acme — pièce jointe — Mail',
     privacyLevel: 'sensitive',
-    meta: { previousTitle: 'Facture août — Danim — Mail' },
+    meta: { previousTitle: 'Facture août — Acme — Mail' },
   },
 
   {
@@ -38,7 +38,7 @@ const s: Step[] = [
     title: 'Téléchargements — Finder',
     endT: '17:12:20',
     important: true,
-    meta: { bundleId: 'com.apple.finder', directory: '/Users/jordan/Downloads' },
+    meta: { bundleId: 'com.apple.finder', directory: '/Users/dev/Downloads' },
   },
   {
     t: '17:10:40',
@@ -48,7 +48,7 @@ const s: Step[] = [
     title: 'Comptabilité — Finder',
     meta: {
       previousTitle: 'Téléchargements — Finder',
-      directory: '/Users/jordan/Documents/Comptabilité',
+      directory: '/Users/dev/Documents/Comptabilité',
     },
     note: 'Finder directory, not a filesystem scan. Metadata the window already exposes.',
   },
@@ -58,7 +58,7 @@ const s: Step[] = [
     app: 'com.apple.finder',
     type: 'fs.file.created',
     important: true,
-    meta: { path: '/Users/jordan/Documents/Comptabilité/facture-aout.pdf', extension: '.pdf' },
+    meta: { path: '/Users/dev/Documents/Comptabilité/facture-aout.pdf', extension: '.pdf' },
     note: 'An authorised, user-chosen folder — never an arbitrary scan.',
   },
 
@@ -138,7 +138,7 @@ const s: Step[] = [
     ctx: 'billing',
     app: 'com.apple.mail',
     type: 'system.window.focus',
-    title: 'Facture août — Danim — envoyé — Mail',
+    title: 'Facture août — Acme — envoyé — Mail',
     endT: '17:38:00',
     privacyLevel: 'sensitive',
     important: true,
@@ -151,7 +151,7 @@ const s: Step[] = [
     type: 'system.window.focus',
     title: 'Comptabilité — Finder',
     endT: '17:41:20',
-    meta: { bundleId: 'com.apple.finder', directory: '/Users/jordan/Documents/Comptabilité' },
+    meta: { bundleId: 'com.apple.finder', directory: '/Users/dev/Documents/Comptabilité' },
   },
   {
     t: '17:40:10',
@@ -159,8 +159,8 @@ const s: Step[] = [
     app: 'com.apple.finder',
     type: 'fs.file.renamed',
     meta: {
-      fromPath: '/Users/jordan/Documents/Comptabilité/facture-aout.pdf',
-      toPath: '/Users/jordan/Documents/Comptabilité/2026-08-facture-danim.pdf',
+      fromPath: '/Users/dev/Documents/Comptabilité/facture-aout.pdf',
+      toPath: '/Users/dev/Documents/Comptabilité/2026-08-facture-acme.pdf',
     },
   },
 ];

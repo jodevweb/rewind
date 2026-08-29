@@ -11,8 +11,8 @@
     "contexts": [
       {
         "tag": "checkout",
-        "label": "Checkout rounding bug (DNM-4102)",
-        "labelMatches": "(?i)checkout|rounding|DNM-4102|total",
+        "label": "Checkout rounding bug (ACM-4102)",
+        "labelMatches": "(?i)checkout|rounding|ACM-4102|total",
         "outcome": "blocked",
         "expectedNextStep": "Pin the locale in the e2e setup — CI runs en_US and formats currency differently",
         "startTimestamp": 1774252920000,
@@ -214,7 +214,7 @@
       },
       "app": "chrome.exe",
       "appDisplay": "Google Chrome",
-      "title": "DNM-4102 Checkout total off by one cent — Linear",
+      "title": "ACM-4102 Checkout total off by one cent — Linear",
       "metadata": {},
       "privacyLevel": "normal",
       "redaction": {
@@ -237,10 +237,10 @@
       },
       "app": "chrome.exe",
       "appDisplay": "Google Chrome",
-      "title": "DNM-4102 Checkout total off by one cent — Linear",
+      "title": "ACM-4102 Checkout total off by one cent — Linear",
       "metadata": {
         "tabId": 101,
-        "url": "https://linear.app/acme/issue/DNM-4102",
+        "url": "https://linear.app/acme/issue/ACM-4102",
         "host": "linear.app",
         "transition": "typed",
         "incognito": false
@@ -266,10 +266,10 @@
       },
       "app": "chrome.exe",
       "appDisplay": "Google Chrome",
-      "title": "DNM-4102 — attachments — Linear",
+      "title": "ACM-4102 — attachments — Linear",
       "metadata": {
         "tabId": 101,
-        "url": "https://linear.app/acme/issue/DNM-4102",
+        "url": "https://linear.app/acme/issue/ACM-4102",
         "host": "linear.app",
         "transition": "link",
         "incognito": false
@@ -371,7 +371,7 @@
       "repositoryId": "myapp",
       "metadata": {
         "from": "main",
-        "to": "fix/DNM-4102-checkout-rounding",
+        "to": "fix/ACM-4102-checkout-rounding",
         "isNewBranch": true
       },
       "privacyLevel": "normal",
@@ -1000,7 +1000,7 @@
       },
       "app": "chrome.exe",
       "appDisplay": "Google Chrome",
-      "title": "Add server-side pagination to the members table by nadia · Pull Request #914 · acme/dashboard",
+      "title": "Add server-side pagination to the members table by robin · Pull Request #914 · acme/dashboard",
       "repositoryId": "dashboard",
       "metadata": {},
       "privacyLevel": "normal",
@@ -1024,7 +1024,7 @@
       },
       "app": "chrome.exe",
       "appDisplay": "Google Chrome",
-      "title": "Add server-side pagination to the members table by nadia · Pull Request #914 · acme/dashboard",
+      "title": "Add server-side pagination to the members table by robin · Pull Request #914 · acme/dashboard",
       "repositoryId": "dashboard",
       "metadata": {
         "tabId": 111,
@@ -1217,7 +1217,7 @@
       "repositoryId": "dashboard",
       "metadata": {
         "from": "main",
-        "to": "nadia/members-pagination",
+        "to": "robin/members-pagination",
         "isNewBranch": false
       },
       "privacyLevel": "normal",
@@ -1398,7 +1398,7 @@
       },
       "repositoryId": "dashboard",
       "metadata": {
-        "text": "Approved #914 but asked nadia to add a keyset cursor test for the empty-page case."
+        "text": "Approved #914 but asked robin to add a keyset cursor test for the empty-page case."
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -2048,7 +2048,7 @@
       },
       "repositoryId": "myapp",
       "metadata": {
-        "branch": "fix/DNM-4102-checkout-rounding",
+        "branch": "fix/ACM-4102-checkout-rounding",
         "dirtyFiles": 3,
         "ahead": 0,
         "behind": 0
@@ -2254,7 +2254,7 @@
       "repositoryId": "myapp",
       "metadata": {
         "sha": "d52f8b1c9a3e7d4f6b2c8a0e5d1f3b7c9a2e4d6f",
-        "messageRedacted": "fix(checkout): compute totals in minor units to avoid float rounding (DNM-4102)",
+        "messageRedacted": "fix(checkout): compute totals in minor units to avoid float rounding (ACM-4102)",
         "filesChanged": [
           "src/money/decimal.ts",
           "src/checkout/total.ts",
@@ -2286,7 +2286,7 @@
       },
       "repositoryId": "myapp",
       "metadata": {
-        "commandRedacted": "git push -u origin fix/DNM-4102-checkout-rounding",
+        "commandRedacted": "git push -u origin fix/ACM-4102-checkout-rounding",
         "cwd": "C:/dev/myapp",
         "exitCode": 0,
         "durationMs": 2600,
@@ -2399,7 +2399,7 @@
       },
       "app": "slack.exe",
       "appDisplay": "Slack",
-      "title": "acme — nadia — Slack",
+      "title": "acme — robin — Slack",
       "metadata": {},
       "privacyLevel": "sensitive",
       "redaction": {
@@ -3082,7 +3082,7 @@
       },
       "repositoryId": "myapp",
       "metadata": {
-        "branch": "fix/DNM-4102-checkout-rounding",
+        "branch": "fix/ACM-4102-checkout-rounding",
         "dirtyFiles": 1,
         "ahead": 1,
         "behind": 0

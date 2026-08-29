@@ -688,7 +688,7 @@ rebasing 20 commits does not produce 20 spurious "new work" events.
 configurable patterns (`[A-Z]{2,10}-\d+`, `#\d+`); normalise to a canonical key.
 **Files.** `crates/rewind-collect/src/enrich/ticket.rs`
 **Dependencies.** P5-002, P3-003.
-**Acceptance.** `DNM-3921` in a branch, a commit and a Linear URL all normalise to one key.
+**Acceptance.** `ACM-3921` in a branch, a commit and a Linear URL all normalise to one key.
 **Tests.** Unit tests across formats and false positives (e.g. `UTF-8`, `HTTP-2`).
 **Risks.** False positives merging unrelated contexts — a denylist plus a minimum-digit rule.
 

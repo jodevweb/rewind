@@ -200,7 +200,7 @@ evaluated against golden fixtures without launching the GUI (INITIAL_ANALYSIS §
 both platforms, and what Level 1 observation keys on.
 
 **macOS blocker B-1:** window titles require the Accessibility (TCC) permission. Without titles, Level
-1 observation is worthless — "Figma" carries no context, "Figma — Home Staging V3" carries all of it.
+1 observation is worthless — "Figma" carries no context, "Figma — Checkout Redesign V3" carries all of it.
 The alternative route, `CGWindowListCopyWindowInfo`, needs Screen Recording permission, which is the
 wrong thing to ask for a product that promises no screenshots. So: Accessibility, requested explicitly
 in onboarding, and a hard dependency of the whole design.

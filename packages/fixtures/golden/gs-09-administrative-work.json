@@ -63,7 +63,7 @@
       },
       "app": "com.apple.mail",
       "appDisplay": "Mail",
-      "title": "Facture août — Danim — Mail",
+      "title": "Facture août — Acme — Mail",
       "metadata": {
         "bundleId": "com.apple.mail"
       },
@@ -89,9 +89,9 @@
       },
       "app": "com.apple.mail",
       "appDisplay": "Mail",
-      "title": "Facture août — Danim — pièce jointe — Mail",
+      "title": "Facture août — Acme — pièce jointe — Mail",
       "metadata": {
-        "previousTitle": "Facture août — Danim — Mail"
+        "previousTitle": "Facture août — Acme — Mail"
       },
       "privacyLevel": "sensitive",
       "redaction": {
@@ -118,7 +118,7 @@
       "title": "Téléchargements — Finder",
       "metadata": {
         "bundleId": "com.apple.finder",
-        "directory": "/Users/jordan/Downloads"
+        "directory": "/Users/dev/Downloads"
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -144,7 +144,7 @@
       "title": "Comptabilité — Finder",
       "metadata": {
         "previousTitle": "Téléchargements — Finder",
-        "directory": "/Users/jordan/Documents/Comptabilité"
+        "directory": "/Users/dev/Documents/Comptabilité"
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -169,7 +169,7 @@
       "app": "com.apple.finder",
       "appDisplay": "Finder",
       "metadata": {
-        "path": "/Users/jordan/Documents/Comptabilité/facture-aout.pdf",
+        "path": "/Users/dev/Documents/Comptabilité/facture-aout.pdf",
         "extension": ".pdf"
       },
       "privacyLevel": "normal",
@@ -353,7 +353,7 @@
       },
       "app": "com.apple.mail",
       "appDisplay": "Mail",
-      "title": "Facture août — Danim — envoyé — Mail",
+      "title": "Facture août — Acme — envoyé — Mail",
       "metadata": {
         "bundleId": "com.apple.mail"
       },
@@ -382,7 +382,7 @@
       "title": "Comptabilité — Finder",
       "metadata": {
         "bundleId": "com.apple.finder",
-        "directory": "/Users/jordan/Documents/Comptabilité"
+        "directory": "/Users/dev/Documents/Comptabilité"
       },
       "privacyLevel": "normal",
       "redaction": {
@@ -406,8 +406,8 @@
       "app": "com.apple.finder",
       "appDisplay": "Finder",
       "metadata": {
-        "fromPath": "/Users/jordan/Documents/Comptabilité/facture-aout.pdf",
-        "toPath": "/Users/jordan/Documents/Comptabilité/2026-08-facture-danim.pdf"
+        "fromPath": "/Users/dev/Documents/Comptabilité/facture-aout.pdf",
+        "toPath": "/Users/dev/Documents/Comptabilité/2026-08-facture-acme.pdf"
       },
       "privacyLevel": "normal",
       "redaction": {

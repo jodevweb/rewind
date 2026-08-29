@@ -470,7 +470,7 @@ mod tests {
         assert_eq!(entry.action, "commit (initial): premier jet");
         // The author's name and email are in the line and must not be in the result.
         assert!(!entry.action.contains("example.com"));
-        assert!(!entry.sha.contains("Jordan"));
+        assert!(!entry.sha.contains("Marie"));
     }
 
     #[test]

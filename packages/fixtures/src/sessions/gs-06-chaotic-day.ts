@@ -14,7 +14,7 @@ const s: Step[] = [
     ctx: 'checkout',
     type: 'system.window.focus',
     app: 'chrome.exe',
-    title: 'DNM-4102 Checkout total off by one cent — Linear',
+    title: 'ACM-4102 Checkout total off by one cent — Linear',
     endT: '09:06:00',
     repo: null,
   },
@@ -23,12 +23,12 @@ const s: Step[] = [
     ctx: 'checkout',
     type: 'browser.navigation',
     app: 'chrome.exe',
-    title: 'DNM-4102 Checkout total off by one cent — Linear',
+    title: 'ACM-4102 Checkout total off by one cent — Linear',
     important: true,
     repo: null,
     meta: {
       tabId: 101,
-      url: 'https://linear.app/acme/issue/DNM-4102',
+      url: 'https://linear.app/acme/issue/ACM-4102',
       host: 'linear.app',
       transition: 'typed',
       incognito: false,
@@ -39,11 +39,11 @@ const s: Step[] = [
     ctx: 'checkout',
     type: 'browser.navigation',
     app: 'chrome.exe',
-    title: 'DNM-4102 — attachments — Linear',
+    title: 'ACM-4102 — attachments — Linear',
     repo: null,
     meta: {
       tabId: 101,
-      url: 'https://linear.app/acme/issue/DNM-4102',
+      url: 'https://linear.app/acme/issue/ACM-4102',
       host: 'linear.app',
       transition: 'link',
       incognito: false,
@@ -79,7 +79,7 @@ const s: Step[] = [
     ctx: 'checkout',
     type: 'git.branch.checkout',
     important: true,
-    meta: { from: 'main', to: 'fix/DNM-4102-checkout-rounding', isNewBranch: true },
+    meta: { from: 'main', to: 'fix/ACM-4102-checkout-rounding', isNewBranch: true },
   },
   {
     t: '09:07:20',
@@ -333,7 +333,7 @@ const s: Step[] = [
     type: 'system.window.focus',
     app: 'chrome.exe',
     title:
-      'Add server-side pagination to the members table by nadia · Pull Request #914 · acme/dashboard',
+      'Add server-side pagination to the members table by robin · Pull Request #914 · acme/dashboard',
     endT: '10:29:00',
     repo: 'dashboard',
   },
@@ -343,7 +343,7 @@ const s: Step[] = [
     type: 'browser.navigation',
     app: 'chrome.exe',
     title:
-      'Add server-side pagination to the members table by nadia · Pull Request #914 · acme/dashboard',
+      'Add server-side pagination to the members table by robin · Pull Request #914 · acme/dashboard',
     important: true,
     repo: 'dashboard',
     meta: {
@@ -432,7 +432,7 @@ const s: Step[] = [
     type: 'git.branch.checkout',
     important: true,
     repo: 'dashboard',
-    meta: { from: 'main', to: 'nadia/members-pagination', isNewBranch: false },
+    meta: { from: 'main', to: 'robin/members-pagination', isNewBranch: false },
   },
   {
     t: '10:31:20',
@@ -514,7 +514,7 @@ const s: Step[] = [
     important: true,
     repo: 'dashboard',
     meta: {
-      text: 'Approved #914 but asked nadia to add a keyset cursor test for the empty-page case.',
+      text: 'Approved #914 but asked robin to add a keyset cursor test for the empty-page case.',
     },
   },
   {
@@ -779,7 +779,7 @@ const s: Step[] = [
     t: '13:22:40',
     ctx: 'checkout',
     type: 'git.status.summary',
-    meta: { branch: 'fix/DNM-4102-checkout-rounding', dirtyFiles: 3, ahead: 0, behind: 0 },
+    meta: { branch: 'fix/ACM-4102-checkout-rounding', dirtyFiles: 3, ahead: 0, behind: 0 },
   },
   {
     t: '13:23:20',
@@ -854,7 +854,7 @@ const s: Step[] = [
     meta: {
       sha: 'd52f8b1c9a3e7d4f6b2c8a0e5d1f3b7c9a2e4d6f',
       messageRedacted:
-        'fix(checkout): compute totals in minor units to avoid float rounding (DNM-4102)',
+        'fix(checkout): compute totals in minor units to avoid float rounding (ACM-4102)',
       filesChanged: [
         'src/money/decimal.ts',
         'src/checkout/total.ts',
@@ -871,7 +871,7 @@ const s: Step[] = [
     ctx: 'checkout',
     type: 'terminal.command',
     meta: {
-      commandRedacted: 'git push -u origin fix/DNM-4102-checkout-rounding',
+      commandRedacted: 'git push -u origin fix/ACM-4102-checkout-rounding',
       cwd: 'C:/dev/myapp',
       exitCode: 0,
       durationMs: 2600,
@@ -922,7 +922,7 @@ const s: Step[] = [
     ctx: null,
     type: 'system.window.focus',
     app: 'slack.exe',
-    title: 'acme — nadia — Slack',
+    title: 'acme — robin — Slack',
     endT: '14:44:20',
     repo: null,
     privacyLevel: 'sensitive',
@@ -1222,7 +1222,7 @@ const s: Step[] = [
     ctx: 'checkout',
     type: 'git.status.summary',
     important: true,
-    meta: { branch: 'fix/DNM-4102-checkout-rounding', dirtyFiles: 1, ahead: 1, behind: 0 },
+    meta: { branch: 'fix/ACM-4102-checkout-rounding', dirtyFiles: 1, ahead: 1, behind: 0 },
   },
   { t: '16:36:00', ctx: null, type: 'system.idle.start', repo: null, meta: { idleSeconds: 0 } },
   { t: '17:12:00', ctx: null, type: 'system.session.lock', repo: null, meta: {} },
@@ -1240,8 +1240,8 @@ export const gs06 = buildSession({
   defaultRepo: 'myapp',
   contexts: {
     checkout: {
-      label: 'Checkout rounding bug (DNM-4102)',
-      labelMatches: '(?i)checkout|rounding|DNM-4102|total',
+      label: 'Checkout rounding bug (ACM-4102)',
+      labelMatches: '(?i)checkout|rounding|ACM-4102|total',
       outcome: 'blocked',
       expectedNextStep:
         'Pin the locale in the e2e setup — CI runs en_US and formats currency differently',

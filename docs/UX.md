@@ -45,7 +45,7 @@ Good morning.
     12 files · 4 pages · 8 commands · 1 commit
     Left off: pnpm test stripe — 2 tests failing
 
-  ● Home Staging V2                        2h 16m        Resume →
+  ● Checkout Redesign V2                        2h 16m        Resume →
     6 files · 1 commit · PR #481 opened
 
   ● Code review                               48m

@@ -170,7 +170,7 @@ describe('ask, over a real golden session', () => {
     expect(answer.refusal).toBeNull();
     expect(answer.contextId).not.toBeNull();
     const named = answer.rollup.find((r) => r.contextId === answer.contextId)!;
-    expect(named.label).toMatch(/stripe|renewal|DNM-3921/i);
+    expect(named.label).toMatch(/stripe|renewal|ACM-3921/i);
   });
 
   it('rolls a window up by context when the question is only about time', () => {

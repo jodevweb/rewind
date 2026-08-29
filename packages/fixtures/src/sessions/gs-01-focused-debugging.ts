@@ -37,7 +37,7 @@ const s: Step[] = [
     ctx: 'stripe',
     type: 'system.window.focus',
     app: 'chrome.exe',
-    title: 'DNM-3921 Subscription renewal charges twice — Linear',
+    title: 'ACM-3921 Subscription renewal charges twice — Linear',
     endT: '09:03:10',
   },
   {
@@ -45,11 +45,11 @@ const s: Step[] = [
     ctx: 'stripe',
     type: 'browser.tab.activated',
     app: 'chrome.exe',
-    title: 'DNM-3921 Subscription renewal charges twice — Linear',
+    title: 'ACM-3921 Subscription renewal charges twice — Linear',
     important: true,
     meta: {
       tabId: 41,
-      url: 'https://linear.app/acme/issue/DNM-3921',
+      url: 'https://linear.app/acme/issue/ACM-3921',
       host: 'linear.app',
       incognito: false,
     },
@@ -60,10 +60,10 @@ const s: Step[] = [
     ctx: 'stripe',
     type: 'browser.navigation',
     app: 'chrome.exe',
-    title: 'DNM-3921 — comments — Linear',
+    title: 'ACM-3921 — comments — Linear',
     meta: {
       tabId: 41,
-      url: 'https://linear.app/acme/issue/DNM-3921',
+      url: 'https://linear.app/acme/issue/ACM-3921',
       host: 'linear.app',
       transition: 'link',
       incognito: false,
@@ -83,7 +83,7 @@ const s: Step[] = [
     ctx: 'stripe',
     type: 'git.branch.checkout',
     important: true,
-    meta: { from: 'main', to: 'fix/DNM-3921-stripe-renewal', isNewBranch: true },
+    meta: { from: 'main', to: 'fix/ACM-3921-stripe-renewal', isNewBranch: true },
   },
   {
     t: '09:03:40',
@@ -355,7 +355,7 @@ const s: Step[] = [
     meta: {
       sha: 'a72c91f4e8b3d2a1c5e9f7b6d4a8c2e1f9b3d7a5',
       messageRedacted:
-        'fix(billing): handle invoice.created arriving before subscription.updated (DNM-3921)',
+        'fix(billing): handle invoice.created arriving before subscription.updated (ACM-3921)',
       filesChanged: [
         'src/billing/stripe.webhook.ts',
         'src/billing/billing.service.ts',
@@ -371,7 +371,7 @@ const s: Step[] = [
     ctx: 'stripe',
     type: 'terminal.command',
     meta: {
-      commandRedacted: 'git push -u origin fix/DNM-3921-stripe-renewal',
+      commandRedacted: 'git push -u origin fix/ACM-3921-stripe-renewal',
       cwd: 'C:/dev/myapp',
       exitCode: 0,
       durationMs: 2400,
@@ -448,8 +448,8 @@ export const gs01 = buildSession({
   defaultRepo: 'myapp',
   contexts: {
     stripe: {
-      label: 'Stripe renewal bug (DNM-3921)',
-      labelMatches: '(?i)stripe|renewal|DNM-3921',
+      label: 'Stripe renewal bug (ACM-3921)',
+      labelMatches: '(?i)stripe|renewal|ACM-3921',
       outcome: 'pr_opened',
       expectedNextStep: 'Wait for review on PR #2182',
       note: 'Twelve application switches across 45 minutes, and all of it is one piece of work.',

@@ -62,7 +62,7 @@ deactivation timestamps, and window or document metadata where it is cleanly ava
 
 ```
 app:    Figma
-window: Home Staging V3
+window: Checkout Redesign V3
 ```
 
 That is already exploitable by the Context Engine, and it is the foundation.
@@ -86,8 +86,8 @@ They are replaced by a generic concept:
 ```
 Anchor
   type            issue | project | repository | branch | worktree | document | url | keyword
-  value           "DNM-4218"
-  normalizedValue "dnm-4218"
+  value           "ACM-4218"
+  normalizedValue "acm-4218"
   confidence      0..1
   source          window_title | url | branch | agent | external | note
 ```
@@ -97,10 +97,10 @@ worktrees, Claude sessions and Cockpit events. The same anchor appearing across 
 strongest available grouping signal:
 
 ```
-Linear:       DNM-4218
-Git branch:   fix/DNM-4218-generation
-Cockpit:      DNM-4218
-Browser:      linear.app/.../DNM-4218
+Linear:       ACM-4218
+Git branch:   fix/ACM-4218-generation
+Cockpit:      ACM-4218
+Browser:      linear.app/.../ACM-4218
 → very probably one context
 ```
 
@@ -128,8 +128,8 @@ Per-application durations may exist internally. The interface presents contexts 
 they crossed:
 
 ```
-Home Staging V3    1h47   Slack → Linear → Figma → Cockpit → Claude
-Pépithèque           52m   Browser → Finder → Cockpit → Terminal
+Checkout Redesign V3    1h47   Slack → Linear → Figma → Cockpit → Claude
+Sideproject           52m   Browser → Finder → Cockpit → Terminal
 Team organisation    31m   Slack → Linear → Notes
 ```
 
@@ -227,12 +227,12 @@ fixtures are added alongside them.
 
 ## Open blockers — these need answers before Phase 1 on macOS
 
-| #   | Blocker                            | Why it blocks                                                                                                                                                                                                                                                                                                                                                                     |
-| --- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| B-1 | **Accessibility (TCC) permission** | Window titles on macOS require either the Accessibility API or Screen Recording. Without titles, Level 1 is worthless — "Figma" alone carries no context, "Figma — Home Staging V3" carries all of it. Screen Recording is the wrong ask for a product that promises no screenshots, so Accessibility it is: a TCC prompt in onboarding, and a hard dependency of the whole pivot |
-| B-2 | **Code signing identity**          | TCC grants bind to bundle id + signature. An ad-hoc signed dev build loses its Accessibility grant on rebuild and re-prompts, which makes the daily dev loop painful. Needs a stable signing identity early, and an Apple Developer account for notarisation                                                                                                                      |
-| B-3 | **Where development happens**      | The Mac is the only machine where this can be validated, and the repository currently lives on the Windows machine. A shared remote is needed before Phase 1                                                                                                                                                                                                                      |
-| B-4 | **Which browser**                  | Chrome and Safari are entirely different collector projects — Safari needs a signed app extension bundled in the host app. This changes P1 substantially                                                                                                                                                                                                                          |
-| B-5 | **Is the Mac MDM-managed?**        | A managed device can pre-deny TCC prompts, which would block B-1 outright                                                                                                                                                                                                                                                                                                         |
-| B-6 | **Cockpit emitter ownership**      | REWIND can define the D-17 protocol, but Cockpit has to emit it. Confirmation needed that Cockpit will add the emitter                                                                                                                                                                                                                                                            |
-| B-7 | **Claude Code session access**     | Two routes: parse local session files (rich, undocumented, fragile across versions) or wrap via shell integration (stable, much poorer). D-18 raises the stakes on getting this right                                                                                                                                                                                             |
+| #   | Blocker                            | Why it blocks                                                                                                                                                                                                                                                                                                                                                                          |
+| --- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| B-1 | **Accessibility (TCC) permission** | Window titles on macOS require either the Accessibility API or Screen Recording. Without titles, Level 1 is worthless — "Figma" alone carries no context, "Figma — Checkout Redesign V3" carries all of it. Screen Recording is the wrong ask for a product that promises no screenshots, so Accessibility it is: a TCC prompt in onboarding, and a hard dependency of the whole pivot |
+| B-2 | **Code signing identity**          | TCC grants bind to bundle id + signature. An ad-hoc signed dev build loses its Accessibility grant on rebuild and re-prompts, which makes the daily dev loop painful. Needs a stable signing identity early, and an Apple Developer account for notarisation                                                                                                                           |
+| B-3 | **Where development happens**      | The Mac is the only machine where this can be validated, and the repository currently lives on the Windows machine. A shared remote is needed before Phase 1                                                                                                                                                                                                                           |
+| B-4 | **Which browser**                  | Chrome and Safari are entirely different collector projects — Safari needs a signed app extension bundled in the host app. This changes P1 substantially                                                                                                                                                                                                                               |
+| B-5 | **Is the Mac MDM-managed?**        | A managed device can pre-deny TCC prompts, which would block B-1 outright                                                                                                                                                                                                                                                                                                              |
+| B-6 | **Cockpit emitter ownership**      | REWIND can define the D-17 protocol, but Cockpit has to emit it. Confirmation needed that Cockpit will add the emitter                                                                                                                                                                                                                                                                 |
+| B-7 | **Claude Code session access**     | Two routes: parse local session files (rich, undocumented, fragile across versions) or wrap via shell integration (stable, much poorer). D-18 raises the stakes on getting this right                                                                                                                                                                                                  |

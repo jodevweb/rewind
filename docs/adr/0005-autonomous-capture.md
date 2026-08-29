@@ -12,7 +12,7 @@ Level 1 — application, bundle identifier, window title — is too thin, and th
 concrete example. Opening Slack yields:
 
 ```
-0-pull-requests (canal) - Danim - Slack
+0-pull-requests (canal) - Acme - Slack
 ```
 
 We know a channel was on screen. We do not know a message was written, to whom, or why. As a record

@@ -58,7 +58,7 @@ export function strength(type: AnchorType): 'strong' | 'medium' | 'weak' {
   return 'weak';
 }
 
-/** Lower-case, strip accents, collapse punctuation. "Pépithèque" and "pepitheque" must match. */
+/** Lower-case, strip accents, collapse punctuation. "Sideproject" and "sideproject" must match. */
 export function normalize(value: string): string {
   return value
     .normalize('NFD')
@@ -367,9 +367,9 @@ const COMMIT_TYPE_RE =
 /**
  * Titles REWIND writes itself, which are not evidence of what the work was about.
  *
- * `git.status.summary` reads `16 fichier(s) non commités · ogamelike` and is emitted every time the
+ * `git.status.summary` reads `16 fichier(s) non commités · beta` and is emitted every time the
  * count changes, so across a day it is the phrase the context repeats most — our own bookkeeping,
- * winning the name over the work. A real project came back called "CommitéS Ogamelike".
+ * winning the name over the work. A real project came back called "CommitéS Beta".
  *
  * A commit message is the opposite case and stays: it is written by the person, about the work.
  */
@@ -396,7 +396,7 @@ export function titlePhrases(title: string): string[] {
   for (let i = 0; i < words.length; i += 1) {
     const w = words[i]!;
     if (w.length >= 4) phrases.push(w);
-    // Bigrams matter: "home staging" and "project alpha" are the anchors, not "home" or "alpha".
+    // Bigrams matter: "checkout redesign" and "project alpha" are the anchors, not "home" or "alpha".
     if (i + 1 < words.length) phrases.push(`${w} ${words[i + 1]!}`);
   }
   return phrases;

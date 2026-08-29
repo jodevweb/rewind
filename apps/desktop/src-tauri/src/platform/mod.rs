@@ -63,7 +63,7 @@ pub struct WindowSnapshot {
 
 /// Whether the platform can currently read window titles at all.
 ///
-/// This exists because "Figma" carries no context and "Figma — Home Staging V3" carries all of it.
+/// This exists because "Figma" carries no context and "Figma — Checkout Redesign V3" carries all of it.
 /// A platform that cannot read titles is not broken, but it is much less useful, and the user has to
 /// be told which of the two they are in.
 // Every variant is constructed on some platform and none on all of them: `NotRequired` is Windows,
