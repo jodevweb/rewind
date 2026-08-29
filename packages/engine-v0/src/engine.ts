@@ -514,8 +514,53 @@ export function runEngine(
     c.labelIsFallback = named === null;
     c.confidence = confidenceOf(c);
   }
+  // Active time, measured once the contexts are settled, as the time actually covered rather than
+  // the sum of what covered it. See `coveredMs`.
+  const activityById = new Map(activities.map((a) => [a.id, a]));
+  for (const c of kept) {
+    c.activeMs = coveredMs(
+      c.activityIds.map((id) => activityById.get(id)).filter((a): a is Activity => Boolean(a)),
+    );
+  }
+
   kept.sort((a, b) => b.activeMs - a.activeMs);
   return { activities, contexts: kept, unassigned, anchorsByRef };
+}
+
+/**
+ * How much time a set of activities actually covers.
+ *
+ * The union of their intervals, not the sum of their lengths — and the difference is not academic.
+ * A day of real capture read 31.5 hours of "active time" inside 23.7 hours of wall clock, because
+ * activities overlap: one Claude Code session spanning nine hours sits on top of two hundred window
+ * focus spans, and adding both counts the same afternoon twice.
+ *
+ * Gaps between activities are still never counted, which was the point of summing in the first
+ * place (§69) — a union preserves that exactly and stops the double count as well. A duration that
+ * exceeds the day it is in destroys trust in every other number on the screen.
+ *
+ * The 30-second floor per activity survives: a single instantaneous event is a moment of work, not
+ * zero. It is applied to each interval before the union, so two instants a second apart do not
+ * become a minute.
+ */
+export function coveredMs(activities: Activity[]): number {
+  if (activities.length === 0) return 0;
+  const spans = activities
+    .map((a) => [a.startTimestamp, Math.max(a.endTimestamp, a.startTimestamp + 30_000)] as const)
+    .sort((x, y) => x[0] - y[0]);
+
+  let total = 0;
+  let [start, end] = spans[0]!;
+  for (const [from, to] of spans.slice(1)) {
+    if (from > end) {
+      total += end - start;
+      start = from;
+      end = to;
+    } else if (to > end) {
+      end = to;
+    }
+  }
+  return total + (end - start);
 }
 
 function attach(context: EngineContext, activity: Activity, byRef: Map<string, GoldenEvent>): void {
