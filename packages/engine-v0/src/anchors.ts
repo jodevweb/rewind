@@ -354,9 +354,20 @@ export function extractAnchors(event: GoldenEvent): Anchor[] {
   return out;
 }
 
+/**
+ * `feat(ui): `, `fix: `, `chore(deps): ` — the type of a commit, not its subject.
+ *
+ * A day of commits in one repository repeats its type on every message, so the type is the most
+ * recurrent phrase in the whole context and wins the name: a real project came back called "Feat".
+ * The prefix is a convention about the message, and what the work was about starts after it.
+ */
+const COMMIT_TYPE_RE =
+  /^(?:feat|fix|chore|refactor|docs|test|style|perf|build|ci|revert|wip)(?:\([^)]*\))?!?:\s*/i;
+
 /** Candidate keyword phrases from a window title, once the application name is removed. */
 export function titlePhrases(title: string): string[] {
   const cleaned = stripAppSuffix(title)
+    .replace(COMMIT_TYPE_RE, ' ')
     .replace(ISSUE_RE, ' ')
     .replace(/[|·•/\\()[\]{}#@]/g, ' ')
     .replace(/\s*[—–-]\s*/g, ' ');
