@@ -194,8 +194,24 @@ impl Store {
         // spanning nine hours, which then bracketed every other piece of work in the day. The key
         // gains the burst's start, so a session that stopped at 17:00 and resumed at 00:30 is two
         // events. Rescanning still replaces them rather than accumulating.
+        // The old index is also the marker for "this database predates bursts". A store upgraded
+        // from it holds agent sessions stored as one event from first record to last, and those do
+        // not fix themselves: the reader skips a file whose size has not changed, so a session
+        // finished last week is never read again and stays a nine-hour event for ever.
+        //
+        // Forgetting how far the session files were read forces one full re-read, after which every
+        // stored session is replaced by its bursts. It costs one slow scan, once.
+        let upgrading: bool = conn
+            .prepare(
+                "SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_events_agent_session'",
+            )?
+            .exists([])?;
         conn.execute_batch("DROP INDEX IF EXISTS idx_events_agent_session")
             .ok();
+        if upgrading {
+            conn.execute("DELETE FROM sources WHERE key LIKE '%.jsonl'", [])
+                .ok();
+        }
         conn.execute_batch(
             "CREATE UNIQUE INDEX IF NOT EXISTS idx_events_agent_burst
              ON events(app_id, json_extract(metadata, '$.sessionId'), timestamp)
@@ -450,6 +466,41 @@ mod tests {
         assert_eq!(days[0].day, work_day(next, 60), "newest day first");
         assert_eq!(days[1].count, 2);
         assert_eq!(days[1].first, morning);
+    }
+
+    #[test]
+    fn a_session_can_be_stored_as_several_bursts_and_replaced_whole() {
+        // The old unique index allowed exactly one row per session, which is what made the
+        // nine-hour event impossible to fix. Two bursts of one session must coexist, and a rescan
+        // must replace both rather than accumulate a third.
+        let store = store();
+        let base = 1_773_302_400_000u64;
+        let burst = |ts: u64| Event {
+            timestamp: ts,
+            metadata: r#"{"sessionId":"s-1"}"#.into(),
+            app_id: "claude-code".into(),
+            source: "agent".into(),
+            kind: "agent.session".into(),
+            ..event(ts, "Claude Code")
+        };
+
+        store
+            .replace_agent_session(&[burst(base), burst(base + 8 * 3_600_000)], "s-1")
+            .expect("first write");
+        assert_eq!(store.total().expect("total"), 2);
+
+        // Rescanned as it grew: three bursts now, and still no accumulation.
+        store
+            .replace_agent_session(
+                &[
+                    burst(base),
+                    burst(base + 8 * 3_600_000),
+                    burst(base + 9 * 3_600_000),
+                ],
+                "s-1",
+            )
+            .expect("rescan");
+        assert_eq!(store.total().expect("total"), 3);
     }
 
     #[test]
