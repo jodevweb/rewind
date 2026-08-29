@@ -13,6 +13,7 @@
 import { buildSession } from '@rewind/fixtures/authoring';
 import { describe, expect, it } from 'vitest';
 
+import { offersASubject, titlePhrases } from './anchors.js';
 import { runEngine } from './engine.js';
 
 function twoProjects(branchA: string, branchB: string) {
@@ -77,5 +78,56 @@ describe('the branch anchor', () => {
 
   it('does not merge two repositories that both report a detached head', () => {
     expect(runEngine(twoProjects('HEAD', 'HEAD')).contexts.length).toBe(2);
+  });
+});
+
+describe('the phrases a title offers as a subject', () => {
+  /**
+   * `feat(ui): `, `fix: `, `chore(deps): ` — a convention about the message, not what the work was
+   * about. The scope changes with every commit, so across a day of commits the type is the one
+   * phrase they all share: the most recurrent candidate, and the least informative. A real project
+   * came back named "Feat".
+   */
+  it('does not offer the type of a conventional commit', () => {
+    const phrases = titlePhrases('feat(faction): what none of you could pay for alone');
+    expect(phrases).not.toContain('feat');
+    expect(phrases).not.toContain('feat faction');
+  });
+
+  it('leaves the message the prefix was attached to untouched', () => {
+    // The control. Stripping the prefix must take the prefix and nothing else with it.
+    expect(titlePhrases('feat(faction): what none of you could pay for alone')).toEqual(
+      titlePhrases('what none of you could pay for alone'),
+    );
+  });
+
+  it('does not strip a word that merely starts a sentence', () => {
+    // `fix` is also an ordinary word. Only the prefix form — type, optional scope, colon — goes.
+    expect(titlePhrases('fix the sweeper before it leaves')).toContain('sweeper');
+    expect(titlePhrases('feature flags for the faction system')).toContain('flags');
+  });
+});
+
+describe('titles REWIND writes itself', () => {
+  const summary = {
+    ref: 'e1',
+    type: 'git.status.summary',
+    title: '16 fichier(s) non commités · ogamelike',
+  } as unknown as Parameters<typeof offersASubject>[0];
+
+  const commit = {
+    ref: 'e2',
+    type: 'git.commit',
+    title: 'the sweeper can leave the web process',
+  } as unknown as Parameters<typeof offersASubject>[0];
+
+  it('does not let our own bookkeeping name the work', () => {
+    // `git.status.summary` is emitted every time the count changes, so across a day it is the
+    // phrase a context repeats most. A real project came back called "CommitéS Ogamelike".
+    expect(offersASubject(summary)).toBe(false);
+  });
+
+  it('keeps a commit message, which is written by the person about the work', () => {
+    expect(offersASubject(commit)).toBe(true);
   });
 });
