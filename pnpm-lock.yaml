@@ -161,6 +161,9 @@ importers:
       '@rewind/config':
         specifier: workspace:*
         version: link:../config
+      vitest:
+        specifier: ^2.1.9
+        version: 2.1.9(@types/node@22.20.1)
 
   packages/eval:
     dependencies:
