@@ -5,7 +5,7 @@
  * single `latest.json` the Tauri updater reads. It runs after every platform has finished, because a
  * manifest naming only one of them would tell the other machine there is no update.
  *
- *   node scripts/build-latest-json.mjs 0.2.0 jodevweb/rewind-dist
+ *   node scripts/build-latest-json.mjs 0.2.0 jodevweb/rewind
  */
 
 import { readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
