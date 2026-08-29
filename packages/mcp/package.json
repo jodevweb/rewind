@@ -12,7 +12,8 @@
   "scripts": {
     "start": "tsx src/main.ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "hook": "tsx src/hook.ts"
   },
   "dependencies": {
     "@rewind/ask": "workspace:*",

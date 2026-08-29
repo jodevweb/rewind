@@ -15,7 +15,15 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { DatabaseSync, Store } from './db.js';
 import { respond } from './server.js';
-import { askText, dayText, daysText, resumeText, standupText } from './tools.js';
+import {
+  askText,
+  dayText,
+  daysText,
+  NOTHING,
+  resumeText,
+  resumeTextForProject,
+  standupText,
+} from './tools.js';
 
 const SCHEMA = `
   CREATE TABLE events (
@@ -155,6 +163,24 @@ describe('what an agent gets back', () => {
     expect(text).toContain('REWIND');
   });
 
+  it('answers for the project a session starts in, and only that one', () => {
+    // What the SessionStart hook hands a new agent. Two agents side by side in two repositories
+    // is an ordinary day here, and a card confidently describing the other one is worse than no
+    // card: the reader has no way to tell it is about somewhere else.
+    const here = resumeTextForProject(store, AT, '/Users/dev/dev/acme-web');
+    expect(here).toContain('acme-web');
+    expect(here).not.toBe(NOTHING);
+
+    expect(resumeTextForProject(store, AT, '/Users/dev/dev/somewhere-else')).toBe(NOTHING);
+  });
+
+  it('does not care which separator or case the directory arrives in', () => {
+    // The hook is handed a path by the host: Windows backslashes here, POSIX on the MacBook, and
+    // the drive letter is capitalised by some callers and not others.
+    const posix = resumeTextForProject(store, AT, '/Users/dev/dev/acme-web');
+    expect(resumeTextForProject(store, AT, '/Users/dev/dev/acme-web/')).toBe(posix);
+    expect(resumeTextForProject(store, AT, '/Users/Dev/Dev/ACME-Web')).toBe(posix);
+  });
   it('a day reads as a worklog and as a standup, from the same events', () => {
     expect(dayText(store, DAY, AT)).toContain('ACME-412');
     expect(
