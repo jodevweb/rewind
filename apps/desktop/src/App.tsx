@@ -14,9 +14,10 @@ import { check as checkForUpdate, type Update } from '@tauri-apps/plugin-updater
 import { relaunch } from '@tauri-apps/plugin-process';
 import { getVersion } from '@tauri-apps/api/app';
 
-import type { GoldenSession } from '@rewind/fixtures/authoring';
 import {
   getLocale,
+  morningBrief,
+  MorningBriefBanner,
   setLocale,
   t,
   tPlural,
@@ -26,6 +27,7 @@ import {
 } from '@rewind/ui';
 import { runEngine } from '@rewind/engine-v0';
 import { workDay } from '@rewind/predict';
+import { toSession, type DaemonEvent } from '@rewind/shared';
 import '@rewind/ui/styles.css';
 
 interface CaptureStatus {
@@ -48,24 +50,6 @@ interface DaySummary {
   last: number;
 }
 
-interface DaemonEvent {
-  timestamp: number;
-  endTimestamp: number | null;
-  tzOffsetMinutes: number;
-  source: string;
-  type: string;
-  appId: string;
-  appDisplay: string;
-  title: string;
-  pid: number | null;
-  /** JSON. Opaque to the daemon, meaningful to the engine — anchors live in here. */
-  metadata: string;
-  redactionVersion: string;
-  redactionApplied: string[];
-  redactionCount: number;
-  importance: number;
-}
-
 const clock = (ms: number) =>
   new Date(ms).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
@@ -75,65 +59,6 @@ const PAUSES = [
   { label: '1 h', minutes: 60 },
   { label: "Jusqu'à reprise", minutes: 0 },
 ];
-
-/**
- * Adapt the daemon's focus events into the session shape the engine consumes.
- *
- * The daemon speaks a narrow struct; the engine speaks the event model. Converting here rather than
- * widening either keeps the daemon small and the engine platform-agnostic — and it is the seam the
- * Rust port replaces, since the engine will eventually consume these events directly.
- */
-function parseMetadata(raw: string): Record<string, unknown> {
-  try {
-    const parsed: unknown = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : {};
-  } catch {
-    return {};
-  }
-}
-
-function toSession(events: DaemonEvent[], id = 'live'): GoldenSession {
-  const ordered = [...events].sort((a, b) => a.timestamp - b.timestamp);
-  // The offset the events were captured at, not the one this machine is in now. A day looked at
-  // from another timezone must read as the day it was, at the hours it happened (TR-8).
-  const tz = ordered[0]?.tzOffsetMinutes ?? -new Date().getTimezoneOffset();
-  return {
-    id,
-    name: 'Aujourd’hui',
-    description: 'Activité capturée sur cette machine.',
-    tests: '',
-    day: new Date().toISOString().slice(0, 10),
-    tzOffsetMinutes: tz,
-    expected: { contextCount: 0, contexts: [], noiseEventRefs: [] },
-    events: ordered.map((e, i) => ({
-      id: `${id}-${i}`,
-      ref: `${id}-${String(i).padStart(5, '0')}`,
-      timestamp: e.timestamp,
-      ...(e.endTimestamp !== null ? { endTimestamp: e.endTimestamp } : {}),
-      tzOffsetMinutes: e.tzOffsetMinutes,
-      source: e.source as 'system',
-      type: e.type,
-      producer: { name: 'rewind-daemon', version: '0.1.0' },
-      app: e.appId,
-      appDisplay: e.appDisplay,
-      title: e.title,
-      metadata: {
-        bundleId: e.appId,
-        ...(e.pid !== null ? { pid: e.pid } : {}),
-        // The daemon keeps the payload opaque; parsing it here is what turns a Claude session into
-        // anchors the engine can group on. A malformed payload must not take the timeline with it.
-        ...parseMetadata(e.metadata),
-      },
-      privacyLevel: 'normal' as const,
-      redaction: {
-        patternsVersion: e.redactionVersion,
-        applied: e.redactionApplied,
-        count: e.redactionCount,
-      },
-      importance: e.importance,
-    })),
-  };
-}
 
 export function App() {
   const [status, setStatus] = useState<CaptureStatus | null>(null);
@@ -247,6 +172,17 @@ export function App() {
 
   const session = useMemo(() => toSession(dayEvents, activeDay), [dayEvents, activeDay]);
   const historySession = useMemo(() => toSession(history, 'history'), [history]);
+
+  /**
+   * Where you left off, shown on a day that has barely started.
+   *
+   * Only on the live day: opening March the 12th to read it is not arriving at work, and a brief
+   * about March the 11th on top of it would be answering a question nobody asked.
+   */
+  const brief = useMemo(
+    () => (isLiveDay ? morningBrief(historySession, today, dayEvents.length) : null),
+    [historySession, today, dayEvents.length, isLiveDay],
+  );
   const contextCount = useMemo(
     () => (session.events.length > 0 ? runEngine(session).contexts.length : 0),
     [session],
@@ -368,6 +304,15 @@ export function App() {
       )}
 
       {error && <div className="banner warn">{error}</div>}
+
+      {brief && (
+        <MorningBriefBanner
+          brief={brief}
+          tz={session.tzOffsetMinutes}
+          actions={actions}
+          onGoToDay={(day) => setPickedDay(day === today ? null : day)}
+        />
+      )}
 
       <DayStrip
         days={days}
