@@ -286,9 +286,21 @@ mod tests {
     #[test]
     fn a_file_from_a_future_version_or_a_torn_write_is_refused() {
         assert_eq!(parse(""), None);
-        assert_eq!(parse("v=2\nts=1\ncmd=ls\n"), None, "an unknown version is not guessed at");
-        assert_eq!(parse("v=1\ncmd=ls\n"), None, "no timestamp, no place in the day");
-        assert_eq!(parse("v=1\nts=1756000000000\ncmd=   \n"), None, "an empty command is not one");
+        assert_eq!(
+            parse("v=2\nts=1\ncmd=ls\n"),
+            None,
+            "an unknown version is not guessed at"
+        );
+        assert_eq!(
+            parse("v=1\ncmd=ls\n"),
+            None,
+            "no timestamp, no place in the day"
+        );
+        assert_eq!(
+            parse("v=1\nts=1756000000000\ncmd=   \n"),
+            None,
+            "an empty command is not one"
+        );
     }
 
     #[test]
