@@ -32,6 +32,7 @@ import {
 
 import { predict, type Predictions } from '@rewind/predict';
 
+import { Ask, type AskHandlers } from './ask.js';
 import { Forecast } from './forecast.js';
 import { formatDuration, t, tPlural } from './i18n.js';
 
@@ -201,118 +202,136 @@ export function Workspace({
     return <div className="empty-state">{emptyMessage}</div>;
   }
 
+  // Answering a question is not a separate screen: it selects a context and a moment in the one
+  // already on screen, so the reader keeps their bearings instead of being teleported into a result
+  // list that has forgotten where they were.
+  const askHandlers: AskHandlers = {
+    onContext: (contextId) => {
+      setSelected(contextId);
+      setInspected(null);
+    },
+    onMoment: (contextId, ref) => {
+      if (contextId) setSelected(contextId);
+      setInspected(ref);
+    },
+    ...(actions?.open ? { onOpen: actions.open } : {}),
+  };
+
   return (
-    <main>
-      <section className="col">
-        <h2 className="col-head">{t('today.title')}</h2>
-        <div className="col-body">
-          <p className="hint">{t('today.hint')}</p>
-          {recent.map((c, i) => (
-            <ContextCard
-              key={c.id}
-              context={c}
-              hue={i}
-              isActive={active?.id === c.id}
-              onSelect={() => setSelected(c.id)}
-            />
-          ))}
-          {recent.length === 0 && <p className="noise">{t('today.none')}</p>}
+    <>
+      <Ask session={session} handlers={askHandlers} {...(now === undefined ? {} : { now })} />
+      <main>
+        <section className="col">
+          <h2 className="col-head">{t('today.title')}</h2>
+          <div className="col-body">
+            <p className="hint">{t('today.hint')}</p>
+            {recent.map((c, i) => (
+              <ContextCard
+                key={c.id}
+                context={c}
+                hue={i}
+                isActive={active?.id === c.id}
+                onSelect={() => setSelected(c.id)}
+              />
+            ))}
+            {recent.length === 0 && <p className="noise">{t('today.none')}</p>}
 
-          {earlier.length > 0 && (
-            <>
-              <button className="disclosure" onClick={() => setShowEarlier((v) => !v)}>
-                {showEarlier ? '▾' : '▸'} {t('today.earlier')} · {earlier.length}
-              </button>
-              {showEarlier &&
-                earlier.map((c, i) => (
-                  <ContextCard
-                    key={c.id}
-                    context={c}
-                    hue={recent.length + i}
-                    isActive={active?.id === c.id}
-                    onSelect={() => setSelected(c.id)}
-                  />
-                ))}
-            </>
-          )}
+            {earlier.length > 0 && (
+              <>
+                <button className="disclosure" onClick={() => setShowEarlier((v) => !v)}>
+                  {showEarlier ? '▾' : '▸'} {t('today.earlier')} · {earlier.length}
+                </button>
+                {showEarlier &&
+                  earlier.map((c, i) => (
+                    <ContextCard
+                      key={c.id}
+                      context={c}
+                      hue={recent.length + i}
+                      isActive={active?.id === c.id}
+                      onSelect={() => setSelected(c.id)}
+                    />
+                  ))}
+              </>
+            )}
 
-          {result.unassigned.length > 0 && (
-            <LoosePanel refs={result.unassigned} byRef={byRef} tz={tz} onInspect={setInspected} />
-          )}
-          {aside}
-        </div>
-      </section>
+            {result.unassigned.length > 0 && (
+              <LoosePanel refs={result.unassigned} byRef={byRef} tz={tz} onInspect={setInspected} />
+            )}
+            {aside}
+          </div>
+        </section>
 
-      <section className="col">
-        <h2 className="col-head">{inspectedEvent ? t('detail.title') : t('resume.title')}</h2>
-        <div className="col-body">
-          {inspectedEvent ? (
-            <EventDetail
-              event={inspectedEvent}
-              tz={tz}
-              actions={actions}
-              onClose={() => setInspected(null)}
-            />
-          ) : resume && active ? (
-            <div className="card resume">
-              <div className="eyebrow">{t('resume.wasWorkingOn')}</div>
-              <h3>{resume.contextLabel}</h3>
-              <div className="submeta">
-                {t('resume.lastActivity')} {clock(resume.lastActiveAt, tz)} ·{' '}
-                <b>{formatDuration(resume.activeMs)}</b> {t('resume.active')}
-              </div>
-              <AppChain apps={resume.appChain} />
-
-              <Rows label={t('resume.files')} lines={resume.working} tz={tz} />
-              <Rows label={t('resume.reading')} lines={resume.reading} tz={tz} />
-              <Rows label={t('resume.ran')} lines={resume.ran} tz={tz} />
-              <Rows label={t('resume.failed')} lines={resume.failures} tz={tz} />
-              <Rows label={t('resume.produced')} lines={resume.produced} tz={tz} />
-
-              {resume.nextStep && (
-                <div className="next">
-                  <div className="eyebrow">{t('resume.nextStep')}</div>
-                  <p>{renderNextStep(resume.nextStep)}</p>
+        <section className="col">
+          <h2 className="col-head">{inspectedEvent ? t('detail.title') : t('resume.title')}</h2>
+          <div className="col-body">
+            {inspectedEvent ? (
+              <EventDetail
+                event={inspectedEvent}
+                tz={tz}
+                actions={actions}
+                onClose={() => setInspected(null)}
+              />
+            ) : resume && active ? (
+              <div className="card resume">
+                <div className="eyebrow">{t('resume.wasWorkingOn')}</div>
+                <h3>{resume.contextLabel}</h3>
+                <div className="submeta">
+                  {t('resume.lastActivity')} {clock(resume.lastActiveAt, tz)} ·{' '}
+                  <b>{formatDuration(resume.activeMs)}</b> {t('resume.active')}
                 </div>
-              )}
-              <p className="footnote">{t('resume.footnote')}</p>
-            </div>
-          ) : (
-            <div className="card empty">{t('resume.none')}</div>
-          )}
+                <AppChain apps={resume.appChain} />
 
-          {!inspectedEvent && active && <Anchors context={active} />}
-          {!inspectedEvent && (
-            <Forecast
-              predictions={predictions}
-              tz={tz}
-              onSelect={(label) => {
-                const match = result.contexts.find((c) => c.label === label);
-                if (match) setSelected(match.id);
-              }}
-            />
-          )}
-        </div>
-      </section>
+                <Rows label={t('resume.files')} lines={resume.working} tz={tz} />
+                <Rows label={t('resume.reading')} lines={resume.reading} tz={tz} />
+                <Rows label={t('resume.ran')} lines={resume.ran} tz={tz} />
+                <Rows label={t('resume.failed')} lines={resume.failures} tz={tz} />
+                <Rows label={t('resume.produced')} lines={resume.produced} tz={tz} />
 
-      <section className="col">
-        <h2 className="col-head">
-          {t('timeline.title')} <span className="col-note">{t('timeline.newestFirst')}</span>
-        </h2>
-        <div className="col-body">
-          {active && (
-            <Timeline
-              context={active}
-              activities={result.activities}
-              byRef={byRef}
-              tz={tz}
-              inspected={inspected}
-              onInspect={setInspected}
-            />
-          )}
-        </div>
-      </section>
-    </main>
+                {resume.nextStep && (
+                  <div className="next">
+                    <div className="eyebrow">{t('resume.nextStep')}</div>
+                    <p>{renderNextStep(resume.nextStep)}</p>
+                  </div>
+                )}
+                <p className="footnote">{t('resume.footnote')}</p>
+              </div>
+            ) : (
+              <div className="card empty">{t('resume.none')}</div>
+            )}
+
+            {!inspectedEvent && active && <Anchors context={active} />}
+            {!inspectedEvent && (
+              <Forecast
+                predictions={predictions}
+                tz={tz}
+                onSelect={(label) => {
+                  const match = result.contexts.find((c) => c.label === label);
+                  if (match) setSelected(match.id);
+                }}
+              />
+            )}
+          </div>
+        </section>
+
+        <section className="col">
+          <h2 className="col-head">
+            {t('timeline.title')} <span className="col-note">{t('timeline.newestFirst')}</span>
+          </h2>
+          <div className="col-body">
+            {active && (
+              <Timeline
+                context={active}
+                activities={result.activities}
+                byRef={byRef}
+                tz={tz}
+                inspected={inspected}
+                onInspect={setInspected}
+              />
+            )}
+          </div>
+        </section>
+      </main>
+    </>
   );
 }
 

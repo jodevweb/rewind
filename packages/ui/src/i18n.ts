@@ -143,9 +143,36 @@ const fr = {
   'openKind.url': 'la page',
   'openKind.workspace': "l'espace de travail",
   'openKind.terminal': 'un terminal',
+
+  'ask.placeholder': 'Pose une question — « où était cette doc ? », « hier après-midi »…',
+  'ask.intent.resume': 'Reprendre',
+  'ask.intent.temporal': 'Période',
+  'ask.intent.retrieval': 'Retrouver',
+  'ask.intent.causal': 'Pourquoi',
+  'ask.intent.summary': 'Résumé',
+  'ask.intent.navigation': 'Aller à',
+  'ask.intent.comparison': 'Comparer',
+  'ask.ambiguous': 'Deux lectures possibles — la plus proche est retenue',
+  'ask.closest': 'Ce qui s’en rapproche le plus',
+  'ask.refusal.no_match': 'Rien de ce qui est enregistré ne correspond à cette question.',
+  'ask.refusal.below_threshold':
+    'Pas assez de preuves pour répondre. Voici ce qui s’en rapproche, sans que ce soit une réponse.',
+  'ask.refusal.insufficient_evidence':
+    'Une seule trace le mentionne. Une cause demande au moins deux sources — REWIND n’en invente pas.',
+  'ask.refusal.empty_window': 'Rien n’a été capturé sur cette période.',
+  'ask.refusal.hint':
+    'Essaie une autre période, ou un fichier, une commande ou une page dont tu te souviens.',
+  'ask.open': 'Ouvrir',
+  'ask.nothing': 'Aucun résultat.',
+  'ask.foot': '↑↓ naviguer · ⏎ aller au moment · ⌘⏎ ouvrir · échap fermer',
+  'ask.examples': 'Par exemple',
+  'ask.example1': 'sur quoi je travaillais ?',
+  'ask.example2': 'où était la doc stripe ?',
+  'ask.example3': 'qu’est-ce que j’ai fait hier après-midi ?',
+  'ask.example4': 'quelle commande a échoué ?',
 } as const;
 
-type Key = keyof typeof fr;
+export type Key = keyof typeof fr;
 
 const en: Record<Key, string> = {
   'app.subtitle': 'Studio',
@@ -273,6 +300,32 @@ const en: Record<Key, string> = {
   'openKind.url': 'the page',
   'openKind.workspace': 'the workspace',
   'openKind.terminal': 'a terminal',
+
+  'ask.placeholder': 'Ask a question — “where was that doc?”, “yesterday afternoon”…',
+  'ask.intent.resume': 'Resume',
+  'ask.intent.temporal': 'Time range',
+  'ask.intent.retrieval': 'Find',
+  'ask.intent.causal': 'Why',
+  'ask.intent.summary': 'Summary',
+  'ask.intent.navigation': 'Go to',
+  'ask.intent.comparison': 'Compare',
+  'ask.ambiguous': 'Two honest readings — the nearer one was taken',
+  'ask.closest': 'The closest it came',
+  'ask.refusal.no_match': 'Nothing that was recorded matches that question.',
+  'ask.refusal.below_threshold':
+    'Not enough evidence to answer that. Here is the closest it came, which is not an answer.',
+  'ask.refusal.insufficient_evidence':
+    'Only one trace mentions it. A cause needs at least two sources — REWIND does not invent one.',
+  'ask.refusal.empty_window': 'Nothing was captured in that window.',
+  'ask.refusal.hint': 'Try a different time range, or a file, a command or a page you remember.',
+  'ask.open': 'Open',
+  'ask.nothing': 'No results.',
+  'ask.foot': '↑↓ move · ⏎ go to that moment · ⌘⏎ open · esc to close',
+  'ask.examples': 'For example',
+  'ask.example1': 'what was I working on?',
+  'ask.example2': 'where was the stripe doc?',
+  'ask.example3': 'what did I do yesterday afternoon?',
+  'ask.example4': 'what command failed?',
 };
 
 const DICTS: Record<Locale, Record<Key, string>> = { fr, en };
