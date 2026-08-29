@@ -402,7 +402,11 @@ mod tests {
 
         let first = work_day(morning, 60);
         let events = store.for_day(&first, 100).expect("for_day");
-        assert_eq!(events.len(), 2, "the small hours belong to the evening before");
+        assert_eq!(
+            events.len(),
+            2,
+            "the small hours belong to the evening before"
+        );
         assert_eq!(events[0].title, "a", "a day reads oldest first");
 
         let days = store.days(10).expect("days");
