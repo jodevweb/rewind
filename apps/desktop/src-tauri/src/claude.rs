@@ -334,7 +334,10 @@ fn events_for(session: &Session, tz: i32) -> Vec<Event> {
             if i == final_burst {
                 let map = metadata.as_object_mut().expect("object");
                 map.insert("models".into(), serde_json::json!(session.models));
-                map.insert("toolCallCount".into(), serde_json::json!(session.tool_calls));
+                map.insert(
+                    "toolCallCount".into(),
+                    serde_json::json!(session.tool_calls),
+                );
                 map.insert("tools".into(), serde_json::json!(tools));
                 map.insert(
                     "filesTouched".into(),
@@ -509,7 +512,12 @@ mod tests {
         let evening = 17 * 60 * MIN;
         let small_hours = evening + 7 * 60 * MIN + 30 * MIN;
         let cut = bursts(
-            &[evening, evening + 10 * MIN, small_hours, small_hours + 5 * MIN],
+            &[
+                evening,
+                evening + 10 * MIN,
+                small_hours,
+                small_hours + 5 * MIN,
+            ],
             BURST_GAP_MS,
         );
         assert_eq!(

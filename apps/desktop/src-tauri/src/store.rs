@@ -248,7 +248,11 @@ impl Store {
     /// Takes every burst of the session at once and swaps the lot. Deleting first and inserting one
     /// burst at a time would leave the session briefly half-stored, and a rescan lands on a session
     /// that is still being written to — so the window matters.
-    pub fn replace_agent_session(&self, events: &[Event], session_id: &str) -> rusqlite::Result<()> {
+    pub fn replace_agent_session(
+        &self,
+        events: &[Event],
+        session_id: &str,
+    ) -> rusqlite::Result<()> {
         let Some(first) = events.first() else {
             return Ok(());
         };

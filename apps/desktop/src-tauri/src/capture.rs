@@ -255,7 +255,9 @@ pub fn spawn(capture: Arc<Capture>) {
                 if let Some((row_id, started)) = open.take() {
                     let stopped = now_ms().saturating_sub(idle_ms).max(started);
                     let ms = stopped.saturating_sub(started);
-                    let _ = capture.store.close_span(row_id, stopped, importance_for(ms));
+                    let _ = capture
+                        .store
+                        .close_span(row_id, stopped, importance_for(ms));
                 }
                 // Coming back is a new event, not a continuation of the one you walked away from.
                 last_key.clear();
