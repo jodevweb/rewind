@@ -10,6 +10,14 @@ import type { GoldenEvent, GoldenSession } from '@rewind/fixtures/authoring';
 
 import { appName, type EngineContext } from './engine.js';
 
+/**
+ * How many things "resume" is allowed to reopen at once.
+ *
+ * A cap, not a preference: a context that touched sixty files must not turn one click into sixty
+ * windows. Ten is about what a person can look at after a weekend away.
+ */
+export const RESUME_OPEN_LIMIT = 10;
+
 export interface ResumeLine {
   label: string;
   detail?: string;
@@ -84,6 +92,27 @@ export function buildResume(session: GoldenSession, context: EngineContext): Res
     bucket.push(line);
   };
 
+  /**
+   * Everything this context can be reopened from, deduplicated by target.
+   *
+   * This used to be filled by three event types the real collectors do not produce yet — a browser
+   * navigation, an IDE workspace and a terminal `cwd` — so on a real day it was empty and "resume"
+   * meant reading a card rather than getting back to work. It now reads the sources that exist:
+   * an agent session knows its project path and the files it touched, and a saved file is a file.
+   */
+  const resources = new Set<string>();
+  const resource = (kind: string, label: string, target: unknown, evidenceRef: string) => {
+    if (typeof target !== 'string') return;
+    const trimmed = target.trim();
+    if (trimmed === '' || resources.has(trimmed)) return;
+    resources.add(trimmed);
+    card.openResources.push({ kind, label, target: trimmed, evidenceRef });
+  };
+
+  /** A file a tool reported relative to its project is only openable once it is absolute again. */
+  const absolute = (file: string, base: string | undefined): string =>
+    file.startsWith('/') || /^[A-Za-z]:/.test(file) || !base ? file : `${base}/${file}`;
+
   let lastFailure: GoldenEvent | undefined;
   let dirtyFiles: { count: number; branch?: string; ref: string } | undefined;
   let lastNote: GoldenEvent | undefined;
@@ -104,6 +133,7 @@ export function buildResume(session: GoldenSession, context: EngineContext): Res
             evidenceRef: e.ref,
             timestamp: e.timestamp,
           });
+          resource('file', leaf, p, e.ref);
         }
         break;
       }
@@ -116,12 +146,7 @@ export function buildResume(session: GoldenSession, context: EngineContext): Res
             evidenceRef: e.ref,
             timestamp: e.timestamp,
           });
-          card.openResources.push({
-            kind: 'url',
-            label: e.title ?? url,
-            target: url,
-            evidenceRef: e.ref,
-          });
+          resource('url', e.title ?? url, url, e.ref);
         }
         break;
       }
@@ -162,11 +187,22 @@ export function buildResume(session: GoldenSession, context: EngineContext): Res
           timestamp: e.timestamp,
           tone: 'success',
         });
+        resource('folder', str(e, 'repository') ?? 'repo', str(e, 'worktree'), e.ref);
         break;
       }
+      case 'git.branch.checkout':
+      case 'git.repo.detected':
+        resource(
+          'folder',
+          str(e, 'repository') ?? 'repo',
+          str(e, 'worktree') ?? str(e, 'path'),
+          e.ref,
+        );
+        break;
       case 'git.status.summary': {
         const dirty = num(e, 'dirtyFiles') ?? 0;
         if (dirty > 0) dirtyFiles = { count: dirty, branch: str(e, 'branch'), ref: e.ref };
+        resource('folder', str(e, 'repository') ?? 'repo', str(e, 'worktree'), e.ref);
         break;
       }
       case 'manual.note': {
@@ -181,6 +217,9 @@ export function buildResume(session: GoldenSession, context: EngineContext): Res
       case 'external.run.finished':
       case 'external.mission.started':
       case 'agent.session.started':
+      // The type the real collector actually writes. It was missing here while the three synthetic
+      // ones were handled, so a day spent in Claude Code produced a Resume card with nothing in it.
+      case 'agent.session':
       case 'agent.activity': {
         lastAgent = e;
         const files = (e.metadata as Record<string, unknown>)['filesTouched'];
@@ -191,19 +230,37 @@ export function buildResume(session: GoldenSession, context: EngineContext): Res
               ? `Cockpit run ${str(e, 'runId') ?? ''} — ${str(e, 'status') ?? ''}`
               : e.type === 'agent.session.started'
                 ? `Claude Code session started`
-                : `Claude Code — ${num(e, 'toolCallCount') ?? 0} tool calls`;
+                : e.type === 'agent.session'
+                  ? (str(e, 'title') ?? e.title ?? 'Claude Code')
+                  : `Claude Code — ${num(e, 'toolCallCount') ?? 0} tool calls`;
         card.produced.push({
           label,
           detail: Array.isArray(files) ? files.map(String).join(', ') : undefined,
           evidenceRef: e.ref,
           timestamp: e.timestamp,
         });
+
+        // An agent session is, in practice, the richest thing to reopen: it knows the project it ran
+        // in and every file it touched. Without this the Resume card of a day spent in Claude Code
+        // had nothing to open at all.
+        const project = str(e, 'projectPath') ?? str(e, 'worktree') ?? str(e, 'cwd');
+        if (project)
+          resource(
+            'workspace',
+            project.split(/[/\\]/).filter(Boolean).pop() ?? project,
+            project,
+            e.ref,
+          );
+        if (Array.isArray(files)) {
+          for (const f of files.slice(0, 8)) {
+            if (typeof f !== 'string' || f.trim() === '') continue;
+            resource('file', f.split(/[/\\]/).pop() ?? f, absolute(f, project), e.ref);
+          }
+        }
         break;
       }
       case 'ide.workspace.opened': {
-        const p = str(e, 'workspacePath');
-        if (p)
-          card.openResources.push({ kind: 'workspace', label: p, target: p, evidenceRef: e.ref });
+        resource('workspace', str(e, 'workspacePath') ?? '', str(e, 'workspacePath'), e.ref);
         break;
       }
       default:
@@ -213,15 +270,7 @@ export function buildResume(session: GoldenSession, context: EngineContext): Res
 
   // Terminal cwd, for "open a terminal here" (§62 — shown, never executed).
   const lastCwd = [...events].reverse().find((e) => str(e, 'cwd'));
-  if (lastCwd) {
-    const cwd = str(lastCwd, 'cwd')!;
-    card.openResources.push({
-      kind: 'terminal',
-      label: cwd,
-      target: cwd,
-      evidenceRef: lastCwd.ref,
-    });
-  }
+  if (lastCwd) resource('terminal', str(lastCwd, 'cwd')!, str(lastCwd, 'cwd'), lastCwd.ref);
 
   // Deterministic next step. First rule that fires wins; if none does, the field is omitted rather
   // than filled with a guess.
@@ -254,5 +303,12 @@ export function buildResume(session: GoldenSession, context: EngineContext): Res
   card.ran = card.ran.slice(-3);
   card.produced = card.produced.slice(-4);
   card.failures = card.failures.slice(-1);
+
+  // Ordered for reopening, not for reading: the place first, then what was open in it. Opening a
+  // file before its workspace lands it in whatever editor claimed the extension, which is how
+  // "resume" turns into ten seconds of closing windows.
+  const rank: Record<string, number> = { workspace: 0, folder: 1, terminal: 2, file: 3, url: 4 };
+  card.openResources.sort((a, b) => (rank[a.kind] ?? 9) - (rank[b.kind] ?? 9));
+  card.openResources = card.openResources.slice(0, RESUME_OPEN_LIMIT);
   return card;
 }

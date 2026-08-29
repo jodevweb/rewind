@@ -11,5 +11,8 @@
   },
   "devDependencies": {
     "@rewind/config": "workspace:*"
+  },
+  "dependencies": {
+    "@rewind/fixtures": "workspace:*"
   }
 }
