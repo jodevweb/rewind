@@ -25,6 +25,7 @@ import {
   type WorkspaceActions,
 } from '@rewind/ui';
 import { runEngine } from '@rewind/engine-v0';
+import { workDay } from '@rewind/predict';
 import '@rewind/ui/styles.css';
 
 interface CaptureStatus {
@@ -37,6 +38,14 @@ interface CaptureStatus {
   /** Where the events actually live. Shown so it is never a mystery (PRIVACY §12). */
   storePath: string;
   diagnostics: string;
+}
+
+/** One work day that has events in it. Counted by the daemon in SQL, never by loading the day. */
+interface DaySummary {
+  day: string;
+  count: number;
+  first: number;
+  last: number;
 }
 
 interface DaemonEvent {
@@ -83,11 +92,13 @@ function parseMetadata(raw: string): Record<string, unknown> {
   }
 }
 
-function toSession(events: DaemonEvent[]): GoldenSession {
-  const tz = -new Date().getTimezoneOffset();
+function toSession(events: DaemonEvent[], id = 'live'): GoldenSession {
   const ordered = [...events].sort((a, b) => a.timestamp - b.timestamp);
+  // The offset the events were captured at, not the one this machine is in now. A day looked at
+  // from another timezone must read as the day it was, at the hours it happened (TR-8).
+  const tz = ordered[0]?.tzOffsetMinutes ?? -new Date().getTimezoneOffset();
   return {
-    id: 'live',
+    id,
     name: 'Aujourd’hui',
     description: 'Activité capturée sur cette machine.',
     tests: '',
@@ -95,11 +106,11 @@ function toSession(events: DaemonEvent[]): GoldenSession {
     tzOffsetMinutes: tz,
     expected: { contextCount: 0, contexts: [], noiseEventRefs: [] },
     events: ordered.map((e, i) => ({
-      id: `live-${i}`,
-      ref: `live-${String(i).padStart(5, '0')}`,
+      id: `${id}-${i}`,
+      ref: `${id}-${String(i).padStart(5, '0')}`,
       timestamp: e.timestamp,
       ...(e.endTimestamp !== null ? { endTimestamp: e.endTimestamp } : {}),
-      tzOffsetMinutes: tz,
+      tzOffsetMinutes: e.tzOffsetMinutes,
       source: e.source as 'system',
       type: e.type,
       producer: { name: 'rewind-daemon', version: '0.1.0' },
@@ -126,7 +137,19 @@ function toSession(events: DaemonEvent[]): GoldenSession {
 
 export function App() {
   const [status, setStatus] = useState<CaptureStatus | null>(null);
-  const [events, setEvents] = useState<DaemonEvent[]>([]);
+  /**
+   * The day on screen, and everything the daemon has.
+   *
+   * Two queries rather than one, because they answer different questions. `dayEvents` is the day
+   * being read and is the only thing the engine sees — handing it a fortnight would let last
+   * Tuesday's anchors compete with this morning's. `history` is the recent stream across days, and
+   * exists for the prediction layer, which counts habits and cannot see one from a single day.
+   */
+  const [dayEvents, setDayEvents] = useState<DaemonEvent[]>([]);
+  const [history, setHistory] = useState<DaemonEvent[]>([]);
+  const [days, setDays] = useState<DaySummary[]>([]);
+  /** `null` means the live day, and keeps following the clock past midnight. */
+  const [pickedDay, setPickedDay] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [, forceRender] = useState(0);
   const [update, setUpdate] = useState<Update | null>(null);
@@ -145,25 +168,45 @@ export function App() {
     | { status: 'error'; reason: string }
   >({ status: 'never' });
 
+  const today = workDay(Date.now(), -new Date().getTimezoneOffset());
+  const activeDay = pickedDay ?? today;
+  const isLiveDay = activeDay === today;
+
   const refresh = useCallback(async () => {
     try {
-      const [s, e] = await Promise.all([
+      const [s, d, e] = await Promise.all([
         invoke<CaptureStatus>('capture_status'),
-        invoke<DaemonEvent[]>('recent_events', { limit: 5000 }),
+        invoke<DaySummary[]>('event_days'),
+        invoke<DaemonEvent[]>('events_for_day', { day: activeDay }),
       ]);
       setStatus(s);
-      setEvents(e);
+      setDays(d);
+      setDayEvents(e);
       setError(null);
     } catch (err) {
       setError(String(err));
     }
-  }, []);
+  }, [activeDay]);
 
   useEffect(() => {
     void refresh();
+    // Only the live day changes while you look at it. A day from last month is finished, and
+    // re-reading it every three seconds is work nobody asked for.
+    if (!isLiveDay) return;
     const timer = setInterval(() => void refresh(), 3000);
     return () => clearInterval(timer);
-  }, [refresh]);
+  }, [refresh, isLiveDay]);
+
+  // History moves on the scale of days, so it is read on the scale of minutes.
+  useEffect(() => {
+    const load = () =>
+      invoke<DaemonEvent[]>('recent_events', { limit: 20000 })
+        .then(setHistory)
+        .catch(() => {});
+    void load();
+    const timer = setInterval(load, 60_000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Offered, never applied on its own: an application that restarts itself while you are working is
   // a worse problem than a stale version.
@@ -202,11 +245,23 @@ export function App() {
     }
   };
 
-  const session = useMemo(() => toSession(events), [events]);
+  const session = useMemo(() => toSession(dayEvents, activeDay), [dayEvents, activeDay]);
+  const historySession = useMemo(() => toSession(history, 'history'), [history]);
   const contextCount = useMemo(
     () => (session.events.length > 0 ? runEngine(session).contexts.length : 0),
     [session],
   );
+
+  /**
+   * The clock the view reasons from.
+   *
+   * On a past day it is that day's last moment, not now. Otherwise every context reads as hours
+   * stale, the drift panel announces that you have moved on from work you finished in March, and
+   * "recently" means nothing on a day that ended six months ago.
+   */
+  const viewClock = isLiveDay
+    ? Date.now()
+    : (days.find((d) => d.day === activeDay)?.last ?? Date.now());
 
   // Opening is what makes the interface an explorer rather than a log. The daemon does the opening:
   // it is the only side that can check the target is a real path or an http(s) URL before handing it
@@ -314,7 +369,22 @@ export function App() {
 
       {error && <div className="banner warn">{error}</div>}
 
-      <Workspace session={session} emptyMessage={t('app.empty')} actions={actions} />
+      <DayStrip
+        days={days}
+        active={activeDay}
+        today={today}
+        onPick={(day) => setPickedDay(day === today ? null : day)}
+      />
+
+      <Workspace
+        session={session}
+        history={historySession}
+        now={viewClock}
+        heading={isLiveDay ? undefined : formatDay(activeDay)}
+        onDay={(day) => setPickedDay(day === today ? null : day)}
+        emptyMessage={t('app.empty')}
+        actions={actions}
+      />
 
       {status && (
         <footer className="diag">
@@ -346,5 +416,61 @@ export function App() {
         </footer>
       )}
     </div>
+  );
+}
+
+/** `2026-03-12` as "jeu. 12 mars", in the reader's language. */
+function formatDay(day: string): string {
+  // Noon, so no timezone can push the label onto the day before or after.
+  const at = new Date(`${day}T12:00:00Z`);
+  return new Intl.DateTimeFormat(getLocale() === 'fr' ? 'fr-FR' : 'en-GB', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    timeZone: 'UTC',
+  }).format(at);
+}
+
+/**
+ * Every day there is something to read, newest first.
+ *
+ * The promise is that you can come back six months later, and until now the application could only
+ * show you the hours it happened to have loaded. The bars are the day's event count against the
+ * busiest day on screen: not a score and not a target — a shape, so a fortnight of work is
+ * navigable by recognising it rather than by reading fourteen dates.
+ */
+function DayStrip({
+  days,
+  active,
+  today,
+  onPick,
+}: {
+  days: DaySummary[];
+  active: string;
+  today: string;
+  onPick: (day: string) => void;
+}) {
+  if (days.length < 2) return null;
+  const peak = Math.max(...days.map((d) => d.count), 1);
+
+  return (
+    <nav className="daystrip">
+      {days.map((d) => (
+        <button
+          key={d.day}
+          className={`day ${d.day === active ? 'on' : ''}`}
+          onClick={() => onPick(d.day)}
+          title={`${d.count} ${t('header.events')}`}
+        >
+          <span className="day-label">{d.day === today ? t('days.today') : formatDay(d.day)}</span>
+          <span className="day-track" aria-hidden>
+            <span
+              className="day-bar"
+              style={{ height: `${Math.max(8, Math.round((d.count / peak) * 100))}%` }}
+            />
+          </span>
+        </button>
+      ))}
+    </nav>
   );
 }

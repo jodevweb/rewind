@@ -152,12 +152,27 @@ export interface WorkspaceActions {
 
 export function Workspace({
   session,
+  history,
+  heading,
+  onDay,
   aside,
   emptyMessage,
   actions,
   now,
 }: {
   session: GoldenSession;
+  /**
+   * Everything the machine has, when that is more than the day on screen.
+   *
+   * The engine only ever sees one day — a fortnight in one call lets last Tuesday's anchors compete
+   * with this morning's. The prediction layer is the opposite: it counts habits, and a habit is
+   * invisible inside a single day. So they read different things, and this is the seam.
+   */
+  history?: GoldenSession;
+  /** Replaces "Today" when the day on screen is not today. */
+  heading?: string;
+  /** Move to another day, when an answer points at one. */
+  onDay?: (day: string) => void;
   aside?: ReactNode;
   emptyMessage?: ReactNode;
   actions?: WorkspaceActions;
@@ -173,8 +188,8 @@ export function Workspace({
 
   const result = useMemo(() => runEngine(session), [session]);
   const predictions: Predictions = useMemo(
-    () => predict(session, now ?? Date.now()),
-    [session, now],
+    () => predict(history ?? session, now ?? Date.now()),
+    [history, session, now],
   );
   const byRef = useMemo(() => new Map(session.events.map((e) => [e.ref, e])), [session]);
   const tz = session.tzOffsetMinutes;
@@ -215,14 +230,19 @@ export function Workspace({
       setInspected(ref);
     },
     ...(actions?.open ? { onOpen: actions.open } : {}),
+    ...(onDay ? { onDay } : {}),
   };
 
   return (
     <>
-      <Ask session={session} handlers={askHandlers} {...(now === undefined ? {} : { now })} />
+      <Ask
+        session={history ?? session}
+        handlers={askHandlers}
+        {...(now === undefined ? {} : { now })}
+      />
       <main>
         <section className="col">
-          <h2 className="col-head">{t('today.title')}</h2>
+          <h2 className="col-head">{heading ?? t('today.title')}</h2>
           <div className="col-body">
             <p className="hint">{t('today.hint')}</p>
             {recent.map((c, i) => (

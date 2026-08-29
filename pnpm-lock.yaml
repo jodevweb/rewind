@@ -50,6 +50,9 @@ importers:
       '@rewind/fixtures':
         specifier: workspace:*
         version: link:../../packages/fixtures
+      '@rewind/predict':
+        specifier: workspace:*
+        version: link:../../packages/predict
       '@rewind/ui':
         specifier: workspace:*
         version: link:../../packages/ui

@@ -170,6 +170,8 @@ const fr = {
   'ask.example2': 'où était la doc stripe ?',
   'ask.example3': 'qu’est-ce que j’ai fait hier après-midi ?',
   'ask.example4': 'quelle commande a échoué ?',
+
+  'days.today': "Aujourd'hui",
 } as const;
 
 export type Key = keyof typeof fr;
@@ -326,6 +328,8 @@ const en: Record<Key, string> = {
   'ask.example2': 'where was the stripe doc?',
   'ask.example3': 'what did I do yesterday afternoon?',
   'ask.example4': 'what command failed?',
+
+  'days.today': 'Today',
 };
 
 const DICTS: Record<Locale, Record<Key, string>> = { fr, en };
