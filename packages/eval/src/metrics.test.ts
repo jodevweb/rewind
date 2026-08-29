@@ -9,7 +9,7 @@ import { describe, expect, it } from 'vitest';
 
 import { loadAllGoldenSessions, loadGoldenSession, type GoldenSession } from '@rewind/fixtures';
 
-import { BASELINES, getPredictor } from './baselines.js';
+import { BASELINES, getPredictor, type Predictor } from './baselines.js';
 import { evaluateSession, summarise, type Prediction } from './metrics.js';
 
 const sessions = loadAllGoldenSessions();
@@ -231,15 +231,34 @@ describe('baselines behave as documented', () => {
     expect(session.events.every((e) => e.repositoryId === undefined)).toBe(true);
   });
 
-  it('no baseline reaches the quality targets — there is real work to do', () => {
+  /**
+   * The benchmark is still hard, and the engine is on the right side of it.
+   *
+   * This test used to assert that *nothing* met the targets, which was true when it was written and
+   * was the honest thing to record then. It stopped being true, and a test that fails because the
+   * product got better is a test that has to be rewritten rather than relaxed.
+   *
+   * The half that still matters is the half about the baselines: if a naive predictor ever clears
+   * these bars, the golden set has stopped discriminating and the numbers above mean nothing.
+   */
+  const meetsTargets = (predictor: Predictor): boolean => {
+    const suite = summarise(sessions.map((s) => evaluateSession(s, predictor.predict(s))));
+    return (
+      suite.meanFalseMergeRate < 0.1 &&
+      suite.meanFalseSplitRate < 0.15 &&
+      suite.meanImportantEventRecall > 0.9
+    );
+  };
+
+  it('no naive baseline reaches the quality targets — the benchmark still discriminates', () => {
     for (const predictor of BASELINES) {
-      if (predictor.id === 'oracle') continue;
-      const suite = summarise(sessions.map((s) => evaluateSession(s, predictor.predict(s))));
-      const meetsTargets =
-        suite.meanFalseMergeRate < 0.1 &&
-        suite.meanFalseSplitRate < 0.15 &&
-        suite.meanImportantEventRecall > 0.9;
-      expect(meetsTargets, `${predictor.id} unexpectedly meets the targets`).toBe(false);
+      if (predictor.id === 'oracle' || predictor.id === 'engine-v0') continue;
+      expect(meetsTargets(predictor), `${predictor.id} unexpectedly meets the targets`).toBe(false);
     }
+  });
+
+  it('the engine meets every quality target (PRODUCT.md §10.2)', () => {
+    const engine = BASELINES.find((p) => p.id === 'engine-v0')!;
+    expect(meetsTargets(engine)).toBe(true);
   });
 });
