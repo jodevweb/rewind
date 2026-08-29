@@ -329,12 +329,21 @@ mod tests {
     }
 
     /// A store of its own, in a temporary directory. A test must never touch the user's database.
+    ///
+    /// The name was built from the process id and the millisecond clock. Cargo runs tests in
+    /// parallel threads of ONE process, so two tests starting in the same millisecond got the same
+    /// path and raced on it — passing or failing depending on timing. A counter removes the
+    /// coincidence entirely, which is better than making the collision rarer.
     fn capture() -> Capture {
+        static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+        let n = NEXT.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+
         let mut path = std::env::temp_dir();
         path.push(format!(
-            "rewind-test-{}-{}.db",
+            "rewind-test-{}-{}-{}.db",
             std::process::id(),
-            now_ms()
+            now_ms(),
+            n
         ));
         Capture::new(Arc::new(Store::open_at(path).expect("store")))
     }
