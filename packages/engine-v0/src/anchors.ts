@@ -364,6 +364,22 @@ export function extractAnchors(event: GoldenEvent): Anchor[] {
 const COMMIT_TYPE_RE =
   /^(?:feat|fix|chore|refactor|docs|test|style|perf|build|ci|revert|wip)(?:\([^)]*\))?!?:\s*/i;
 
+/**
+ * Titles REWIND writes itself, which are not evidence of what the work was about.
+ *
+ * `git.status.summary` reads `16 fichier(s) non commités · beta` and is emitted every time the
+ * count changes, so across a day it is the phrase the context repeats most — our own bookkeeping,
+ * winning the name over the work. A real project came back called "CommitéS Beta".
+ *
+ * A commit message is the opposite case and stays: it is written by the person, about the work.
+ */
+const GENERATED_TITLE_TYPES = new Set(['git.status.summary']);
+
+/** Whether an event's title may contribute a subject. Used when ranking and when counting. */
+export function offersASubject(event: GoldenEvent): boolean {
+  return Boolean(event.title) && !GENERATED_TITLE_TYPES.has(event.type);
+}
+
 /** Candidate keyword phrases from a window title, once the application name is removed. */
 export function titlePhrases(title: string): string[] {
   const cleaned = stripAppSuffix(title)
@@ -448,7 +464,7 @@ export function keywordAnchors(events: GoldenEvent[]): Map<string, Anchor> {
  * word that is common in your day is demoted by the statistics whatever language it is in.
  */
 export function subjectAnchors(events: GoldenEvent[]): Map<string, Anchor> {
-  const titled = events.filter((e) => Boolean(e.title));
+  const titled = events.filter(offersASubject);
   if (titled.length === 0) return new Map();
 
   // Values that name a PLACE. None of them may become a subject, or the rename achieves
