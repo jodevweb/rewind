@@ -32,12 +32,27 @@ was Claude doing before I stopped?_ — and REWIND shows you the answer, with th
 
 ## Status
 
-**Phase 0 — Foundations.** Design documents complete; decisions settled in
+The desktop application runs on macOS and Windows, captures continuously, updates itself, and
+answers questions. Decisions are settled in
 [ADR 0001](docs/adr/0001-validated-product-decisions.md) and revised by
-[ADR 0002](docs/adr/0002-work-context-first-macos.md) (work-context-first, macOS-first). The monorepo,
-the shared protocol package, the secret redactor, **ten golden sessions** and the context engine
-benchmark all exist and run. No collectors and no desktop app yet — by design: the first milestone is
-_golden session → events → contexts → Resume_, not "Tauri starts".
+[ADR 0002](docs/adr/0002-work-context-first-macos.md) (work-context-first, macOS-first).
+
+What works today:
+
+- **Capture** — window focus and local Claude Code sessions, redacted before storage, into SQLite.
+- **Contexts** — the engine reconstructs a day into pieces of work. Scored against eleven
+  hand-authored golden sessions: **99.2 % pairwise F1 · 0.3 % false merge · 1.2 % false split ·
+  99.7 % important-event recall**, every target in [PRODUCT.md](docs/PRODUCT.md) §10.2 met.
+- **Resume** — what you were on, what you ran, what failed, what to do next. Every line read from a
+  stored event; nothing generated.
+- **Ask** — ⌘K, a question in plain language, answered from your own events with the evidence
+  attached. Local, deterministic, and it refuses rather than guessing.
+- **History** — any work day the machine holds, not only the hours in memory.
+- **Prediction** — rhythm, what an interruption costs you, what you usually pick up, and drift.
+  Counted, never trained, and silent when it has too little to say.
+
+Not started: the browser and editor extensions, the shell integration, the Git collector, and the
+Rust port of the engine (ADR 0001 D-4).
 
 ```
 pnpm eval        # score the context engine benchmark
@@ -80,7 +95,7 @@ packages/
   engine-v0/            The context engine, TypeScript reference          ← implemented
   predict/              Rhythm, interruption cost, resume, drift          ← implemented
   ask/                  Plain-language questions, answered with evidence  ← implemented
-  ui/                   Design system                                     (Phase 1)
+  ui/                   Today, Resume, Timeline, Ask, design tokens, i18n  ← implemented
   shared/               Utilities shared by UI and extensions
   config/               Shared tsconfig and tooling presets
 docs/                   The documents above

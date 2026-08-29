@@ -211,6 +211,31 @@ asserted nothing because of it. Use `repo: null` per step to opt out.
 
 ---
 
+## Days, and who reads what
+
+The daemon exposes three event queries and they are not interchangeable:
+
+- `events_for_day(day)` — one work day, **whole**. What the engine sees. Handing it a fortnight lets
+  last Tuesday's anchors compete with this morning's; handing it half a day produces contexts that
+  end where the page did.
+- `recent_events(limit)` — the recent stream across days. What the prediction layer sees, because a
+  habit is invisible inside a single day. Also what Ask searches: a question about last week that
+  only looks at today is not a memory.
+- `event_days()` — every work day that has anything in it, counted in SQL. The navigator lists six
+  months without the interface having read six months.
+
+Three silent bugs came out of building this, and they are the kind that look like nothing:
+
+1. `recent_events` clamped to **500** while the window asked for 5000. The interface reconstructed
+   the last couple of hours and called it the day, and prediction counted habits inside a fraction
+   of one. Nothing looked wrong.
+2. The view stamped every event with **this machine's current** timezone offset, discarding the one
+   it was captured at. A day read from another timezone showed the wrong hours — the exact thing
+   TR-8 exists to prevent.
+3. The engine and the prediction layer were sharing one input while wanting opposite things.
+
+The live day polls every 3 s; a finished day does not poll at all; history reloads every 60 s.
+
 ## Prediction
 
 `packages/predict` — four models, all counted rather than trained: `rhythm`, `interruption`,
