@@ -263,13 +263,13 @@ file Jaccard > 0.4. Also never automatic.
 
 ## 7. Manual control (§29, §30, §31)
 
-| Action                                               | Effect                                                                                                                                            |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Action                                                    | Effect                                                                                                                                            |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Start Context** ("I'm working on Checkout Redesign V2") | Creates a context with `origin: manual`; it receives a +0.15 score bonus for `MANUAL_PRIORITY_WINDOW` (2 h) and absorbs new activities by default |
-| **Merge**                                            | Union of activities, links, sessions; keeps the older `createdAt` and the preferred name; records a feedback rule                                 |
-| **Split**                                            | User picks a boundary activity or selects activities; two contexts result, links redistributed by evidence; records a feedback rule               |
-| **Rename**                                           | Sets `nameLocked`; nothing overwrites it                                                                                                          |
-| **Move activity**                                    | Reassigns one activity; records a feedback rule                                                                                                   |
+| **Merge**                                                 | Union of activities, links, sessions; keeps the older `createdAt` and the preferred name; records a feedback rule                                 |
+| **Split**                                                 | User picks a boundary activity or selects activities; two contexts result, links redistributed by evidence; records a feedback rule               |
+| **Rename**                                                | Sets `nameLocked`; nothing overwrites it                                                                                                          |
+| **Move activity**                                         | Reassigns one activity; records a feedback rule                                                                                                   |
 
 Manual assignments are **immutable by the engine**. An activity the user moved is never moved back.
 

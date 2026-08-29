@@ -49,7 +49,11 @@ const s: Step[] = [
     t: '16:04:00',
     ctx: 'importer',
     type: 'ide.file.saved',
-    meta: { path: '/Users/dev/dev/dataflow/src/importer.ts', language: 'typescript', lineCount: 210 },
+    meta: {
+      path: '/Users/dev/dev/dataflow/src/importer.ts',
+      language: 'typescript',
+      lineCount: 210,
+    },
   },
   {
     t: '16:09:00',
