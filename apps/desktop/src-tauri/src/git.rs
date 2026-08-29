@@ -216,15 +216,35 @@ fn read_from(path: &Path, offset: u64) -> Option<(Vec<Entry>, u64)> {
     Some((entries, size))
 }
 
+/// Run a console program without flashing a console window at the user.
+///
+/// Windows gives a console application its own window unless the parent asks otherwise, and it is
+/// shown even for a process that lives a few milliseconds. `git status` runs once every five
+/// minutes for each repository, capped at 24, so the machine threw up to two dozen empty windows
+/// across the screen every five minutes — reported, accurately, as "des fenêtres vides qui
+/// s'ouvrent très rapidement et se ferment". Nothing in a log says this is happening; it is only
+/// visible to whoever is sitting in front of the machine.
+///
+/// The only subprocess this daemon runs is the one below. Any future one belongs here too.
+#[cfg(windows)]
+fn without_a_window(command: &mut std::process::Command) -> &mut std::process::Command {
+    use std::os::windows::process::CommandExt;
+    /// `CREATE_NO_WINDOW`. One constant is not worth a dependency on the Windows crates.
+    const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+    command.creation_flags(CREATE_NO_WINDOW)
+}
+
+#[cfg(not(windows))]
+fn without_a_window(command: &mut std::process::Command) -> &mut std::process::Command {
+    command
+}
+
 /// How many files differ from HEAD. `None` when git is absent or the call fails — which is reported
 /// as nothing at all, never as a clean tree.
 fn dirty_count(worktree: &Path) -> Option<u64> {
-    let output = std::process::Command::new("git")
-        .arg("-C")
-        .arg(worktree)
-        .args(["status", "--porcelain"])
-        .output()
-        .ok()?;
+    let mut command = std::process::Command::new("git");
+    command.arg("-C").arg(worktree).args(["status", "--porcelain"]);
+    let output = without_a_window(&mut command).output().ok()?;
     if !output.status.success() {
         return None;
     }
