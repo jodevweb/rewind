@@ -38,7 +38,7 @@ export interface Project {
   /** Files Git reports as uncommitted, from the latest status seen. `undefined` when never seen. */
   dirty?: number;
   lastCommit?: { message: string; at: number };
-  /** The title of the latest Claude Code session that has a real one. */
+  /** The title of the latest agent session (Claude Code, Codex…) that has a real one. */
   lastSession?: { title: string; at: number };
   /** Files the recent sessions touched, absolute, newest first: what "Reprendre" reopens. */
   files: string[];
@@ -93,8 +93,8 @@ export function isScratch(path: string): boolean {
   return /[\\/](temp|tmp)[\\/]/i.test(path) || /[\\/]scratchpad([\\/]|$)/i.test(path);
 }
 
-/** "Claude Code — Atlas" is the tool's default title: it says where, never what. */
-const isGenericTitle = (title: string) => /^claude code\b/i.test(title.trim());
+/** "Claude Code — Atlas" or "Codex — Atlas" is the default title: it says where, never what. */
+const isGenericTitle = (title: string) => /^(claude code|codex)\b/i.test(title.trim());
 
 function absolute(file: string, base: string): string {
   if (/^[A-Za-z]:[\\/]/.test(file) || file.startsWith('/')) return file;

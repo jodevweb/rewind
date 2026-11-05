@@ -65,6 +65,7 @@ const WORDS: Record<string, RowKind[]> = {
 
   agent: ['agent'],
   claude: ['agent'],
+  codex: ['agent'],
 
   fenetre: ['window'],
   window: ['window'],

@@ -128,7 +128,7 @@ const APP_NAMES: Record<string, string> = {
 };
 
 export function appName(event: GoldenEvent): string {
-  if (event.source === 'agent') return 'Claude Code';
+  if (event.source === 'agent') return event.appDisplay ?? 'Claude Code';
   if (event.source === 'external') return 'Cockpit';
   if (event.source === 'terminal') return 'Terminal';
   if (event.source === 'git') return 'Git';

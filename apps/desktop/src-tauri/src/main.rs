@@ -17,6 +17,7 @@
 mod autostart;
 mod capture;
 mod claude;
+mod codex;
 mod git;
 mod platform;
 mod redact;
@@ -221,6 +222,7 @@ fn main() {
 
     // Claude Code sessions: the deepest autonomous source in this workflow (ADR 0003 D-27).
     claude::spawn(Arc::clone(&store), Arc::clone(&capture), tz);
+    codex::spawn(Arc::clone(&store), Arc::clone(&capture), tz);
 
     // Git: branches, commits and uncommitted work. The cheapest source with the highest return —
     // window titles carry no branch and no path, so without it every anchor above weak came from

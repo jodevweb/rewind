@@ -252,8 +252,8 @@ export function buildResume(session: GoldenSession, context: EngineContext): Res
               : e.type === 'agent.session.started'
                 ? `Claude Code session started`
                 : e.type === 'agent.session'
-                  ? (str(e, 'title') ?? e.title ?? 'Claude Code')
-                  : `Claude Code — ${num(e, 'toolCallCount') ?? 0} tool calls`;
+                  ? (str(e, 'title') ?? e.title ?? e.appDisplay ?? 'Claude Code')
+                  : `${e.appDisplay ?? 'Claude Code'} — ${num(e, 'toolCallCount') ?? 0} tool calls`;
         card.produced.push({
           label,
           detail: Array.isArray(files) ? files.map(String).join(', ') : undefined,

@@ -98,7 +98,7 @@ struct Session {
     sidechain_only: bool,
 }
 
-fn parse_iso_ms(text: &str) -> Option<u64> {
+pub(crate) fn parse_iso_ms(text: &str) -> Option<u64> {
     // "2026-08-28T14:32:11.482Z" — parsed by hand rather than pulling in a date crate for one shape.
     let bytes = text.as_bytes();
     if bytes.len() < 19 {
@@ -250,7 +250,7 @@ fn projects_dir() -> Option<PathBuf> {
 /// Thinking, reading a diff and running a long build are all normal gaps inside one stretch of work,
 /// so the threshold has to sit above them. Half an hour of nothing is not a pause in the work; it is
 /// the end of it, and whatever comes back afterwards is a new sitting.
-const BURST_GAP_MS: u64 = 30 * 60_000;
+pub(crate) const BURST_GAP_MS: u64 = 30 * 60_000;
 
 /// Cut a session's records into the stretches where somebody was actually there.
 ///
@@ -258,7 +258,7 @@ const BURST_GAP_MS: u64 = 30 * 60_000;
 /// 17:00 and the next at 00:30, and reading it as `first → last` claims nine and a half hours of
 /// continuous work — a single event long enough to bracket an entire day, which is how one evening
 /// of gaming ended up inside an afternoon of work.
-fn bursts(stamps: &[u64], gap: u64) -> Vec<(u64, u64)> {
+pub(crate) fn bursts(stamps: &[u64], gap: u64) -> Vec<(u64, u64)> {
     if stamps.is_empty() {
         return Vec::new();
     }
