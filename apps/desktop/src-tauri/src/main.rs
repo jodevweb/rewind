@@ -14,6 +14,7 @@
 //!   - **The recording state is always visible.** The tray glyph says `● Recording` or `⏸ Paused`,
 //!     and there is no third state in which capture happens quietly (§158).
 
+mod agents;
 mod autostart;
 mod capture;
 mod claude;
@@ -84,6 +85,29 @@ fn open_target(target: String) -> Result<(), String> {
 #[tauri::command]
 fn reveal_target(target: String) -> Result<(), String> {
     platform::reveal_target(&target)
+}
+
+fn agent_runtime(app: &AppHandle) -> agents::Runtime {
+    agents::runtime(app.path().resource_dir().ok())
+}
+
+/// Which agents are installed, which are connected, and whether Node is there to run the server.
+/// Async so the Node probe never blocks the window.
+#[tauri::command]
+async fn agents_report(app: AppHandle) -> agents::AgentsReport {
+    agents::report(&agent_runtime(&app))
+}
+
+/// Connect or disconnect one agent, then report again so the interface shows what is now true.
+#[tauri::command]
+async fn agent_set(
+    app: AppHandle,
+    id: String,
+    connect: bool,
+) -> Result<agents::AgentsReport, String> {
+    let rt = agent_runtime(&app);
+    agents::set(&rt, &id, connect)?;
+    Ok(agents::report(&rt))
 }
 
 #[tauri::command]
@@ -250,7 +274,9 @@ fn main() {
             events_for_day,
             set_paused,
             open_target,
-            reveal_target
+            reveal_target,
+            agents_report,
+            agent_set
         ])
         .setup(|app| {
             // Before the tray, so the menu's checkbox shows the state in force.

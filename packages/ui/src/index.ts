@@ -7,3 +7,4 @@ export * from './handoff.js';
 export * from './brief.js';
 export * from './home.js';
 export * from './projects.js';
+export * from './agents.js';

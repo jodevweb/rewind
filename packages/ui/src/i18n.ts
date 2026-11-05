@@ -213,6 +213,27 @@ const fr = {
   'empty.localTitle': 'Rien ne quitte cette machine.',
   'empty.localBody':
     'Pas de compte, pas de serveur, pas de capture d’écran, aucune frappe clavier enregistrée. Ce n’est pas une promesse : c’est vérifié à chaque build.',
+  'agents.open': 'Agents',
+  'agents.title': 'Tes agents',
+  'agents.intro':
+    'Un agent connecté peut demander à REWIND où tu en étais, dès le début d’une session. Tout reste sur ta machine.',
+  'agents.connected': 'Connecté',
+  'agents.notConnected': 'Pas connecté',
+  'agents.stale': 'À réparer',
+  'agents.problem': 'Fichier illisible',
+  'agents.connect': 'Connecter',
+  'agents.disconnect': 'Déconnecter',
+  'agents.repair': 'Réparer',
+  'agents.close': 'Fermer',
+  'agents.loading': 'Recherche des agents…',
+  'agents.none': 'Aucun agent compatible trouvé sur cette machine.',
+  'agents.absent': 'Pas installés ici : {list}.',
+  'agents.others':
+    'Pour les autres assistants (ChatGPT, Mistral…), utilise « Copier le contexte » sur l’accueil et colle-le dans la conversation.',
+  'agents.nodeMissing':
+    'Il faut Node 22.5 ou plus récent pour connecter un agent. Installe-le depuis nodejs.org, puis rouvre ce panneau.',
+  'agents.nodeOld':
+    'Node {v} est trop ancien : il faut la version 22.5 ou plus récente (nodejs.org).',
   'home.recording': 'enregistre',
   'home.paused': 'en pause',
   'home.backstage': 'Coulisses',
@@ -433,6 +454,26 @@ const en: Record<Key, string> = {
   'empty.localTitle': 'Nothing leaves this machine.',
   'empty.localBody':
     'No account, no server, no screenshots, and not one keystroke recorded. That is not a promise: it is checked on every build.',
+  'agents.open': 'Agents',
+  'agents.title': 'Your agents',
+  'agents.intro':
+    'A connected agent can ask REWIND where you left off, right at the start of a session. Everything stays on your machine.',
+  'agents.connected': 'Connected',
+  'agents.notConnected': 'Not connected',
+  'agents.stale': 'Needs repair',
+  'agents.problem': 'Unreadable file',
+  'agents.connect': 'Connect',
+  'agents.disconnect': 'Disconnect',
+  'agents.repair': 'Repair',
+  'agents.close': 'Close',
+  'agents.loading': 'Looking for agents…',
+  'agents.none': 'No compatible agent found on this machine.',
+  'agents.absent': 'Not installed here: {list}.',
+  'agents.others':
+    'For other assistants (ChatGPT, Mistral…), use “Copy context” on the home screen and paste it into the conversation.',
+  'agents.nodeMissing':
+    'Connecting an agent needs Node 22.5 or later. Install it from nodejs.org, then reopen this panel.',
+  'agents.nodeOld': 'Node {v} is too old: version 22.5 or later is needed (nodejs.org).',
   'home.recording': 'recording',
   'home.paused': 'paused',
   'home.backstage': 'Backstage',

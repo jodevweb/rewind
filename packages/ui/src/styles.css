@@ -2232,3 +2232,124 @@ kbd {
 .home .banner {
   border-radius: 16px;
 }
+
+/* Agents: one sheet over the home screen, one row per installed agent. */
+.agents {
+  width: min(620px, calc(100vw - 32px));
+  max-height: calc(100vh - 64px);
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 28px;
+  padding: 32px;
+  background: var(--h-tile);
+  color: var(--h-ink);
+  font: inherit;
+  box-shadow: 0 24px 64px rgba(31, 27, 45, 0.28);
+}
+.agents::backdrop {
+  background: rgba(31, 27, 45, 0.4);
+}
+.agents-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.agents-head h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+.agents-intro {
+  margin: 12px 0 24px;
+  max-width: 52ch;
+  color: var(--h-ink-2);
+}
+.agents-list {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.agents-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  padding: 16px 0;
+  border-top: 1.5px solid var(--h-track);
+}
+.agents-row:last-child {
+  border-bottom: 1.5px solid var(--h-track);
+}
+.agents-who {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.agents-name {
+  font-size: 19px;
+  font-weight: 700;
+}
+.agents-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  color: var(--h-muted);
+}
+.agents-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #a8a4b8;
+}
+.agents-state.ok .agents-dot {
+  background: var(--h-ok);
+}
+.agents-state.warn {
+  color: var(--h-warn);
+}
+.agents-state.warn .agents-dot {
+  background: var(--h-warn);
+}
+.agents-problem {
+  font-size: 14px;
+  color: var(--h-muted);
+  overflow-wrap: anywhere;
+}
+.agents-buttons {
+  display: flex;
+  gap: 8px;
+}
+.agents .agents-btn {
+  min-height: 44px;
+  padding: 8px 20px;
+  font-size: 16px;
+}
+.agents .agents-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.agents-notice {
+  margin: 0 0 20px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #fbefe8;
+  color: var(--h-warn);
+}
+.agents-muted {
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: var(--h-muted);
+}
+.agents-error {
+  margin: 8px 0 0;
+  color: var(--h-warn);
+  overflow-wrap: anywhere;
+}

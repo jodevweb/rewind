@@ -23,6 +23,8 @@ import {
   t,
   tPlural,
   Workspace,
+  type AgentsApi,
+  type AgentsReport,
   type Locale,
   type WorkspaceActions,
 } from '@rewind/ui';
@@ -216,6 +218,15 @@ export function App() {
     [],
   );
 
+  // Connecting an agent edits that agent's own configuration file, so the daemon does it.
+  const agents: AgentsApi = useMemo(
+    () => ({
+      report: () => invoke<AgentsReport>('agents_report'),
+      set: (id, connect) => invoke<AgentsReport>('agent_set', { id, connect }),
+    }),
+    [],
+  );
+
   const setPaused = async (minutes: number | null) => {
     setStatus(await invoke<CaptureStatus>('set_paused', { minutes }));
   };
@@ -260,6 +271,7 @@ export function App() {
         onBackstage={() => setView('backstage')}
         actions={actions}
         banners={notices}
+        agents={agents}
       />
     );
   }
