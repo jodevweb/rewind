@@ -53,14 +53,14 @@ These come from the design documents and are enforced in CI. A change that viola
 trade-off discussion; it is a defect.
 
 1. **No keystroke capture, no clipboard reading, no screen capture.** `pnpm check:forbidden-apis`
-   fails the build if the APIs appear anywhere (PRIVACY.md §2).
+   fails the build if the APIs appear anywhere.
 2. **Nothing is persisted without passing redaction.** The redactor fails closed: on error the event
-   is dropped, never stored (PRIVACY.md §4.2).
+   is dropped, never stored.
 3. **Collectors never write to the database or the UI.** They emit to the normaliser only
    (ARCHITECTURE.md §18).
 4. **Every collector ships its privacy record before it merges** — what, why, where stored, how
    deleted, can it contain secrets (COLLECTORS.md §9).
-5. **New collectors ship disabled by default** and are announced in release notes (PRIVACY.md §13).
+5. **New collectors ship disabled by default** and are announced in release notes.
 6. **No LLM in the deterministic path.** Resume facts, privacy decisions and deletion are never
    model-driven (AI.md §8).
 7. **Every answer carries evidence.** A summary with an empty evidence list is invalid (EVENT_MODEL.md
@@ -99,7 +99,7 @@ or the other, and the pull request is where we decide which.
 
 ## Testing philosophy
 
-Three areas are release-blocking because a failure in them is unrecoverable (TESTING.md §11):
+Three areas are release-blocking because a failure in them is unrecoverable:
 
 - **Privacy** — a leaked secret cannot be un-leaked.
 - **Context quality** — wrong grouping degrades the product invisibly; nothing errors.

@@ -1,19 +1,8 @@
 name: CI
 
-# Minutes are the constraint here, not wall-clock time. This is a private repository on the free
-# tier, and GitHub bills runners by a multiplier: Linux x1, Windows x2, macOS x10. A six-minute
-# macOS job costs sixty minutes of the monthly allowance, so running one on every push burns the
-# month in a few days of ordinary work — which is exactly what happened.
-#
-# So the shape of this file is deliberate:
-#
-#   - everything that CAN run on Linux does, and runs there only;
-#   - Windows carries the one job that has to prove the Windows build;
-#   - macOS runs only when macOS-specific code changed, or on request.
-#
-# The tradeoff is real: a change to shared Rust code is not proven on macOS until the release
-# builds it. That is the right trade at x10 — the release does build both, so nothing ships
-# unproven, it is only proven later.
+# TypeScript and the privacy gates run on Linux. The Rust daemon is checked on both platforms it
+# ships for, on every push: a platform that is not built is not supported. The repository is public,
+# so standard runners cost nothing and there is no reason to ration the macOS job.
 
 on:
   workflow_dispatch:
@@ -25,16 +14,17 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  # Linux only. This also ran on Windows at 2x and never once caught something Linux did not:
-  # same Node, same pnpm, no platform-specific code in the TypeScript.
   typescript:
     name: TypeScript
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: pnpm
@@ -52,105 +42,49 @@ jobs:
     name: Privacy gates
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
 
-      # PRIVACY.md §2 promises these APIs are absent from the product. This makes it a build gate
-      # rather than a policy statement (ticket P0-008).
+      # The product promises it never logs keystrokes, reads the clipboard or captures the screen.
+      # This makes that promise a build gate rather than a policy statement.
       - name: Forbidden API check (no keylogger, no clipboard, no screen capture)
         run: pnpm check:forbidden-apis
 
-      # TESTING.md §11: any failing privacy test blocks the release.
+      # A secret that survives redaction blocks the release, whatever else passes.
       - name: Redaction corpus
         run: pnpm --filter @rewind/protocol test
 
-      # TESTING.md §11: context quality is release-blocking. The harness validates itself via the
-      # oracle baseline, so a broken metric fails here rather than silently reporting good numbers.
+      # Context quality is release-blocking too. The harness validates itself against an oracle
+      # baseline, so a broken metric fails here rather than silently reporting good numbers.
       - name: Context engine benchmark
         run: pnpm --filter @rewind/eval test
 
-  # ADR 0004 D-30: both platforms build from the first Rust commit. A platform that is not built
-  # is not supported, whatever the documents say — and this is also the only place the Rust code can
-  # be compiled at all right now, since Smart App Control blocks an unsigned rustc on the dev machine.
-  # Which Rust targets to compile. macOS is gated because of the 10x multiplier: it runs when a
-  # macOS provider changed, when the manifest changed, or when someone asks for it.
-  decide:
-    name: Decide
-    runs-on: ubuntu-latest
-    outputs:
-      macos: ${{ steps.check.outputs.macos }}
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          fetch-depth: 2
-      - id: check
-        shell: bash
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "macos=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          # Every commit in this push, not just the last: a push of three commits whose first
-          # touched a macOS provider still has to be checked on macOS.
-          BEFORE="${{ github.event.before }}"
-          if [ -n "$BEFORE" ] && git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
-            CHANGED=$(git diff --name-only "$BEFORE" HEAD)
-          else
-            CHANGED=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
-          fi
-          if echo "$CHANGED" | grep -qE "(macos|Cargo[.](toml|lock)|tauri[.]conf[.]json|capabilities/)"; then
-            echo "Running the macOS job: macOS-specific files changed."
-            echo "macos=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "Skipping the macOS job: nothing macOS-specific changed, and it bills at 10x."
-            echo "macos=false" >> "$GITHUB_OUTPUT"
-          fi
-
   rust:
-    name: Rust (windows)
-    runs-on: windows-latest
+    name: Rust (${{ matrix.label }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            label: windows
+          - os: macos-latest
+            label: macos
     defaults:
       run:
         working-directory: apps/desktop/src-tauri
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
           toolchain: stable
           components: clippy, rustfmt
-      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
-        with:
-          workspaces: apps/desktop/src-tauri
-
-      # Tauri needs GTK/webkit on Linux only; macOS and Windows runners already have their webview.
-      - name: Format
-        run: cargo fmt --check
-      - name: Clippy
-        run: cargo clippy --all-targets -- -D warnings
-      - name: Test
-        run: cargo test
-
-  # Same checks, on macOS, only when it can tell us something Windows cannot.
-  rust-macos:
-    name: Rust (macos)
-    needs: decide
-    if: needs.decide.outputs.macos == 'true'
-    runs-on: macos-latest
-    defaults:
-      run:
-        working-directory: apps/desktop/src-tauri
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
-        with:
-          toolchain: stable
-          components: clippy, rustfmt
-      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           workspaces: apps/desktop/src-tauri
       - name: Format
