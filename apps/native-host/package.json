@@ -1,0 +1,7 @@
+{
+  "name": "@rewind/native-host",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Chrome native messaging bridge relaying to the ingest pipe (Phase 3)."
+}

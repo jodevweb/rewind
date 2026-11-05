@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rewind.local/schemas/timeline-event.json",
+  "title": "TimelineEvent",
+  "description": "The canonical event (EVENT_MODEL.md §2). Authoritative definition: Rust structs and TypeScript types are generated from this file (ticket P0-003).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "timestamp",
+    "tzOffsetMinutes",
+    "source",
+    "type",
+    "producer",
+    "metadata",
+    "privacyLevel",
+    "redaction",
+    "importance"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "UUIDv7 — time-ordered, producer-generated, used for idempotent ingest.",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "timestamp": { "type": "integer", "description": "Epoch milliseconds, UTC." },
+    "endTimestamp": {
+      "type": "integer",
+      "description": "Epoch milliseconds, UTC. Present for events with duration."
+    },
+    "tzOffsetMinutes": {
+      "type": "integer",
+      "minimum": -840,
+      "maximum": 840,
+      "description": "Local UTC offset at capture time. Required: temporal queries are wrong without it (TR-8)."
+    },
+    "source": {
+      "type": "string",
+      "enum": ["system", "browser", "ide", "filesystem", "git", "terminal", "agent", "manual"]
+    },
+    "type": {
+      "type": "string",
+      "pattern": "^[a-z]+(\\.[a-z_]+)+$",
+      "description": "Namespaced event type. Unknown types are rejected at ingest, not stored speculatively."
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "type": "string", "maxLength": 64 },
+        "version": { "type": "string", "maxLength": 32 }
+      }
+    },
+    "app": { "type": "string", "maxLength": 256 },
+    "appDisplay": { "type": "string", "maxLength": 256 },
+    "title": {
+      "type": "string",
+      "maxLength": 1024,
+      "description": "Redacted before persistence. Sensitive by default outside the safe-app allowlist (PRIVACY.md §3.3)."
+    },
+    "projectId": { "type": "string" },
+    "repositoryId": { "type": "string" },
+    "metadata": {
+      "type": "object",
+      "description": "Type-specific payload, validated against the per-type schema at ingest."
+    },
+    "privacyLevel": { "type": "string", "enum": ["normal", "sensitive", "private"] },
+    "redaction": {
+      "type": "object",
+      "description": "Proof that redaction ran. Persistence rejects events without it (PRIVACY.md §4.2).",
+      "additionalProperties": false,
+      "required": ["patternsVersion", "applied", "count"],
+      "properties": {
+        "patternsVersion": { "type": "string" },
+        "applied": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Detector ids that fired. Never the matched values."
+        },
+        "count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "searchableText": {
+      "type": "string",
+      "maxLength": 4096,
+      "description": "Assembled by the normaliser only. A producer cannot smuggle unredacted text into the index."
+    },
+    "importance": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "activityId": { "type": "string" },
+    "contextId": { "type": "string" }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "@rewind/browser-extension",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Chrome MV3 extension: tab and navigation events (Phase 3)."
+}

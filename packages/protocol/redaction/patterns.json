@@ -1,0 +1,177 @@
+{
+  "version": "1.0.1",
+  "note": "Language-neutral secret detector registry. Consumed by the Rust hot-path redactor and the TypeScript extension-side redactor. Patterns MUST stay inside the subset shared by the Rust `regex` crate and JavaScript RegExp: no lookahead, no lookbehind, no backreferences. Case-insensitivity is expressed via `flags`, never inline `(?i)`, because JavaScript does not support inline flags. Every quantifier is bounded: this code runs on the collection hot path, where an unbounded repeat next to an ambiguous prefix is a catastrophic-backtracking hazard (TESTING.md §5.4). Order matters: specific detectors run before generic ones, and generic detectors refuse values that already begin with '[' so they cannot relabel an existing redaction.",
+  "patterns": [
+    {
+      "id": "private_key",
+      "description": "Complete PEM private key block, any algorithm",
+      "regex": "-----BEGIN [A-Z ]{0,20}PRIVATE KEY-----[\\s\\S]{0,8192}?-----END [A-Z ]{0,20}PRIVATE KEY-----",
+      "flags": "",
+      "confidence": "certain",
+      "replacement": "[REDACTED:private_key]"
+    },
+    {
+      "id": "private_key_fragment",
+      "description": "Truncated PEM block with no END marker. A partial key is still a key, and a window title or log line will often carry only the head of one.",
+      "regex": "-----BEGIN [A-Z ]{0,20}PRIVATE KEY-----[A-Za-z0-9+/=\\s]{0,8192}",
+      "flags": "",
+      "confidence": "certain",
+      "replacement": "[REDACTED:private_key_fragment]"
+    },
+    {
+      "id": "anthropic_api_key",
+      "description": "Anthropic API key",
+      "regex": "\\bsk-ant-[A-Za-z0-9_\\-]{20,200}",
+      "flags": "",
+      "confidence": "certain",
+      "replacement": "[REDACTED:anthropic_api_key]"
+    },
+    {
+      "id": "openai_api_key",
+      "description": "OpenAI API key, classic and project-scoped",
+      "regex": "\\bsk-(?:proj-)?[A-Za-z0-9_\\-]{20,200}",
+      "flags": "",
+      "confidence": "certain",
+      "replacement": "[REDACTED:openai_api_key]"
+    },
+    {
+      "id": "stripe_secret_key",
+      "description": "Stripe secret or restricted key, live or test",
+      "regex": "\\b(?:sk|rk)_(?:live|test)_[A-Za-z0-9]{16,200}",
+      "flags": "",
+      "confidence": "certain",
+      "replacement": "[REDACTED:stripe_secret_key]"
+    },
+    {
+      "id": "stripe_webhook_secret",
+      "description": "Stripe webhook signing secret",
+      "regex": "\\bwhsec_[A-Za-z0-9]{16,200}",
+      "flags": "",
+      "confidence": "certain",
+      "replacement": "[REDACTED:stripe_webhook_secret]"
+    },
+    {
+      "id": "github_token",
+      "description": "GitHub personal, OAuth, server-to-server, refresh or user token",
+      "regex": "\\bgh[pousr]_[A-Za-z0-9]{36,255}",
+      "flags": "",
+      "confidence": "certain",
+      "replacement": "[REDACTED:github_token]"
+    },
+    {
+      "id": "github_pat_fine_grained",
+      "description": "GitHub fine-grained personal access token",
+      "regex": "\\bgithub_pat_[A-Za-z0-9_]{22,255}",
+      "flags": "",
+      "confidence": "certain",
+      "replacement": "[REDACTED:github_pat_fine_grained]"
+    },
+    {
+      "id": "gitlab_pat",
+      "description": "GitLab personal access token",
+      "regex": "\\bglpat-[A-Za-z0-9_\\-]{20,128}",
+      "flags": "",
+      "confidence": "certain",
+      "replacement": "[REDACTED:gitlab_pat]"
+    },
+    {
+      "id": "npm_token",
+      "description": "npm access token",
+      "regex": "\\bnpm_[A-Za-z0-9]{36}",
+      "flags": "",
+      "confidence": "certain",
+      "replacement": "[REDACTED:npm_token]"
+    },
+    {
+      "id": "slack_token",
+      "description": "Slack bot, user, app or refresh token",
+      "regex": "\\bxox[baprs]-[A-Za-z0-9\\-]{10,200}",
+      "flags": "",
+      "confidence": "certain",
+      "replacement": "[REDACTED:slack_token]"
+    },
+    {
+      "id": "sendgrid_key",
+      "description": "SendGrid API key",
+      "regex": "\\bSG\\.[A-Za-z0-9_\\-]{16,64}\\.[A-Za-z0-9_\\-]{16,128}",
+      "flags": "",
+      "confidence": "certain",
+      "replacement": "[REDACTED:sendgrid_key]"
+    },
+    {
+      "id": "aws_access_key_id",
+      "description": "AWS access key id (IAM user, STS, role, group)",
+      "regex": "\\b(?:AKIA|ASIA|AIDA|AROA|AGPA|ANPA)[A-Z0-9]{16}\\b",
+      "flags": "",
+      "confidence": "certain",
+      "replacement": "[REDACTED:aws_access_key_id]"
+    },
+    {
+      "id": "google_api_key",
+      "description": "Google / Firebase API key: literal AIza plus 35 characters",
+      "regex": "\\bAIza[A-Za-z0-9_\\-]{35}",
+      "flags": "",
+      "confidence": "certain",
+      "replacement": "[REDACTED:google_api_key]"
+    },
+    {
+      "id": "jwt",
+      "description": "JSON Web Token, three base64url segments",
+      "regex": "\\beyJ[A-Za-z0-9_\\-]{8,2048}\\.[A-Za-z0-9_\\-]{8,4096}\\.[A-Za-z0-9_\\-]{8,2048}",
+      "flags": "",
+      "confidence": "high",
+      "replacement": "[REDACTED:jwt]"
+    },
+    {
+      "id": "authorization_header",
+      "description": "Authorization header value (Bearer, Basic, Token)",
+      "regex": "(authorization\\s*[:=]\\s*(?:bearer|basic|token)\\s+)[A-Za-z0-9._~+/=\\-]{8,4096}",
+      "flags": "i",
+      "confidence": "certain",
+      "replacement": "$1[REDACTED:authorization_header]"
+    },
+    {
+      "id": "url_credentials",
+      "description": "Credentials embedded in a URL, including database connection strings",
+      "regex": "([a-zA-Z][a-zA-Z0-9+.\\-]{0,32}://)[^\\s/:@]{1,128}:[^\\s/@]{1,128}@",
+      "flags": "",
+      "confidence": "certain",
+      "replacement": "$1[REDACTED:url_credentials]@"
+    },
+    {
+      "id": "env_assignment",
+      "description": "Assignment to a name that implies a secret, in shell, dotenv, YAML or query-string form. The name prefix is optional so a bare 'api_key=' matches. The value must not already start with '[' so an earlier, more precise redaction is never relabelled.",
+      "regex": "(\\b[A-Za-z0-9_]{0,64}(?:secret|token|password|passwd|apikey|api_key|access_key|private_key|credential)[A-Za-z0-9_]{0,64}\\s*[:=]\\s*)[\"']?[^\\s\"'\\[][^\\s\"']{3,512}",
+      "flags": "i",
+      "confidence": "high",
+      "replacement": "$1[REDACTED:env_assignment]"
+    },
+    {
+      "id": "cli_flag_secret",
+      "description": "Secret passed as a command-line flag value",
+      "regex": "(--?(?:token|password|passwd|api[-_]?key|secret)[= ])[^\\s\\[][^\\s]{3,512}",
+      "flags": "i",
+      "confidence": "high",
+      "replacement": "$1[REDACTED:cli_flag_secret]"
+    }
+  ],
+  "entropy": {
+    "enabledByDefault": false,
+    "note": "Last-resort heuristic, disabled until its false-positive rate is measured against the fixture corpus (INITIAL_ANALYSIS TR-10). It runs only on tokens no named detector matched, and never on an allow-shape.",
+    "minLength": 20,
+    "maxLength": 200,
+    "minEntropyBitsPerChar": 4.0,
+    "allowShapes": [
+      { "id": "git_sha", "regex": "^[0-9a-f]{7,40}$" },
+      { "id": "sha256", "regex": "^[0-9a-f]{64}$" },
+      {
+        "id": "uuid",
+        "regex": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+      },
+      { "id": "iso_timestamp", "regex": "^\\d{4}-\\d{2}-\\d{2}[T ][0-9:.]+Z?$" },
+      { "id": "semver", "regex": "^v?\\d+\\.\\d+\\.\\d+[A-Za-z0-9.\\-+]*$" },
+      { "id": "ipv4", "regex": "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$" },
+      { "id": "redaction_placeholder", "regex": "^\\[REDACTED:[a-z_]+\\]$" }
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Shown by macOS when REWIND asks for Accessibility. The user decides based on this sentence,
+       so it says what is read and what is not (ADR 0003 D-22). -->
+  <key>NSAccessibilityUsageDescription</key>
+  <string>REWIND lit le nom et le titre de la fenêtre active pour reconstituer sur quoi tu travailles. Il ne lit jamais le contenu de tes messages ou documents, et ne prend aucune capture d'écran.</string>
+
+  <key>NSAppleEventsUsageDescription</key>
+  <string>REWIND interroge le système pour connaître l'application active. Aucun contenu n'est lu.</string>
+
+  <key>LSApplicationCategoryType</key>
+  <string>public.app-category.productivity</string>
+</dict>
+</plist>

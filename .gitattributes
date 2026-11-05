@@ -1,0 +1,15 @@
+# The repository is shared between Windows and macOS (ADR 0003 B-3). Normalise to LF in the
+# repository and check out LF everywhere, so a file never shows as modified purely because of the
+# platform it was checked out on — and so the fixture JSON stays byte-identical across machines,
+# which the `build:check` staleness gate depends on.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
+*.icns binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+pnpm-lock.yaml -diff
+packages/fixtures/golden/*.json linguist-generated=true

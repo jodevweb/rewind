@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "What the window is allowed to call. Tauri v2 grants a plugin command nothing unless it is named here, and this file did not exist: the updater's check() failed on a permission error every time, which the interface swallowed. Hence an application that never found an update and never said why.",
+  "windows": ["main"],
+  "permissions": ["core:default", "updater:default", "process:allow-restart"]
+}

@@ -1,0 +1,38 @@
+node_modules/
+dist/
+build/
+.turbo/
+target/
+*.tsbuildinfo
+.DS_Store
+*.log
+coverage/
+.env
+.env.*
+!.env.example
+apps/desktop/src-tauri/gen/
+packages/protocol/src/generated.ts
+
+# macOS
+.DS_Store
+
+# Captured real activity from this machine. Never committed.
+apps/studio/public/captured/
+
+# Rust / Tauri
+apps/desktop/src-tauri/target/
+apps/desktop/dist/
+
+# Scratch files from CI inspection — never committed.
+*.tmp.json
+*.tmp.txt
+
+# Never commit this file. Back it up somewhere durable.
+REWIND-UPDATER-PRIVATE-KEY.txt
+
+# Staging for a release build; assembled by CI, never committed.
+release-assets/
+
+# The handover file. It is written for whoever picks this up next and it says things about
+# how the person working on it works — that belongs on the machine, not in a public repository.
+MEMORY.md

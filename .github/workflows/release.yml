@@ -1,0 +1,174 @@
+name: Release
+
+# Publishes a signed release that the application updates itself from — so a new version reaches
+# both machines without a git pull and a local build on each.
+#
+# The release goes HERE, in this repository. That is only possible because it is public: GitHub
+# serves a private repository's release assets solely to an authenticated client, and the
+# application has no token and must not have one (ADR 0005 D-13). While this repository was private
+# the manifest had to live in a second public one, and the updater failed silently against it —
+# which is the whole of ADR 0006, now superseded by ADR 0007.
+#
+# There was a transitional mirror to `rewind-dist`, for copies installed while this repository was
+# private and which knew no other endpoint. Both machines have since updated through it, so it is
+# gone — along with the second endpoint in tauri.conf.json and the DIST_TOKEN secret (ADR 0008).
+#
+# Signing happens only here. The private key never leaves CI, so an update can only come from a
+# build that ran in this repository; the application refuses anything that does not verify against
+# the public key in tauri.conf.json.
+#
+# Run it from the Actions tab, with the version typed in. There is deliberately no tag trigger.
+#
+# There was one — `push: tags: ['v*']` — and it fired on a tag that was moved rather than created.
+# Rewriting history force-pushed v0.5.0 and v0.5.1, both tags landed as pushes, and the workflow ran
+# twice with no version input. Without one it reads the version committed in package.json, which is
+# `0.1.0` and always has been, so it built and published a release called v0.1.0, mirrored it, and
+# that release — being the most recent — became "latest". For about an hour the updater endpoint
+# offered a downgrade to a version that never existed.
+#
+# A tag push is not a decision to release. It happens when a tag is moved, re-pointed or restored,
+# and none of those mean "build this". The version is now always typed by the person releasing.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version, e.g. 0.2.0'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            label: macOS
+            platform: darwin-aarch64
+          - os: windows-latest
+            label: Windows
+            platform: windows-x86_64
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      # `__VERSION__` is filled from tauri.conf.json, so without this the version typed into the
+      # Actions tab is ignored and the run rebuilds whatever version is already committed.
+      # The version reaches the shell through the environment, never pasted into the script: a
+      # value typed into the Actions tab is text, and `${{ }}` inside `run:` would make it code.
+      # It must also look like a version, so nothing else can be released under that name.
+      - name: Set version
+        shell: bash
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "not a version: $VERSION"; exit 1; }
+          node scripts/set-version.mjs "$VERSION"
+
+      - name: Read version
+        id: version
+        shell: bash
+        run: node -p "'version='+require('./apps/desktop/package.json').version" >> "$GITHUB_OUTPUT"
+
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+        with:
+          toolchain: stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
+        with:
+          workspaces: apps/desktop/src-tauri
+
+      # A release that skipped the privacy gates would be the one build where the guarantees did not
+      # hold. That is exactly backwards, so they run before anything is published.
+      - name: Privacy gates
+        run: |
+          pnpm check:forbidden-apis
+          pnpm --filter @rewind/protocol test
+
+      # The same command build.yml uses, rather than tauri-action. tauri-action picks a package
+      # manager from a lockfile in its projectPath, and apps/desktop has none, so it fell back to
+      # `npm run tauri` and failed. It was only ever here to create the release, which this workflow
+      # no longer asks it to do — the release goes to another repository.
+      - name: Build
+        run: pnpm --filter @rewind/desktop build
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          # Empty when the secret is unset, which is what a key generated without a password needs.
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+
+      - name: Collect assets
+        run: node scripts/collect-release-assets.mjs ${{ matrix.platform }} ${{ steps.version.outputs.version }}
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: assets-${{ matrix.platform }}
+          path: release-assets/
+          retention-days: 7
+
+  publish:
+    name: Publish
+    needs: build
+    runs-on: ubuntu-latest
+    # The release lands in this repository, so this job needs to be able to write one.
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      # Both platforms merge into one directory: two sets of installers and two descriptors.
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          path: release-assets/
+          pattern: assets-*
+          merge-multiple: true
+
+      # The checkout is clean, so package.json still carries the committed version — `0.1.0`, which it
+      # has been since the first commit — rather than the one the build jobs stamped. This used to
+      # fall back to it when no version was given, which is how an accidental run published v0.1.0.
+      # There is no fallback now: the dispatched version is the only version.
+      - name: Resolve version
+        id: version
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "not a version: $VERSION"; exit 1; }
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      # One manifest, pointing at this repository's assets, published once. It was uploaded in two
+      # places while the mirror existed; there was only ever one set of installers and signatures.
+      - name: Build the update manifest
+        run: node scripts/build-latest-json.mjs "${{ steps.version.outputs.version }}" "${{ github.repository }}"
+
+      - name: Publish
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: REWIND v${{ steps.version.outputs.version }}
+          body: |
+            Mise à jour automatique depuis l'application, ou téléchargement ci-dessous.
+
+            **Première installation sur macOS.** L'application est signée ad-hoc mais pas notarisée
+            par Apple, faute de compte développeur payant. macOS met donc à la corbeille, au
+            lancement, toute application téléchargée qu'il ne peut pas vérifier. Après avoir glissé
+            REWIND dans Applications, et **avant** de l'ouvrir :
+
+            ```
+            xattr -dr com.apple.quarantine /Applications/REWIND.app
+            ```
+
+            Une seule fois, par machine. Les mises à jour suivantes passent par l'application et ne
+            repassent pas par la quarantaine.
+          draft: false
+          prerelease: false
+          files: release-assets/*
