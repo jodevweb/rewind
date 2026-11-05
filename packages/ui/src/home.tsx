@@ -17,6 +17,7 @@ import { useMemo, useState, type ReactNode } from 'react';
 
 import '@fontsource-variable/bricolage-grotesque';
 
+import { AgentsSheet, type AgentsApi } from './agents.js';
 import { copyText } from './handoff.js';
 import { getLocale, t, type Key } from './i18n.js';
 import { buildHome, place, projectBrief, PAUSED_AFTER_DAYS, type Project } from './projects.js';
@@ -63,6 +64,7 @@ export function Home({
   onBackstage,
   actions,
   banners,
+  agents,
 }: {
   /** Everything the machine holds, across days: projects are only visible across days. */
   history: GoldenSession;
@@ -72,9 +74,12 @@ export function Home({
   actions?: WorkspaceActions;
   /** Update and permission notices, shown under the header. */
   banners?: ReactNode;
+  /** Connecting coding agents. Absent where there is no daemon to do it (the studio). */
+  agents?: AgentsApi;
 }) {
   const home = useMemo(() => buildHome(history, now), [history, now]);
   const [picked, setPicked] = useState<string | null>(null);
+  const [agentsOpen, setAgentsOpen] = useState(false);
   const [flash, setFlash] = useState<string | null>(null);
 
   const colour = useMemo(
@@ -117,11 +122,18 @@ export function Home({
               {recording ? t('home.recording') : t('home.paused')}
             </span>
           )}
+          {agents && (
+            <button className="home-link" onClick={() => setAgentsOpen(true)}>
+              {t('agents.open')}
+            </button>
+          )}
           <button className="home-link" onClick={onBackstage}>
             {t('home.backstage')}
           </button>
         </div>
       </header>
+
+      {agents && agentsOpen && <AgentsSheet api={agents} onClose={() => setAgentsOpen(false)} />}
 
       {banners}
 

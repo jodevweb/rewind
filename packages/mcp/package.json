@@ -13,7 +13,8 @@
     "start": "tsx src/main.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "hook": "tsx src/hook.ts"
+    "hook": "tsx src/hook.ts",
+    "bundle": "node bundle.mjs"
   },
   "dependencies": {
     "@rewind/ask": "workspace:*",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@rewind/config": "workspace:*",
+    "esbuild": "0.25.12",
     "tsx": "^4.19.2",
     "vitest": "^2.1.9"
   }

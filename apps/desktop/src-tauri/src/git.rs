@@ -338,9 +338,10 @@ fn read_from(path: &Path, offset: u64) -> Option<(Vec<Entry>, u64)> {
 /// s'ouvrent très rapidement et se ferment". Nothing in a log says this is happening; it is only
 /// visible to whoever is sitting in front of the machine.
 ///
-/// The only subprocess this daemon runs is the one below. Any future one belongs here too.
+/// Every subprocess this daemon runs goes through here: `git status` below, and the Node probe in
+/// `agents.rs`.
 #[cfg(windows)]
-fn without_a_window(command: &mut std::process::Command) -> &mut std::process::Command {
+pub(crate) fn without_a_window(command: &mut std::process::Command) -> &mut std::process::Command {
     use std::os::windows::process::CommandExt;
     /// `CREATE_NO_WINDOW`. One constant is not worth a dependency on the Windows crates.
     const CREATE_NO_WINDOW: u32 = 0x0800_0000;
@@ -348,7 +349,7 @@ fn without_a_window(command: &mut std::process::Command) -> &mut std::process::C
 }
 
 #[cfg(not(windows))]
-fn without_a_window(command: &mut std::process::Command) -> &mut std::process::Command {
+pub(crate) fn without_a_window(command: &mut std::process::Command) -> &mut std::process::Command {
     command
 }
 

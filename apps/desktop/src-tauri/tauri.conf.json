@@ -6,8 +6,8 @@
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5274",
-    "beforeDevCommand": "pnpm run frontend:dev",
-    "beforeBuildCommand": "pnpm run frontend:build"
+    "beforeDevCommand": "pnpm --filter @rewind/mcp bundle && pnpm run frontend:dev",
+    "beforeBuildCommand": "pnpm --filter @rewind/mcp bundle && pnpm run frontend:build"
   },
   "app": {
     "windows": [
@@ -31,6 +31,7 @@
     "active": true,
     "createUpdaterArtifacts": true,
     "targets": ["app", "dmg", "nsis"],
+    "resources": { "resources/mcp/*": "mcp/" },
     "icon": ["icons/128x128.png", "icons/icon.png", "icons/icon.ico"],
     "copyright": "REWIND",
     "shortDescription": "Une mémoire contextuelle pour ton ordinateur",
