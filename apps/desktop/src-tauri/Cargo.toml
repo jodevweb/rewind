@@ -26,6 +26,8 @@ serde_json = "1"
 # Bundled: SQLite is compiled in, so there is no system library to install on either platform.
 rusqlite = { version = "0.32", features = ["bundled"] }
 regex = "1"
+# Pure Rust zstd decoder, for Codex session logs. No C toolchain needed on either platform.
+ruzstd = "0.8"
 tauri-plugin-updater = "2"
 tauri-plugin-process = "2"
 tauri-plugin-autostart = "2"

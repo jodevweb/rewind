@@ -96,9 +96,9 @@ export function headline(e: GoldenEvent): string {
       return `${leaf(str(e, 'fromPath'))} → ${leaf(str(e, 'toPath'))}`;
     case 'agent.session':
     case 'agent.session.started':
-      return (str(e, 'title') ?? e.title) || 'session Claude Code';
+      return (str(e, 'title') ?? e.title) || `session ${e.appDisplay ?? 'agent'}`;
     case 'agent.activity':
-      return `Claude Code — ${m['toolCallCount'] ?? 0} appels d’outils`;
+      return `${e.appDisplay ?? 'Agent'} — ${m['toolCallCount'] ?? 0} appels d’outils`;
     case 'external.mission.started':
       return `mission : ${str(e, 'mission') ?? ''}`;
     case 'external.run.finished':
