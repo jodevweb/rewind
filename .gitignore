@@ -23,7 +23,7 @@ apps/studio/public/captured/
 apps/desktop/src-tauri/target/
 apps/desktop/dist/
 # The MCP server and hook, bundled at build time from packages/mcp.
-apps/desktop/src-tauri/resources/mcp/
+apps/desktop/src-tauri/resources/mcp/*.mjs
 
 # Scratch files from CI inspection — never committed.
 *.tmp.json
